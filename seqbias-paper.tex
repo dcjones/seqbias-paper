@@ -1,34 +1,35 @@
 
-\documentclass[letterpaper]{article}
-\usepackage{qcjstd}
-\usepackage{graphicx}
-\usepackage{lscape}
-\usepackage{multicol}
-\usepackage{geometry}
-\usepackage{amsmath}
-\usepackage{multirow}
-%\usepackage{bookman}
-%\usepackage{cmbright}
+\documentclass{bioinfo}
+\copyrightyear{2011}
+\pubyear{2011}
 
-\makeatletter
-\newenvironment{tablehere}
-  {\def\@captype{table}}
-  {\vspace{1em}}
+\usepackage{comment}
 
-\newenvironment{figurehere}
-  {\def\@captype{figure}}
-  {\vspace{1em}}
-\makeatother
-
-\geometry{left=0.8in,right=0.8in, top=1in, bottom=1in}
-
-\title{A Model for Sequence Bias in RNA-Seq}
 
 \begin{document}
+\firstpage{1}
 
-%\maketitle
+\title{Correcting for bias in high throughput sequencing data}
+\author[Jones \textit{et~al}]
+{Daniel C. Jones\,$^{1,}$
+\footnote{to whom correspondence should be addressed}\hspace{0.5em}
+Walter L. Ruzzo\,$^{1,2}$
+Xinxia Peng\,$^{3}$
+Michael G. Katze$^{3}$
+}
 
-\qcjtitle{\sc{(Draft)}}{\sc{A Model for Sequencing Bias in RNA-Seq}}{Daniel C. Jones}
+\history{Received on XXXXX; revised on XXXXX; accepted on XXXXX}
+
+\address{
+$^{1}$Deportment of Computer Science and Engineering, University of
+Washington, Seattle, WA 98195-2350, USA\\
+$^{2}$Fred Hutchinson Cancer Research Center, Seattle, WA 98109\\
+$^{3}$Department of Microbiology, University of Washington, Seattle, WA
+98195-7242, USA}
+
+\editor{Associate Editor: XXXXXXX}
+
+\maketitle
 
 \begin{abstract}
 Quantification of RNA abundance in RNA-Seq experiments is often conflated with
@@ -38,8 +39,6 @@ sequences.  We propose a method to measure and compensate for these influences
 using a simple graphical model, trained without the need of existing gene
 annotations.
 \end{abstract}
-
-\begin{multicols}{2}
 
 \section{Introduction}
 
@@ -84,6 +83,7 @@ trimming the reads prior to mapping (see, supplementary Figure 1), suggesting
 it is not a result of erroneous base calling, and that a more sophisticated
 means of correction is needed.
 
+\begin{comment}
 \begin{figure*}
 \begin{center}
 \includegraphics[width=0.75\textwidth]{fig/freqs.pdf}
@@ -94,6 +94,7 @@ is summarized using the symmetrized Kullback-Leibler divergence (see Section
 3).}
 \label{fig:freqs}
 \end{figure*}
+\end{comment}
 
 
 Some work has been done to model and correct for these biases.  Li, et. al.,
@@ -290,6 +291,7 @@ The second of these encodes the assumption that distant nucleotides are
 effectively independent.
 
 
+\begin{comment}
 \begin{figure*}
 \begin{center}
 \includegraphics[width=0.75\textwidth]{fig/structure2.pdf}
@@ -299,6 +301,7 @@ read start. Dotted boxes represent positions not included in the model (i.e.
 positions deemed uninformative).}
 \label{fig:structure}
 \end{figure*}
+\end{comment}
 
 Figure \ref{fig:structure} shows an example of the structure learned when this
 procedure is applied to 200,000 reads from the Trapnell data set
@@ -324,6 +327,8 @@ available data sets \cite{Bullard2010} \cite{Mortazavi2008} \cite{Trapnell2010}
 \cite{Wetterbom2010}, as well as an unpublished data set of our own (see, Table
 \ref{tab:datasets}).
 
+%% TODO
+\begin{comment}
 \begin{tablehere}
 \begin{center}
 \footnotesize{
@@ -340,6 +345,7 @@ Trapnell \cite{Trapnell2010} & Mouse & Illumina & 75
 \caption{Data sets on which the methods are evaluated.}
 \label{tab:datasets}
 \end{tablehere}
+\end{comment}
 
 
 Testing was performed by cross-validation. Each method was trained on data taken
@@ -403,6 +409,8 @@ The result of this this analysis is plotted in Figure
 \ref{fig:kl} for the Trapnell data set. Similar plots for the other data sets are
 provided in the supplement.
 
+%% TODO
+\begin{comment}
 \begin{figurehere}
 \begin{center}
 \includegraphics[width=0.5\textwidth]{fig/kl.pdf}
@@ -411,12 +419,15 @@ provided in the supplement.
 experiment.}
 \label{fig:kl}
 \end{figurehere}
+\end{comment}
 
 To summarize these plots, we summed the divergence from position -20
 through 20, for each of the methods, then normalized this number by dividing by
 the summed divergence before adjustment. The results of this analysis are plotted in
 Figure \ref{fig:kl-delta}.
 
+%% TODO
+\begin{comment}
 \begin{figurehere}
 \begin{center}
 \includegraphics[width=0.35\textwidth]{fig/kl-delta.pdf}
@@ -426,6 +437,7 @@ number less than 1 indicates a decrease in divergence, or an increase in
 uniformity.}
 \label{fig:kl-delta}
 \end{figurehere}
+\end{comment}
 
 
 \subsection{Poisson Regression}
@@ -450,6 +462,7 @@ $$ \log \left( \frac{ L_{i} } { L'_{i} } \right) $$
 When the fit improves, this number is positive, and negative when it is
 worsened. The values computed from our test are listed in Table \ref{tab:pois}.
 
+\begin{comment}
 \begin{tablehere}
 \begin{center}
 \tiny{
@@ -466,12 +479,15 @@ worsened. The values computed from our test are listed in Table \ref{tab:pois}.
 \caption{Change in fit, compared to the null model of uniform Poisson rate across exons.}
 \label{tab:pois}
 \end{tablehere}
+\end{comment}
 
 Computing one number to summarize the fit of the model ignores variance in the
 likelihood from exon to exon. This number could be dominated by a few test
 regions. Figure \ref{fig:pois} plots the distribution of the change in fit
 across the 1000 test exons, revealing a similar, but more nuanced result.
 
+%% TODO
+\begin{comment}
 \begin{figurehere}
 \begin{center}
 \includegraphics[width=0.4\textwidth]{fig/pois.pdf}
@@ -480,6 +496,7 @@ across the 1000 test exons, revealing a similar, but more nuanced result.
 positive value indicates a better fit in the bias corrected model.}
 \label{fig:pois}
 \end{figurehere}
+\end{comment}
 
 
 \section{Discussion}
@@ -537,8 +554,6 @@ The method is implemented in the R/Bioconductor \cite{Gentleman2004} package \te
 
 \bibliographystyle{plain}
 \bibliography{seqbias-paper}
-
-\end{multicols}
 
 \end{document}
 

@@ -1,6 +1,5 @@
 
 \documentclass[letterpaper]{article}
-\usepackage{qcjstd}
 \usepackage{lscape}
 \usepackage{comment}
 \usepackage{geometry}
@@ -13,7 +12,7 @@
 
 \begin{document}
 
-\qcjtitle{\sc{(SUPPLEMENTARY)}}{\sc{A Model for Sequencing Bias in RNA-Seq}}{Daniel C. Jones}
+%\qcjtitle{\sc{(SUPPLEMENTARY)}}{\sc{A Model for Sequencing Bias in RNA-Seq}}{Daniel C. Jones}
 
 %\begin{center}
 %\large{
@@ -35,6 +34,8 @@ reduce the bias, and simply shifts the plot by seven positions. This indicates
 that the issue is \emph{sampling bias}, rather than a bias in base calling.
 
 
+%% TODO
+\begin{comment}
 %\begin{figure}[b]
 \begin{center}
 \includegraphics[width=0.35\textwidth]{fig/trimmed-freqs.pdf}
@@ -43,6 +44,7 @@ that the issue is \emph{sampling bias}, rather than a bias in base calling.
 %Mortazavi dataset.}
 %\label{fig:trimmed}
 %\end{figure}
+\end{comment}
 
 
 \section{CHiP-Seq}
@@ -58,6 +60,8 @@ Measuring nucleotide frequencies, we find the bias to be significantly less
 than that observed the RNA-Seq data sets we tested, but the data was by no means
 unbiased.
 
+%% TODO
+\begin{comment}
 %\begin{figure}[b]
 \begin{center}
 \includegraphics[width=0.5\textwidth]{fig/freqs_cao.pdf}
@@ -65,6 +69,7 @@ unbiased.
 %\caption{Nucleotide frequencies from CHiP-Seq reads.}
 %\label{fig:freqs_cao}
 %\end{figure}
+\end{comment}
 
 In the analysis of the RNA-Seq data, we used the assumption of continuous
 transcription across annotated exons to evaluate the efficacy of the models, as
@@ -79,17 +84,23 @@ from the 50,000 segments with the highest read counts.
 
 First we plot directly the positional KL divergence, computed identically 
 
+%% TODO
+\begin{comment}
 \begin{center}
 \includegraphics[width=0.5\textwidth]{fig/cao-kl.pdf}
 \end{center}
+\end{comment}
 
 Secondly, we summarize these plots, computing one normalized divergence
 estimate by summing the KL divergence of positions -20 through 20, and
 divided by the unadjusted summed divergence to normalize.
 
+%% TODO
+\begin{comment}
 \begin{center}
 \includegraphics[width=0.5\textwidth]{fig/cao-kl-delta.pdf}
 \end{center}
+\end{comment}
 
 We see that our method is effective at reducing the bias in this ChiP-Seq data.
 
@@ -102,9 +113,12 @@ question the accuracy of such tests. In our experiments, we have observed the
 bias to be mostly, but not entirely consistent between replicates. Below, we
 plot the frequencies from the four runs in the Trapnell data set.
 
+%% TODO
+\begin{comment}
 \begin{center}
 \includegraphics[width=0.5\textwidth]{fig/replicates.pdf}
 \end{center}
+\end{comment}
 
 Though we do not know if the variability is always minor, assuming this is so,
 there remains the risk that the sequence bias would greatly effect the depth to
@@ -118,6 +132,8 @@ expressed genes, but not the test itself.
 
 Below we plot the adjusted and unadjusted KL divergence of each sample.
 
+%% TODO
+\begin{comment}
 %\begin{figure}[b]
 %\begin{center}
 \includegraphics[width=\textwidth]{fig/kl-all.pdf}
@@ -125,6 +141,7 @@ Below we plot the adjusted and unadjusted KL divergence of each sample.
 %\caption{Positional KL divergence for each dataset and method.}
 %\label{fig:kl-all}
 %\end{figure}
+\end{comment}
 
 
 \bibliographystyle{plain}
