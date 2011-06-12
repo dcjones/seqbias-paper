@@ -23,7 +23,7 @@ Michael G. Katze$^{3}$
 \address{
 $^{1}$Deportment of Computer Science and Engineering, University of
 Washington, Seattle, WA 98195-2350, USA\\
-$^{2}$Fred Hutchinson Cancer Research Center, Seattle, WA 98109\\
+$^{2}$Fred Hutchinson Cancer Research Center, Seattle, WA 98109, USA\\
 $^{3}$Department of Microbiology, University of Washington, Seattle, WA
 98195-7242, USA}
 
@@ -32,22 +32,46 @@ $^{3}$Department of Microbiology, University of Washington, Seattle, WA
 \maketitle
 
 \begin{abstract}
-Quantification of RNA abundance in RNA-Seq experiments is often conflated with
-protocol specific bias as a result of PCR amplification, differing primer
-affinities, and random priming with a non-uniform distribution of primer
-sequences.  We propose a method to measure and compensate for these influences
-using a simple graphical model, trained without the need of existing gene
-annotations.
+
+\section{Motivation:}
+
+Quantification of sequence abundance in RNA-Seq and ChiP-Seq experiments is
+often conflated with protocal-specific bias, influenced by PCR amplification,
+and differing primer affinities and mixtures, for example. The result is
+potentially inaccurate quantification, affecting de novo gene annotation and
+isoform quantification in RNA-Seq, and peak calling in ChiP-Seq.
+
+
+\section{Results:}
+
+We present a method to measure and correct for these influences using a simple
+graphical model. Our model does not rely on existing gene annotations, making it
+applicable to any high throughput sequencing data. We evaluate our method on
+several datasets, and by multiple criteria, demonstrating that it effectively
+decreases bias and increases uniformity.
+
+
+\section{Availability:}
+The method is implemented in the \texttt{seqbias} R/Bioconductor package,
+available freely under the LGPL licence from
+\href{http://bioconductor.org}{http://bioconductor.org}.
+
+
+\section{Contact:}
+\href{dcjones@cs.washington.edu}{dcjones@cs.washington.edu}
+
 \end{abstract}
+
 
 \section{Introduction}
 
 In the last few years, RNA-Seq has emerged as a promising alternative to
 microarrays in quantifying RNA abundance. But, as microarray technology has
-brought with it technical challenges ranging from robust normalization to
-addressing cross-hybridization, RNA-Seq presents a new set of problems.
+brought with it technical challenges ranging from developing robust
+normalization to accounting for cross-hybridization, RNA-Seq presents a new set
+of problems.
 
-A significant example is the effect of transcript length and quantification.
+A significant example is the effect of transcript length on quantification.
 As noted by Oshlack, et. al., transcript length biases discovery of differentially
 expression, since more reads are aligned to longer transcripts, granting
 higher statistical significance in tests differential expression
@@ -212,7 +236,7 @@ each node represents a position in the sequence, relative to the read start, and
 edges encode dependency between positions. Bayesian networks have been
 applied to recognize motifs in nucleotide sequences in the past, in particular
 in modeling splice cites \cite{Cai2000} \cite{Chen2005} and transcription factor
-binding sites \cite{BenGal2005} \cite{Grau2006} \cite{Pudimat2005}. 
+binding sites \cite{Ben-Gal2005} \cite{Grau2006} \cite{Pudimat2005}. 
 
 In our model, we do not rely on constraining the set of networks (e.g. to
 trees), and instead approximate the NP-Hard problem of determining the optimal
@@ -377,8 +401,8 @@ additional two to be particularly informative. The background frequencies in
 each variation were were estimated from positions 18--23 within each read.
 
 All data sets were mapped using Bowtie \cite{Langmead2009} against the latest
-genome assemblies available from the UCSC Genome Browser \cite{Rhead2010} during
-preparation.
+genome assemblies available from the UCSC Genome Browser \cite{Karolchik2008}
+during preparation.
 
 
 
@@ -547,12 +571,8 @@ sequenced on the Illumina platform display similar patterns of nonuniformity,
 yet differ in magnitude. Batch effects in RNA-Seq remain a legitimate concern,
 that should be evaluated and corrected for.
 
-\section{Availability}
 
-The method is implemented in the R/Bioconductor \cite{Gentleman2004} package \texttt{seqbias}.
-
-
-\bibliographystyle{plain}
+\bibliographystyle{natbib}
 \bibliography{seqbias-paper}
 
 \end{document}
