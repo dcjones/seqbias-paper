@@ -95,7 +95,7 @@ nonuniformity in nucleotide frequencies on five data sets (see, Table
 These biases may adversely effect transcript discovery, as low level noise may
 be over reported in some regions, and in others, active transcription may be
 under reported. They render untrustworthy comparisons of relative abundance
-between genes, and any test of differential expression hangs on the assumption
+between genes, and any test of differential expression hangs on the assuBmption
 that these biases are identical between replicates.  Additionally, in many tests
 of differential expression---similarly the effects of transcript length---a higher
 read count will result in higher statistical confidence. It follows that the
@@ -107,18 +107,18 @@ trimming the reads prior to mapping (see, supplementary Figure 1), suggesting
 it is not a result of erroneous base calling, and that a more sophisticated
 means of correction is needed.
 
-\begin{comment}
 \begin{figure*}
-\begin{center}
-\includegraphics[width=0.75\textwidth]{fig/freqs.pdf}
-\end{center}
-\caption{Nucleotide frequencies relative to the start of each read (labeled
-position 0), respecting strand. The divergence of the nucleotide distribution
-is summarized using the symmetrized Kullback-Leibler divergence (see Section
-3).}
+\centerline{\includegraphics[width=0.8\textwidth]{fig/freqs.eps}}
+\caption{Nucleotide frequencies are plotted relative to the start (labeled,
+position 0) of each mapped read, respecting strand. The sequence is taken frmo
+the genomic context surrounding the read, so that -40 to -1, for example, fall
+outside the read sequence itself. The symmetrized Killback-Leibler divergence is
+used to summarize the difference in nucleotide frequency compared to a fixed
+estimate of background necleotide frequencies made by sampling many positions
+nearby mapped reads.  Under the assumption that reads are sampled uniformly from
+transcripts, each of the plots should be essentially flat.}
 \label{fig:freqs}
 \end{figure*}
-\end{comment}
 
 
 Some work has been done to model and correct for these biases.  Li, et. al.,
@@ -159,7 +159,18 @@ combined with the probabilistic characterization of sequence bias that we
 described here.
 
 
-\section{Method}
+\begin{figure}
+\centerline{\includegraphics[width=0.35\textwidth]{fig/overview.eps}}
+\caption{An overview of the approach taken: (a) foreground sequences are sampled
+from the regions surrounding the starts of mapped reads, (b) background
+sequences are sampled by randomly offsetting foreground positions, (c) a
+Bayesian network is classifier is trained to descriminate between the set of
+sampled foreground and background sequences, (d) and the classifier is evaluated
+at each position within a locus, predicting bias.}
+\label{fig:overview}
+\end{figure}
+
+\section{Methods}
 
 \subsection{Principle}
 
