@@ -10,8 +10,8 @@
    xmlns:xlink="http://www.w3.org/1999/xlink"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="354.87076"
-   height="543.19263"
+   width="343.88675"
+   height="572.06976"
    id="svg2"
    version="1.1"
    inkscape:version="0.48.1 r9760"
@@ -3771,9 +3771,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="0.7"
-     inkscape:cx="63.273186"
-     inkscape:cy="327.93091"
+     inkscape:zoom="0.5"
+     inkscape:cx="348.98748"
+     inkscape:cy="75.073761"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -3781,14 +3781,18 @@
      inkscape:window-height="852"
      inkscape:window-x="0"
      inkscape:window-y="0"
-     inkscape:window-maximized="1"
+     inkscape:window-maximized="0"
      fit-margin-top="10"
      fit-margin-left="10"
      fit-margin-right="10"
      fit-margin-bottom="10">
     <inkscape:grid
        type="xygrid"
-       id="grid7430" />
+       id="grid7430"
+       empspacing="5"
+       visible="true"
+       enabled="true"
+       snapvisiblegridlinesonly="true" />
   </sodipodi:namedview>
   <metadata
      id="metadata7">
@@ -3806,7 +3810,7 @@
      inkscape:label="Layer 1"
      inkscape:groupmode="layer"
      id="layer1"
-     transform="translate(-125.86566,-27.409221)">
+     transform="translate(-125.86566,-31.389221)">
     <text
        xml:space="preserve"
        style="font-size:18px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Univers 45 Light;-inkscape-font-specification:Univers 45 Light"
@@ -5272,7 +5276,7 @@
          id="path16220" />
       <path
          inkscape:connector-curvature="0"
-         style="fill:none;stroke:#ffffff;stroke-width:3.2;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;stroke-opacity:1;stroke-dasharray:none"
+         style="fill:none;stroke:#ffffff;stroke-width:3.20000005;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;stroke-opacity:1;stroke-dasharray:none"
          d="m 161.60156,70.308594 0,-55.910156"
          id="path16222" />
       <path
@@ -6490,7 +6494,7 @@
          id="path19049" />
       <path
          inkscape:connector-curvature="0"
-         style="fill:none;stroke:#ffffff;stroke-width:3.2;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;stroke-opacity:1;stroke-dasharray:none"
+         style="fill:none;stroke:#ffffff;stroke-width:3.20000005;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;stroke-opacity:1;stroke-dasharray:none"
          d="m 77.378906,70.308594 0,-55.910156"
          id="path19051" />
       <path
@@ -7667,7 +7671,7 @@
          id="path20659" />
       <path
          inkscape:connector-curvature="0"
-         style="fill:none;stroke:#ffffff;stroke-width:3.2;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;stroke-opacity:1;stroke-dasharray:none"
+         style="fill:none;stroke:#ffffff;stroke-width:3.20000005;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;stroke-opacity:1;stroke-dasharray:none"
          d="m 103.02734,70.308594 0,-55.910156"
          id="path20661" />
       <path
@@ -8986,7 +8990,7 @@
          id="path22283" />
       <path
          inkscape:connector-curvature="0"
-         style="fill:none;stroke:#ffffff;stroke-width:3.2;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;stroke-opacity:1;stroke-dasharray:none"
+         style="fill:none;stroke:#ffffff;stroke-width:3.20000005;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;stroke-opacity:1;stroke-dasharray:none"
          d="m 138.32031,70.308594 0,-55.910156"
          id="path22285" />
       <path
@@ -9907,5 +9911,18 @@
        id="path22625"
        mask="none"
        clip-path="none" />
+    <text
+       xml:space="preserve"
+       style="font-size:20px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Univers 55;-inkscape-font-specification:Univers 55"
+       x="294.15137"
+       y="593.45898"
+       id="text19564"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         id="tspan19566"
+         x="294.15137"
+         y="593.45898">R<tspan
+   style="font-size:65.00091553%;baseline-shift:super"
+   id="tspan19570">2</tspan></tspan></text>
   </g>
 </svg>
