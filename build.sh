@@ -13,6 +13,7 @@ BIB=bibtex
 $TEX seqbias-paper.tex
 $BIB seqbias-paper
 $TEX seqbias-paper.tex
+$TEX seqbias-paper.tex
 
 
 

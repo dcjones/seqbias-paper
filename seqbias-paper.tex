@@ -34,7 +34,6 @@ $^{3}$Department of Microbiology, University of Washington, Seattle, WA
 \begin{abstract}
 
 \section{Motivation:}
-
 Quantification of sequence abundance in RNA-Seq and ChiP-Seq experiments is
 often conflated with protocal-specific bias, influenced by PCR amplification,
 and differing primer affinities and mixtures, for example. The result is
@@ -43,7 +42,6 @@ isoform quantification in RNA-Seq, and peak calling in ChiP-Seq.
 
 
 \section{Results:}
-
 We present a method to measure and correct for these influences using a simple
 graphical model. Our model does not rely on existing gene annotations, making it
 applicable to any high throughput sequencing data. We evaluate our method on
@@ -71,41 +69,43 @@ brought with it technical challenges ranging from developing robust
 normalization to accounting for cross-hybridization, RNA-Seq presents a new set
 of problems.
 
-A significant example is the effect of transcript length on quantification.
-As noted by Oshlack, et. al., transcript length biases discovery of differentially
-expression, since more reads are aligned to longer transcripts, granting
-higher statistical significance in tests differential expression
-\cite{Oshlack2009}. Recently, some methods have been developed attempting to account for
-this effect in gene set enrichment tests \cite{Young2010} \cite{Gao2011}.
-Additionally, differing transcript lengths introduce ``edge
-effects'', as very short fragments from the end of a transcript will not be
-sequenced. NEUMA \cite{Lee2010} and FPKM \cite{Trapnell2010} are two methods
-that attempt to take this into account.
+A significant example is the effect of transcript length on quantification.  As
+noted by \citet{Oshlack2009} transcript length biases discovery of
+differentially expression, since more reads are aligned to longer transcripts,
+granting higher statistical significance in tests differential expression.
+Recently, some methods have been developed attempting to account for this effect
+in gene set enrichment tests \citep{Young2010,Gao2011}.
+
+%% TODO: do something with this sentance.
+Additionally,
+differing transcript lengths introduce ``edge effects'', as very short fragments
+from the end of a transcript will not be sequenced. NEUMA \cite{Lee2010} and
+FPKM \cite{Trapnell2010} are two methods that attempt to take this into account.
 
 The underlying nucleotide sequence also influences quantification in a manner
-that is complex and protocol specific. In an ideal experiment, the number of
+that is complex and protocol-specific. In an ideal experiment, the number of
 reads mapping to a particular position in the genome is a function of RNA
-abundance and should not be additionally dependent on the sequence. As pointed
-out recently, this is not the case \cite{Dohm2008} \cite{Li2010}
-\cite{Hansen2010}. As illustration, Figure \ref{fig:freqs} plots this
-nonuniformity in nucleotide frequencies on five data sets (see, Table
-\ref{tab:datasets}), each using a different protocol.
+abundance and should not be additionally dependent on the sequence at that
+position. As noted first by \citet{Dohm2008}, this is not the case.  As
+illustration, Figure \ref{fig:freqs} plots this nonuniformity in nucleotide
+frequencies on five data sets (see, Table \ref{tab:datasets}), each using a
+different protocol.
 
 
 These biases may adversely effect transcript discovery, as low level noise may
 be over reported in some regions, and in others, active transcription may be
 under reported. They render untrustworthy comparisons of relative abundance
-between genes, and any test of differential expression hangs on the assuBmption
-that these biases are identical between replicates.  Additionally, in many tests
-of differential expression---similarly the effects of transcript length---a higher
-read count will result in higher statistical confidence. It follows that the
-sensitivity of such a test will also be biased by sequence, affecting downstream
-systems biology analysis such as gene ontology enrichment tests.
+between genes or isoforms, and any test of differential expression hangs on the
+assumption that these biases are identical between replicates.  Additionally, in
+many tests of differential expression---similar to the effects of transcript
+length---a higher read count will result in higher statistical confidence. It
+follows that the sensitivity of such a test will also be biased by sequence,
+affecting downstream analysis such as gene ontology enrichment tests.
 
 This bias, though observed primarily in the 5' end of a read, is not resolved by
-trimming the reads prior to mapping (see, supplementary Figure 1), suggesting
-it is not a result of erroneous base calling, and that a more sophisticated
-means of correction is needed.
+trimming the reads prior to mapping \citep{Hansen2010} (see also, Supplementary
+Section 1), suggesting it is not a result of erroneous base calling, and that a
+more sophisticated means of correction is needed.
 
 \begin{figure*}
 \centerline{\includegraphics[width=0.8\textwidth]{fig/freqs.eps}}
@@ -120,45 +120,46 @@ transcripts, each of the plots should be essentially flat.}
 \label{fig:freqs}
 \end{figure*}
 
-
-Some work has been done to model and correct for these biases.  Li, et. al.,
-\cite{Li2010} propose two models. The firsts is a Poisson linear model, in which
-read counts across a transcript follow inhomogeneous Poisson process. The read
-count at position $i$ within the transcript is Poisson distributed with
-parameter $\lambda_i$, where, $\log(\lambda_i)$ is the sum of weights determined by the
-nucleotide at each position surrounding the read start, in addition to a term
-capturing the abundance of the transcript.
+Li, et. al., \cite{Li2010} propose two models. The first is a Poisson linear
+model, in which read counts across a transcript follow inhomogeneous Poisson
+process. The read count at position $i$ within the transcript is Poisson
+distributed with parameter $\lambda_i$, where, $\log(\lambda_i)$ is the sum of
+weights determined by the nucleotide at each position surrounding the read
+start, in addition to a term capturing the abundance of the transcript.
 
 The second model is based on multiple additive regression trees, or MART
-\cite{Friedman2003}.  In their tests, MART shows a moderate improvement over the
-Poisson linear model. Both models are fit to a number of abundant test genes,
-requiring existing gene annotations for the reference genome. 
+\citep{Friedman2003}.  In their tests, the MART model shows a moderate
+improvement over the Poisson linear model. Both models are fit to a number of
+abundant test genes, requiring existing gene annotations for the reference
+genome. 
 
-Another model, proposed by Hansen, et. al., \cite{Hansen2010} directly estimates
-the distribution of initial heptamers within reads, then estimates a presumed
-background heptamer distribution by sampling from the end of reads. Read counts
-are then adjusted by the ratio of the two. Specifying two distributions over
-heptamers (i.e. foreground and background distributions) requires $2(4^7-1) =
-32,766$ parameters, so while no gene annotations are needed to train such a
-model, a significant number of reads are required.
+Another model, proposed by \citet{Hansen2010}, directly estimates the
+distribution of initial heptamers within reads, then estimates a presumed
+background heptamer distribution, sampled from the end of reads. The read count
+at a given position is then adjusted by the ratio of the foreground and
+background heptamer probabilities. Specifying two distributions over heptamers
+(i.e. foreground and background distributions) requires $2(4^7-1) = 32,766$
+parameters, so while no gene annotations are needed to train such a model, a
+significant number of reads are required.
 
-Version 0.9.0 of Cufflinks \cite{Trapnell2010} also introduces a model to
-correct for sequence bias. No description of their method is yet available, nor
-is there any implementation of the model that can be run independently of
-Cufflinks to facilitate testing, so we have withheld any comparison in our
-tests.
+Lastly, \citet{Roberts2011} have very recently published a description of
+another approach, in which sequence probabilities are modeled by variable-order
+Markov chains. The structure of these Markov chains are hard-coded, chosen in
+advance using a hill-climbing algorithm on a representative dataset. This method
+is implemented in the latest version of Cufflinks \citep{Trapnell2010}, and
+tightly incorporated into its estimation of transcript abundance.
 
-Besides the direct influence of nucleotide composition on sequencing efficiency,
-the ``uniqueness'' of a sequence within the genome affects how likely it is to
-be mapped correctly, thus influencing quantification in a non-trivial way. Some
-methods exist attempting to quantify uniqueness \cite{Koehler2010} and to take
-it into account in the measure of transcript abundance \cite{Li2010b}
-\cite{Lee2010}. Though we make no attempt to address this problem, any
-probabilistic characterization of uniqueness or ``mapability'' could easily be
-combined with the probabilistic characterization of sequence bias that we
-described here.
+Here we propose a new approach, using Bayesian networks to model sequence
+probabilities. Unlike the methods of Roberts or Li, our model requires no gene
+annotations, nor even the assumption that the short reads are derived from RNA.
+In this sense, we build on the work done by \citet{Hansen2010}, generalizing
+their approach in a way we find to be more robust and effective at correcting
+for bias in a variety of protocols. Due to the weak assumptions required my our
+model, it is applicable and potentially useful in any setting in which short
+reads are aligned to a reference sequence.
 
 
+%% TODO: where should this figure be cited?
 \begin{figure}
 \centerline{\includegraphics[width=0.35\textwidth]{fig/overview.eps}}
 \caption{An overview of the approach taken: (a) foreground sequences are sampled
@@ -174,43 +175,43 @@ at each position within a locus, predicting bias.}
 
 \subsection{Principle}
 
-We assume a simple model of an RNA-Seq experiment: the number of reads $x_i$
-aligned to genomic position $i$ is an unbiased estimate of RNA abundance.
-Furthermore, we assume reads may be treated as i.i.d. samples. That
-is, if $N$ reads are generated, and $m_i$ is the event that a generated read
-maps to position $i$,
-$$ E[ x_i ] = N \Pr[ m_i ] $$
+We begin with a natural model of an RNA-Seq experiment (and one that is often
+assumed, whether implicitly or otherwise). The number of reads $x_i$ aligned to
+genomic position $i$ is an unbiased estimate of RNA abundance. Furthermore, we
+assume reads may be treated as independent and identically distributed samples.
+That is, if $N$ reads are generated, and $m_i$ is the event that a generated
+read maps to position $i$.
+$$ E[x_i] = N \Pr[m_i] $$
 
-
-The experiment may be considered unbiased  with regards to sequence if having
+The experiment may be considered unbiased  with regards to sequence if, having
 observed the nucleotide sequence $s_i$ surrounding position $i$,
 $$ E[ x_i | s_i ] = N \Pr[ m_i | s_i ] = N \Pr[ m_i ] = E[ x_i ] $$
 
 From Bayes' rule,
 $$ \Pr[ m_i | s_i ] = \frac{ \Pr[ s_i | m_i ] \Pr[ m_i ] }{ \Pr[ s_i ] } $$
 
-This suggests a natural reweighing scheme. First, define the \emph{sequence
-bias} $b_i$ at position $i$ as,
+This suggests a natural scheme in which observations may be reweighted to
+correct for bias.  First, define the \emph{sequence bias} $b_i$ at position $i$
+as,
 $$ b_i = \frac{ \Pr[ s_i ] } { \Pr[ s_i | m_i ] } $$
 
-Now, if we reweight the read count at position $i$ by $b_i$, we
+Now, if we reweight the read count $x_i$ at position $i$ by $b_i$, we
 have,
 \begin{align*}
-E[ b_i x_i  | s_i ] &= b_i E[ x_i | s_i ] \\
+E[ b_i x_i | s_i ] &= b_i E[ x_i | s_i ] \\
 &= N b_i \Pr[ m_i | s_i ] \\
 &= N \frac{ \Pr[ m_i | s_i ] \Pr[ s_i ] }{ \Pr[ s_i | m_i ] } \\
 &= N \Pr[ m_i ] \\
 &= E[ x_i ]
 \end{align*}
-Thus the reweighted read counts are made to be unbiased.
-
+Thus the reweighted read counts are made unbiased.
 
 To estimate the bias $b_i$, we must make estimates of the background sequence
 probability $\Pr[s_i]$ and the foreground sequence probability $\Pr[ s_i | m_i
-]$, the later being the probability of the sequence given a read being sampled
-from its position. Any estimation of sequence probabilities presents a challenge
-of finding a model that sufficiently complex to capture the common features of
-the training data but avoids overfitting.
+]$, the latter being the probability of the sequence given a read being sampled
+from its position. Estimating bias is therefore a problem of finding a model of
+sequence probability that sufficiently complex to capture the common features of
+the training data yet avoids overfitting.
 
 Towards that end, we propose training a Bayesian network classifier trained on
 examples of foreground and background sequences. Though our goal is not
@@ -218,36 +219,38 @@ classification, by using the machinery of classification we can avoid a model
 that is over-parametrized. Parameters that are not informative in
 discriminating between foreground and background are not included in the model.
 The Bayesian network can then used to evaluate sequence probability, and thus
-bias at any genomic position.
+bias, at any genomic position.
 
-This discussion so far ignores one complication. The RNA abundance that we wish to
-estimate is not itself independent of of the nucleotide sequence. Notably,
-exonic DNA is tends to be more GC-rich than intergenic DNA. If background
-sequences are sampled uniformly from the genome we run the risk of incorrectly
-adjusting for biological sequence bias, rather than technical sequence bias. To
-avoid this, we propose using paired training data. Each foreground training
-sequence is paired with a background sequence taken from nearby position that is
-likely to have similar abundance and general nucleotide composition.
+However, we have so for ignored one complication: the RNA abundance that we wish
+to estimate is not itself independent of the nucleotide sequence. Notably,
+exonic DNA tends to be more GC-rich than intergenic DNA. If background sequences
+are sampled uniformly from the genome we run the risk of incorrectly adjusting
+for biological sequence bias, rather than techncical sequence bias.  To avoid
+this, we propose using paired training data. Each foreground training
+sequence is paired with a background sequence taken from nearby position
+that is likely to have similar abundance and general nucleotide composition.
 Alternatively, we could pair foreground samples with background samples from
-within the same transcript, but we prefer to avoid dependence on existing gene
-annotations as such a model would be less suitable for de-novo discovery or
-annotation applications.
+within the same transcript, but we prefer to avoid dependence on existing
+gene annotations as such a model would be limited to RNA-Seq analysis in which
+trustworthy and reasonably complete gene annotations are available.
 
-Hansen, et. al., \cite{Hansen2010} implicitly characterizes and corrects for
-bias in the same manner proposed here. Their approach differs primarily in how
-sequence probabilities are estimated. Li, et. al., \cite{Li2010} offers a
-different perspective, taking advantage of gene annotations to train a model
-that optimally explains variance in base level counts across transcripts.
+The methods proposed \citet{Hansen2010} and \cite{Roberts2011} also treat bias
+correction as a problem of estimating foreground and background sequence
+probabilities. They differ primarily in how these sequence probabilities are
+estimated. \citet{Li2010} estimate reweighting coefficients ($b_i$, in our
+notation) directly, given training data consistig of long, highly-expressed
+transcripts.
+
 
 
 \subsection{Estimation}
 
 To estimate sequencing bias, we train a Bayesian network classifier in which
 each node represents a position in the sequence, relative to the read start, and
-edges encode dependency between positions. Bayesian networks have been
-applied to recognize motifs in nucleotide sequences in the past, in particular
-in modeling splice cites \cite{Cai2000} \cite{Chen2005} and transcription factor
-binding sites \cite{Ben-Gal2005} \cite{Grau2006} \cite{Pudimat2005}. 
+edges encode dependency between positions.  Bayesian networks have been applied
+to recognize motifs in nucleotide sequences in the past, in particular in
+modeling splice cites \citep{Cai2000, Chen2005} and transcription factor binding
+sites \citep{Ben-Gal2005, Grau2006, Pudimat2005}. 
 
 In our model, we do not rely on constraining the set of networks (e.g. to
 trees), and instead approximate the NP-Hard problem of determining the optimal
@@ -276,6 +279,8 @@ label $x_k$ is binary, indicating classification as background ($x_{i_k} =
 0$) or foreground ($x_{i_k} = 1$). We will denote the nucleotide sequence at
 position $i_k$ as $s_{i_k}$.
 
+%% TODO: leaving it here for now
+%% -------------------------------------------------------
 
 \subsubsection{Training}
 
