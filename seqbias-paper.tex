@@ -326,18 +326,6 @@ The second of these encodes the assumption that distant nucleotides are
 effectively independent.
 
 
-\begin{comment}
-\begin{figure*}
-\begin{center}
-\includegraphics[width=0.75\textwidth]{fig/structure2.pdf}
-\end{center}
-\caption{The network structure learned on the Trapnell data set, where 0 is the
-read start. Dotted boxes represent positions not included in the model (i.e.
-positions deemed uninformative).}
-\label{fig:structure}
-\end{figure*}
-\end{comment}
-
 Figure \ref{fig:structure} shows an example of the structure learned when this
 procedure is applied to 200,000 reads from the Trapnell data set
 \cite{Trapnell2010}. The structure learned is non-trivial, and
@@ -529,16 +517,12 @@ regions. Figure \ref{fig:pois} plots the distribution of the change in fit
 across the 1000 test exons, revealing a similar, but more nuanced result.
 
 %% TODO
-\begin{comment}
-\begin{figurehere}
-\begin{center}
-\includegraphics[width=0.4\textwidth]{fig/pois.pdf}
-\end{center}
+\begin{figure}
+\centerline{\includegraphics[width=0.3\textwidth]{fig/pois-boxplot.eps}}
 \caption{Plotted is the change in fit of each of the test exons. A
 positive value indicates a better fit in the bias corrected model.}
 \label{fig:pois}
-\end{figurehere}
-\end{comment}
+\end{figure}
 
 
 \section{Discussion}
