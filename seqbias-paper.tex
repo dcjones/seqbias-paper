@@ -249,7 +249,7 @@ To estimate sequencing bias, we train a Bayesian network classifier in which
 each node represents a position in the sequence, relative to the read start, and
 edges encode dependency between positions.  Bayesian networks have been applied
 to recognize motifs in nucleotide sequences in the past, in particular in
-modeling splice cites \citep{Cai2000, Chen2005} and transcription factor binding
+modeling splice sites \citep{Cai2000, Chen2005} and transcription factor binding
 sites \citep{Ben-Gal2005, Grau2006, Pudimat2005}. 
 
 In our model, we do not rely on constraining the set of networks (e.g. to
@@ -263,38 +263,38 @@ including uninformative parameters that would only increase variance.
 
 \subsubsection{Sampling}
 
-To begin, we generate $n$ training examples, where $n = 200,000$ is typical, half of
-which labeled as foreground, the other background. To do so, we sample the
-positions of $n/2$ reads. Duplicate reads are ignored, to avoid overfitting to
-any exceedingly highly expressed locus.  For each foreground position $i$
-sampled, we then sample a background position by drawing a random offset $\delta
-\sim \text{Normal}( 0, \sigma )$, where by default $\sigma = 50$ is chosen, and
-taking $i' = \lceil i + \delta \rceil$. By using such a scheme we attempt to
-mitigate the effects of biological sequence bias, sampling positions that are
-more likely to be biologically similar.
+The model is trained on $n$ sequences, one half labeled as foreground, the other
+background, sampled from the reference genome. To obtain the foreground
+sequences, we take sequences surrounding the starts positions of $n/2$ aligned
+reads. We wish to avoid overfitting to any short locus with a large abundance of reads,
+yet we must also capture the bias introduced by PCR amplification. We therefore
+choose the $n/2$ unique reads with the highest number of duplicates,
+yet count each read only once, ignoring duplicates
 
-This sampling procedure produces a set of $n$ genomic positions with
-accompanying labels $T = \{ (i_1,x_1), (i_2,x_2), \dots, (i_n,x_n) \}$. The
-label $x_k$ is binary, indicating classification as background ($x_{i_k} =
-0$) or foreground ($x_{i_k} = 1$). We will denote the nucleotide sequence at
-position $i_k$ as $s_{i_k}$.
+To obtain background training sequences, we randomly offset the positions from
+which the foreground sequences were sampled.  The offset is drawn from a
+zero-mean gaussian, and rounded to the nearest integer, away from zero.
+By using such a scheme, we attempt to mitigate the effects of biological
+sequence bias, sampling positions that are more likely to be biologically
+similar.
 
-%% TODO: leaving it here for now
-%% -------------------------------------------------------
+This procuder produces a training set of $n$ sequences with accompanying labels
+$T = \{ (s_1, x_1), (s_2, x_2), \dots, (s_n, x_n) \}$. The label $x_i$ is
+binary, indicating classification as background ($x_i = 0$) or foreground ($x_i
+= 1$).
 
 \subsubsection{Training}
 
+
 To determine the structure and parameters of the Bayesian network, we use a
-hill-climbing approach similar to BNC algorithm \cite{Grossman2004}.
+hill-climbing approach similar to algorithm described by \citet{Grossman2004}.
 The network structure is determined by greedily optimizing the conditional
 log-likelihood.
 \begin{align*}
-\ell &= \sum_{k=1}^{n} \log \Pr( x_{i_k} | s_{i_k} ) \\
+\ell &= \sum_{i=1}^{n} \log \Pr( x_i | s_i ) \\
 &=
-\sum_{k=1}^{n} \log \frac{ \Pr(s_{i_k} | x_{i_k}) \Pr( x_{i_k} ) }{
-\sum_{x \in \{0,1\}} \Pr( s_{i_k} | x ) \Pr(x) } \\
-%&= \sum_{k=1}^{n} \log \frac{ \Pr( s_{i_k} | x_{i_k} ) }
-%{ \sum_{x \in \{0,1\}} \Pr( s_{i_k} | x ) }
+\sum_{i=1}^{n} \log \frac{ \Pr(s_i | x_i) \Pr( x_i ) }{
+\sum_{x \in \{0,1\}} \Pr( s_i | x ) \Pr(x) } \\
 \end{align*}
 
 Where $\Pr(x)$ is flat (i.e.  $\Pr( x = 0 ) = \Pr( x = 1 ) =
@@ -302,23 +302,27 @@ Where $\Pr(x)$ is flat (i.e.  $\Pr( x = 0 ) = \Pr( x = 1 ) =
 
 As we will be estimating parameters and evaluating the likelihood on the same
 set of samples, simply maximizing the likelihood would severely overfit the
-training set. We thus penalize model complexity using the Akaike information
-criterion with the second order sample size correction \cite{Hurvich1989}.
-Where $m$ is the number of parameters needed to specify the model, we maximize,
-$$ \ell' = \ell - m - \frac{(m + 1)(m + 2)}{n - m - 2} $$
+training set. We thus penalize model complexity heuristically using the Akaike
+information criterion. Where $m$ is the number of parameters needed to specify
+the model, we maximize, 
+
+$$ \ell' = \ell - m $$
+
+Some benifit would be obtained from a more highly tuned complexity penalty.
+However, since the model is trained greedily, additional parameters will be
+decreasingly informitive, and increasingly similar between foreground and
+background. Adding more parameters will have little effect.  Only when $m$ is
+allowed to grow exponentially does the prediction become polluted by small
+deviations between thousands of uninformitive parameters.
 
 At each step of the optimization procedure, every possible edge or position
-addition, removal, or edge reversal that produces a valid network (i.e. does not
+addition, removal, or edge reversal that produces a valid network (i.e., does not
 introduce a cycle) is evaluated, and the alteration that increases the score
-$\ell'$ the most is kept.  This process is repeated until a local maxima is
+$\ell'$ the most is kept.  This process is repeated until a local maximum is
 found, in which no single alteration to the network will increase the score.
 
 Given the network structure, the parameters are estimated directly from the
-observed nucleotide frequencies. This choice of parameters maximizes the
-likelihood of the model, but not necessarily the conditional likelihood. They
-are equivalent asymptotically, thus, as per the BNC algorithm, we adopt this
-approximation rather than  resorting to numerical methods which might render the
-algorithm too slow to be practical.
+observed nucleotide frequencies in the training data.
 
 The run time of the training procedure is further reduced in practice by imposing the
 following two restrictions on the structure of the network,
@@ -328,13 +332,11 @@ number $p_{\text{max}}$.
 \item $|j - i| \le d_{\text{max}}$ for all edges $(i,j)$ and some number $d_{\text{max}}$.
 \end{enumerate}
 The second of these encodes the assumption that distant nucleotides are
-effectively independent.
+effectively independent. We choose $p_{\text{max}} = 4$ and $d_{\text{max}} =
+10$, as reasonable default values.
 
-
-Figure \ref{fig:structure} shows an example of the structure learned when this
-procedure is applied to 200,000 reads from the Trapnell data set
-\cite{Trapnell2010}. The structure learned is non-trivial, and
-positions that uninformative are excluded automatically.
+Figure \ref{fig:models} shows examples of the structure learned when this
+procedure is applied to several data sets, using 200,000 reads from each.
 
 
 \section{Results}
@@ -349,44 +351,39 @@ positions that uninformative are excluded automatically.
 Because we cannot observe directly the underlying RNA-abundance, our evaluation
 strategy relies on testing two assumptions we make of an ideal, unbiased experiment.
 \begin{enumerate}
-\item Positional nucleotide frequencies (as in Figure \ref{fig:freqs}) measured
-from reads within exons should not differ greatly from frequencies measured by
+\item Positional nucleotide frequencies (as in Figure \ref{fig:freqs}), measured
+from reads within exons, should not differ greatly from frequencies measured by
 sampling uniformly within the same exons.
-\item Read counts across exons should follow approximately a Poisson process.
+\item Read counts across a single exon should follow, approxmiately, a Poisson
+process.
 \end{enumerate}
 
-We applied our procedure (labeled ``BN'') as well as those of Li, et. al, and
-Hansen, et. al., which are implemented in the R packages \texttt{mseq} and
-\texttt{Genominator}, respectively. The procedures were applied to four publicly
-available data sets \cite{Bullard2010} \cite{Mortazavi2008} \cite{Trapnell2010}
-\cite{Wetterbom2010}, as well as an unpublished data set of our own (see, Table
-\ref{tab:datasets}).
+We applied our procedure (labeled ``BN'') as well as those as well as those of
+\citet{Li2010} (``GLM'' and ``MART'') and \citet{Hansen2010} (``7mer''), which
+are implemented in the R packages \texttt{mseg} and \texttt{Genominator},
+respectively. Thhe procedures were applied to four publically available data
+sets \citep{Bullard2010, Mortazavi2008, Trapnell2010, Wetterbom2010}, as well as
+an unpublished data sets of our own (Table \ref{tab:datasets}).
 
-%% TODO
-\begin{comment}
-\begin{tablehere}
-\begin{center}
-\footnotesize{
-\begin{tabular}{lllr}
-\textbf{Experiment} & \textbf{Species} & \textbf{Platform} & \textbf{Read Length} \\ \hline
-Wetterbom \cite{Wetterbom2010} & Chimpanzee & ABI & 33 \\
+\begin{table}
+\processtable{Datasets on which the methods are evaluated.\label{tab:datasets}}
+{
+\begin{tabular}{lllr}\toprule
+Experiment & Species & Platform & Read Length \\\midrule
+\citet{Wetterbom2010} & Chimpanzee & ABI & 33 \\
 Katze (unpublished) & Macaque & ABI & 50 \\
-Bullard \cite{Bullard2010} & Human & Illumina & 35 \\
-Mortazavi \cite{Mortazavi2008} & Mouse & Illumina & 33 \\
-Trapnell \cite{Trapnell2010} & Mouse & Illumina & 75
+\citet{Bullard2010} & Human & Illumina & 35 \\
+\citet{Mortazavi2008} & Mouse & Illumina & 33 \\
+\citet{Trapnell2010} & Mouse & Illumina & 75 \\\botrule
 \end{tabular}
-}
-\end{center}
-\caption{Data sets on which the methods are evaluated.}
-\label{tab:datasets}
-\end{tablehere}
-\end{comment}
+}{}
+\end{table}
 
 
 Testing was performed by cross-validation. Each method was trained on data taken
 from chromosomes 1--8 of the genome from which the reads were mapped (including
-chromosomes 2a and 2b in the Chimpanzee genome). For evaluation, we drew a set
-long, highly expressed exons from the remaining chromosomes. In particular, for
+chromosomes 2a and 2b of the Chimpanzee genome). For evaluation, we drew a set
+of long, highly expressed exons from the remaining chromosomes. In particular, for
 each reference sequence, beginning with the set of exons annotated by Ensembl
 release 60 \cite{Hubbard2009}, we removed any exons with known alternate splice
 sites, then chose the top 1000 exons by read count, restricting ourselves those
@@ -395,27 +392,31 @@ at least 100nt long.
 The differences in the methods being tested necessitated training procedures
 unique to each.
 
-Li recommends that their MART and GLM models be trained using the 100 most abundant
-genes. We used 1000 exons from chromosomes 1--8, otherwise chosen in a manner
-identical to that which was used to select the test exons.  Both the GLM and
-MART model were trained using the default parameters.
+\citet{Li2010} recommends that their MART and GLM models be trained using the
+100 most abundant genes. We used 1000 exons from chromosomes 1--8, otherwise
+chosen in a manner identical to that which was used to select the test exons.
+Both the GLM and MART models were trained using the default parameters.
 
-Hansen recommends using all of the reads to estimate heptamer frequencies used by
-their model. The training procedure works by simple tallying of frequencies and
-is thus relatively fast. We choose to use all of the reads from chromosomes 1--8.
-We evaluated three variations of this scheme. The first uses the default
-parameters, evaluating 7-mer frequencies averaged over the first two positions
-of the read (labeled ``Avg-7mer''). We also evaluated estimating 7-mer
-frequencies over only the first position, as well as 4-mer frequencies over only
-the first position. Though many variations of this scheme may be used, we found these
-additional two to be particularly informative. The background frequencies in
-each variation were were estimated from positions 18--23 within each read.
+\citet{Hansen2010} recommends using all of the reads to estimate heptamer
+frequencies used by their model. The training procedure works by simple tallying
+of frequencies. The implementation of this model in the Genominator package we
+found to use a great deal of memory, and were unable to train with the volume of
+data we wished, so we reimplemented the model and trained it on all of the reads
+aligned to chromosomes 1-8.
 
-All data sets were mapped using Bowtie \cite{Langmead2009} against the latest
-genome assemblies available from the UCSC Genome Browser \cite{Karolchik2008}
+We evaluated several variations of the heptamer model. The suggested method
+involved averaging the frequencies of the first two heptamers of each read. Yet,
+we found that in every case, this performed worse than simply counting the
+frequencies of the initial heptamer, and thus we report only the latter. The
+background frequences are estimated from positions 18--23 in each read.
+
+All data sets were mapped using Bowtie \citep{Langmead2009} against the latest
+genome assemblies available from the UCSC Genome Browser \citep{Karolchik2008}
 during preparation.
 
 
+%% leaving off here for now
+%% --------------------------------------------------------
 
 \subsection{Kullback-Leibler Divergence}
 
