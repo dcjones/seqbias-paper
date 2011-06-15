@@ -343,6 +343,7 @@ procedure is applied to several data sets, using 200,000 reads from each.
 
 \begin{figure*}
 \centerline{\includegraphics[width=\textwidth]{fig/models.eps}}
+%% TODO: caption
 \caption{Blah blah blah.}
 \label{fig:models}
 \end{figure*}
@@ -415,115 +416,120 @@ genome assemblies available from the UCSC Genome Browser \citep{Karolchik2008}
 during preparation.
 
 
-%% leaving off here for now
-%% --------------------------------------------------------
 
 \subsection{Kullback-Leibler Divergence}
 
 Plotting the nucleotide frequencies (Figure  \ref{fig:freqs}) we observe an
 obvious bias. To quantify the non-uniformity observed in these plots, we use the
-symmetrized Kullback-Leibler (KL) divergence \cite{Kullback1951}. Comparing only
-nucleotide frequencies may miss dinucleotide or higher order bias. Thus, for a fair
-comparison, we compute the KL divergence for $k$-mers, with $k \in \{ 1 \dots 6
-\}$.
 
 If $f_x$ is the background frequency of a $k$-mer $x$, and $f'_x$ the observed
-frequency, the KL divergence is computed as,
-$$D( f, f' ) = \sum_{x} \left( f_x \log( f_x / f'_x ) + f'_x \log( f'_x / f_x) \right)$$
-Where the sum is over all $k$-mers. We compute the divergence at each
-position relative to the read start, by tallying (overlapping) $k$-mer
-frequencies at each position, weighted by the bias coefficient at that position,
-and comparing to a background distribution. The background distribution is
-estimated by averaging the $k$-mer frequencies at positions $-60 \dots -20$ and
-$20 \dots 60$, where the observed bias was very low in each data set.  We further
-take the precaution of ignoring any positions with more than 10,000 reads, to
-avoid the measure being dominated by any small group of outliers. The only
-qualitative effect this was seen to have was in the Katze data set, in which the
-frequency plots are otherwise quite skewed.
+frequency, the KL divergence is computed as, symmetrized Kullback-Leibler (KL)
+divergence \citep{Kullback1951}.
+%Comparing only nucleotide frequencies may miss
+%dinucleotide or higher order bias. Thus, for a fair comparison, we compute the
+%KL divergence for $k$-mers, with $k \in \{ 1 \dots 6 \}$.
+$$D_k( f, f' ) = \sum_{x} \left( f_x \log( f_x / f'_x ) + f'_x \log( f'_x / f_x) \right)$$
+where the sum is over all $k$-mers.
 
-The result of this this analysis is plotted in Figure
-\ref{fig:kl} for the Trapnell data set. Similar plots for the other data sets are
-provided in the supplement.
+
+%% --------------------
+
+To avoid the risk of a small number of reads with many duplicates dominating the
+measure, we do not count duplicate reads when computing the KL divergence. Since we
+explicitly chose exons with high coverage, not counting duplicates may not
+fully capturing the effects of the bias correction methods. Thus, for each exon,
+we compute the number of duplicates for each read, and count only reads in the
+upper half. Under the assumption of uniform sampling, the set of reads falling
+in the upper half should not depend on sequence, and we should expect the KL
+divergence to be low.
+
+We compute the divergence by reweighting the read counts using the predicted
+bias coefficient, choosing the upper half in each exon, discarding duplicate
+reads, and then tallying frequencies of overlapping $k$-mers. The $k$-mer
+distribution obtained are then compared to a background distribution obtained by
+redistributing reads uniformly at random within their exons.
+
+We repeated the procedure for $k \in \{1, 2, 3, 4, 5, 6\}$. The results of this
+analysis are plotted in Figure \ref{fig:kl}, for $k = 1$ and $k = 4$. The
+remaining cases are plotted in Supplementary Section 3.
+%% TODO: what section, for real?
 
 \begin{figure*}
 \centerline{\includegraphics[width=0.9\textwidth]{fig/kl.eps}}
-\caption{Plots of the KL divergence over overlapping $k$-mers in the Trapnell
-experiment.}
+\caption{The Kullback-Leibler divergence compares the frequency of $k$-mers
+(here, for $k = 1$ and $k = 4$) surrounding the starts of aligned reads to the
+frquencies expected under the assumption of unifom sampling from within exons.
+A large divergence indicates significant bias. Plotted here is the divergence
+from unadjusted reads counts as well as after adjusting reads counts using each
+method.}
 \label{fig:kl}
 \end{figure*}
-
-To summarize these plots, we summed the divergence from position -20
-through 20, for each of the methods, then normalized this number by dividing by
-the summed divergence before adjustment. The results of this analysis are plotted in
-Figure \ref{fig:kl-delta}.
-
-%% TODO
-\begin{comment}
-\begin{figurehere}
-\begin{center}
-\includegraphics[width=0.35\textwidth]{fig/kl-delta.pdf}
-\end{center}
-\caption{Summed KL divergence, normalized by unadjusted divergence, so that a
-number less than 1 indicates a decrease in divergence, or an increase in
-uniformity.}
-\label{fig:kl-delta}
-\end{figurehere}
-\end{comment}
 
 
 \subsection{Poisson Regression}
 
 In this comparison, we measure how well the counts conform to a Poisson process.
-The assumption of positional read counts following a Poisson distribution has
-been shown to be a poor fit \cite{Srivastava2010}, yet measuring the improvement in
-fit derived from correcting for technical bias remains a principled and easily
-interpreted criteria.
+The assumption of positional read counts following a Poisson distribution is
+known to be a poor fit \citep{Srivastava2010}, but measuring the improvement in
+the fit derived from correcting for bias remains a principled and easily
+interpreted criterion.
 
 We perform maximum-likelihood fitting of two models. In the null model, the
 Poisson rate is fixed for each exon. That is, for position $j$ within
-gene $i$, the rate is,
+exon $i$, the rate is
 $$ \lambda_{ij} = a_i $$
-Where $a_i$ is the parameter being fit. For comparison, we then fit a model in
-which the rate is proportional to the predicted bias coefficients.
+where $a_i$ is the parameter being fit. For comparison, we then fit a model in
+which the rate is also proportional to the predicted bias coefficients:
 $$ \lambda'_{ij} = a_i b_{ij} $$
 
-If the null model has log-likelihood $L$ and the bias corrected model
-$L'$, we measure the change in fit as,
-$$ \log \left( \frac{ L_{i} } { L'_{i} } \right) $$
-When the fit improves, this number is positive, and negative when it is
-worsened. The values computed from our test are listed in Table \ref{tab:pois}.
+If the null model has log-likelihood $L$, and the bias-corrected model $L'$, a
+simple goodness of fit measure is the improvement in log-likelihood (a statistic
+commonly known as McFadden's pesudo-coefficient of determination
+\citep{McFadden1974}), defined as,
+$$R^2 = 1 - \frac{L'}{L}$$
 
-\begin{comment}
-\begin{tablehere}
-\begin{center}
-\tiny{
-\begin{tabular}{lrrrrrr}
-         &\textbf{Avg-7mer}&\textbf{7mer}&\textbf{4mer}&\textbf{GLM}&\textbf{MART}&\textbf{BN} \\
-\textbf{Katze}            &  0.004  & 0.017  & 0.055 &0.166  &0.248&0.305 \\
-\textbf{Wetterbom}        & -0.076  &-0.058  &-0.002 &0.240  &0.070&0.557 \\
-\textbf{Bullard}          &  0.124  & 0.192  & 0.139 &0.285  &0.198&0.380 \\
-\textbf{Mortazavi}        &  0.059  & 0.123  & 0.099 &0.284  &0.310&0.401 \\
-\textbf{Trapnell}         &  0.094  & 0.163  & 0.104 &0.265  &0.332&0.349 \\
-\end{tabular}
-}
-\end{center}
-\caption{Change in fit, compared to the null model of uniform Poisson rate across exons.}
-\label{tab:pois}
-\end{tablehere}
-\end{comment}
+This measure can be interpreted as the improvement in fit over the null model,
+with $R^2 = 1$ indicating a prefect fit, and a negitve numbers, an increasingly
+worse fit. A more dubious, yet intuitive interpretation of $R^2$ is the
+proportion of variability eplained by the model.
 
-Computing one number to summarize the fit of the model ignores variance in the
-likelihood from exon to exon. This number could be dominated by a few test
-regions. Figure \ref{fig:pois} plots the distribution of the change in fit
-across the 1000 test exons, revealing a similar, but more nuanced result.
+We compue $R^2$ for each of the test exons, giving us a sense of the variability
+of the effectiveness of each model. The results of this analysis are plotted in
+Figure \ref{fig:pois}.  To summarize each model with a single number, we can
+examine the median $R^2$ value, as listed in Table \ref{tab:pois}.
 
-%% TODO
 \begin{figure}
 \centerline{\includegraphics[width=0.3\textwidth]{fig/pois-boxplot.eps}}
-\caption{Plotted is the change in fit of each of the test exons. A
-positive value indicates a better fit in the bias corrected model.}
-\label{fig:pois}
+\caption{For each of the 1000 test exons, we measure a pseudo-coefficients of
+determination $R^2$, equivalent to the improvement in log-likelihood under the
+bias corrected model. The statistic is positive when uniformity is increased,
+and negative when decreased. Boxes are plotted to mark the 25\%, 50\%, and 75\%
+quantiles, with whiskers extending to 1.5 times the inter-quartile range (i.e.,
+the span between tho 25\% and 75\% quantiles).
+}
+
+
+    \label{fig:pois}
 \end{figure}
+
+
+\begin{table}
+\processtable{
+    The $R^2$ goodness of fit statistic measures increased uniformity in read
+    coverage, after correcting for bias. Here the median $R^2$ across the test
+    exons is listed for each method and simple. A positive $R^2$ indicates a
+    better fit.\label{tab:pois}}{
+    \begin{tabular}{lcccc}\toprule
+          & BN    & MART  & GLM   & 7mer \\\midrule
+Wetterbom & 0.168 & 0.016 & 0.066 & -0.079 \\
+Katze     & 0.283 & 0.243 & 0.158 & 0.033 \\
+Bullard   & 0.271 & 0.163 & 0.224 & 0.157 \\
+Mortazavi & 0.225 & 0.210 & 0.197 & 0.091 \\
+Trapnell  & 0.298 & 0.289 & 0.248 & 0.138
+    \end{tabular}
+}{}
+\end{table}
+
 
 
 \section{Discussion}
@@ -532,44 +538,62 @@ We have demonstrated that sequence bias can confound, sometimes severely,
 quantification in RNA-Seq experiments, and we have introduced an effective
 method to account for this bias without the need of existing gene annotations.
 
-In our results, estimating initial 4-mer or 7-mer frequencies was not seen to be
-as effective as the other models, even when data generated using random hexamer
-priming was used. Given the large number of parameters needed to estimate 7-mer
-frequencies, a likely explanation is that the model is overfit to the training
-set. Though the training set consisted of at least 600,000 reads in
+In our results, estimating initial heptamer frequencies was not seen to be as
+effective as the other models, even when data generated using random hexamer
+priming was used. Given the large number of parameters needed to estimate
+heptamer frequencies, a likely explanation is that the model is overfit to the
+training set. Though the training set consisted of at least 600,000 reads in
 each experiment, it seems more reads, or a greater diversity of reads are needed
-to produce an accurate estimate.
+to produce an accurate or useful estimate.
 
 Our method generalizes this approach, attempting to overcome this problem by
 using an estimation of sequence probability that is more robust to overfitting
-and can account for bias beyond the initial heptamer. This approach is
-competitive with that of Li, et. al., despite not requiring gene annotations.
+and can account for bias beyond the initial heptamer. In all our tests, this
+approach was at least as effective as those of \citet{Li2010}, despite not
+requiring gene annotations, or manual selection of training examples.
+
+We have withheld any direct comparison to the method described by
+\citet{Roberts2011} and implemented in Cufflinks \citep{Trapnell2010}. Though
+this method is superficially similar to our own, a proper comparison is
+difficult, as the software can not be applied independently of estimating
+transcript abundance in FPKM using Cufflinks. Fairness would dictate that
+competing methods be substituted in FPKM estimation, or that a seperate
+interface be written to the Cufflinks bias correction method---both comparison
+requiring significant effort.
+
+Though the Cufflinks method and our own both use graphical models to estimate
+sequence probabilities, we make no restriction on the graph other than
+acyclicity, and go to considerable effort to efficiently approximate the optimal
+structure for each data set, rathor than using a fixed structure, as in
+Cufflinks. A ``one size fits all'' approach likely works quite well in many
+cases, yet the observed specificity of the bias to protocal and platform argues
+against it. For example, the structures learned by our method (Figure
+\ref{fig:models}), are considerably different between those sequenced on an
+Illumina platform versus an AB platform.
+
+%% TODO: discussion of run-time, etc
+
 
 Because we do not require annotations, CHiP-Seq, and other high-throughput
-sequencing experiments, may also benefit from our model. In a preliminary
+sequencing experiments may also benefit from our model. In a preliminary
 investigation, we found the sequence bias in one CHiP-Seq experiment
 \cite{Cao2010} was less than that observed in any of the RNA-Seq data we
 evaluated, however our method is still able effectively correct for the bias
-that was observed (see, supplementary). Protocol differences, as we have seen,
+that was observed (see, Supplementary Section 4).
+%% TODO: which actual section ?
+Protocol differences, as we have seen,
 can result in significant differences in observed nucleotide frequencies, so we
 may not safely assert that bias in CHiP-Seq data is always low.  Given the weak
 assumptions made by our model, our estimation of bias could easily be
 incorporated into CHiP-Seq peak calling algorithms, and potentially improve
 accuracy.
 
-Our method can also very naturally capture dependency between nucleotides in the
-sequence. This of particular importance when working with reads generated from
-the AB SOLiD platform, in which the di-base, ``colorspace'' coding scheme is
-used, encoding two adjacent nucleotides as a single color. A color bias at one
-position will manifest itself as a nucleotide bias at two positions. Capturing
-this effect requires a model that considers the dependency between nearby
-positions. In our results, the MART model, as well as our own, perform
-significantly better than the GLM model, illustrating this proposition.
-
 RNA-Seq is most often used to compare levels of expression, and so a natural
 concern is the consistency of the bias between samples. In the data we examined,
 the bias appears to be largely, but not entirely consistent (see,
-supplementary). Similarly, in Figure \ref{fig:freqs}, the three data sets
+Supplementary Section 5).
+%% TODO: which actual section ?
+Similarly, in Figure \ref{fig:freqs}, the three data sets
 sequenced on the Illumina platform display similar patterns of nonuniformity,
 yet differ in magnitude. Batch effects in RNA-Seq remain a legitimate concern,
 that should be evaluated and corrected for.

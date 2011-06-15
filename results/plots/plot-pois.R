@@ -75,3 +75,12 @@ for (w in levels(xs$sample)) {
     dev.off()
 }
 
+
+
+# TODO: compute median values.
+
+xs$r2 <- r2(xs$L, xs$L.base)
+med <- tapply(xs$r2, INDEX = list(xs$sample, xs$method), FUN = median)
+print(round(med, digits=3))
+
+
