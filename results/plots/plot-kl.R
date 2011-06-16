@@ -9,7 +9,10 @@ ws <- c('bullard.tab', 'katze.tab', 'mortazavi.tab',
 
 xs <- NULL
 for (w in ws) {
-    x  <- read.table(paste(d, '/kl/', w, sep = ''), header = T)
+    x  <- read.table(paste(d_old, '/kl/', w, sep = ''), header = T)
+    x  <- subset(x, method != 'Jones')
+    x  <- rbind(x, read.table(paste(d, '/kl/', w, sep = ''), header = T))
+
     xs <- rbind(xs, x)
 }
 

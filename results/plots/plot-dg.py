@@ -99,8 +99,10 @@ def draw_edges(G, ctx):
         d = abs(node_pos[u] - node_pos[v])
 
         # totally ad-hoc formlae, here:
-        delta = r * (1.0 - (8.0 * (d) / n))
-        w = ed((xu, yu), (xv, yv)) / 2.0
+        delta = r * (1.0 - (7.0 * (d) / n))
+
+        #w = ed((xu, yu), (xv, yv)) / 2.0
+        w =  5.0 / d
 
         omega = atan2(w, delta)
         xa, ya = delta * sin(theta + omega), delta * cos(theta + omega)

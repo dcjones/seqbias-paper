@@ -7,9 +7,13 @@ source('config.R')
 ws <- c('bullard.tab', 'katze.tab', 'mortazavi.tab',
         'trapnell.tab', 'wetterbom.tab')
 
+
 xs <- NULL
 for (w in ws) {
-    x  <- read.table(paste(d, '/pois/', w, sep = ''), header = T)
+    x  <- read.table(paste(d_old, '/pois/', w, sep = ''), header = T)
+    x <- subset(x, method != 'Jones')
+    x <- rbind(x, read.table(paste(d, '/pois/', w, sep = ''), header = T))
+
     xs <- rbind(xs, x)
 }
 
