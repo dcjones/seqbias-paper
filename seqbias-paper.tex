@@ -9,7 +9,7 @@
 \begin{document}
 \firstpage{1}
 
-\title{Correcting for bias in high throughput sequencing data}
+\title{Correcting for bias in high-throughput sequencing data}
 \author[Jones \textit{et~al}]
 {Daniel C. Jones\,$^{1,}$
 \footnote{to whom correspondence should be addressed}\hspace{0.5em}
@@ -451,8 +451,7 @@ redistributing reads uniformly at random within their exons.
 
 We repeated the procedure for $k \in \{1, 2, 3, 4, 5, 6\}$. The results of this
 analysis are plotted in Figure \ref{fig:kl}, for $k = 1$ and $k = 4$. The
-remaining cases are plotted in Supplementary Section 3.
-%% TODO: what section, for real?
+remaining cases are plotted in Supplementary Section 4.
 
 \begin{figure*}
 \centerline{\includegraphics[width=1.00\textwidth]{fig/kl.eps}}
@@ -577,8 +576,7 @@ increasingly long training time. For example, in our tests, fitting our model to
 minutes, running on one core of a 3Ghz Intel Xeon processor. However, limiting
 the training to 25,000 reads leads to a model that is nearly as accurate while
 requiring under 4 minutes to train. A full discussion of this trade-off is in
-Supplementary Section 6.
-%% TODO: what actual section?
+Supplementary Section 5.
 
 
 Because we do not require annotations, ChIP-Seq, and other high-throughput
@@ -586,8 +584,7 @@ sequencing experiments may also benefit from our model. In a preliminary
 investigation, we found the sequence bias in one ChIP-Seq experiment
 \cite{Cao2010} was less than that observed in any of the RNA-Seq data we
 evaluated, however our method is still able effectively correct for the bias
-that was observed (see, Supplementary Section 4).
-%% TODO: which actual section ?
+that was observed (see, Supplementary Section 2).
 Protocol differences, as we have seen,
 can result in significant differences in observed nucleotide frequencies, so we
 may not safely assert that bias in ChIP-Seq data is always low.  Given the weak
@@ -597,13 +594,11 @@ accuracy.
 
 RNA-Seq is most often used to compare levels of expression, and so a natural
 concern is the consistency of the bias between samples. In the data we examined,
-the bias appears to be largely, but not entirely consistent (see,
-Supplementary Section 5).
-%% TODO: which actual section ?
-Similarly, in Figure \ref{fig:freqs}, the three data sets sequenced on the
-Illumina platform display similar patterns of nonuniformity, yet differ in
-magnitude, suggesting that batch effects in RNA-Seq remain a legitimate concern
-that should not be dismissed without evaluation.
+the bias appears to be largely, but not entirely consistent (see, Supplementary
+Section 3).  Similarly, in Figure \ref{fig:freqs}, the three data sets sequenced
+on the Illumina platform display similar patterns of nonuniformity, yet differ
+in magnitude, suggesting that batch effects in RNA-Seq remain a legitimate
+concern that should not be dismissed without evaluation.
 
 In summary, we have demonstrated a relatively simple graphical model that
 effectively corrects for sequence bias pervasive in RNA-Seq, and to a lesser
