@@ -35,23 +35,24 @@ $^{3}$Department of Microbiology, University of Washington, Seattle, WA
 
 \section{Motivation:}
 Quantification of sequence abundance in RNA-Seq and ChiP-Seq experiments is
-often conflated with protocal-specific bias, influenced by PCR amplification,
-and differing primer affinities and mixtures, for example. The result is
-potentially inaccurate quantification, affecting de novo gene annotation and
-isoform quantification in RNA-Seq, and peak calling in ChiP-Seq.
+often conflated with protocol-specific sequence bias, influenced by PCR
+amplification, and differing primer affinities and mixtures, for example.  The
+result is decreased accuracy in many applications, such as de novo gene
+annotation and isoform quantification in RNA-Seq, and peak calling in
+ChIP-Seq.
 
 
 \section{Results:}
 We present a method to measure and correct for these influences using a simple
 graphical model. Our model does not rely on existing gene annotations, making it
 applicable to any high throughput sequencing data. We evaluate our method on
-several datasets, and by multiple criteria, demonstrating that it effectively
+several data sets, and by multiple criteria, demonstrating that it effectively
 decreases bias and increases uniformity.
 
 
 \section{Availability:}
 The method is implemented in the \texttt{seqbias} R/Bioconductor package,
-available freely under the LGPL licence from
+available freely under the LGPL license from
 \href{http://bioconductor.org}{http://bioconductor.org}.
 
 
@@ -72,15 +73,10 @@ of problems.
 A significant example is the effect of transcript length on quantification.  As
 noted by \citet{Oshlack2009} transcript length biases discovery of
 differentially expression, since more reads are aligned to longer transcripts,
-granting higher statistical significance in tests differential expression.
+granting higher statistical significance in tests of differential expression.
 Recently, some methods have been developed attempting to account for this effect
-in gene set enrichment tests \citep{Young2010,Gao2011}.
-
-%% TODO: do something with this sentance.
-Additionally,
-differing transcript lengths introduce ``edge effects'', as very short fragments
-from the end of a transcript will not be sequenced. NEUMA \cite{Lee2010} and
-FPKM \cite{Trapnell2010} are two methods that attempt to take this into account.
+in gene set enrichment tests \citep{Young2010,Gao2011}, leading to more accurate
+downstream analysis.
 
 The underlying nucleotide sequence also influences quantification in a manner
 that is complex and protocol-specific. In an ideal experiment, the number of
@@ -110,11 +106,11 @@ more sophisticated means of correction is needed.
 \begin{figure*}
 \centerline{\includegraphics[width=0.8\textwidth]{fig/freqs.eps}}
 \caption{Nucleotide frequencies are plotted relative to the start (labeled,
-position 0) of each mapped read, respecting strand. The sequence is taken frmo
+position 0) of each mapped read, respecting strand. The sequence is taken from
 the genomic context surrounding the read, so that -40 to -1, for example, fall
-outside the read sequence itself. The symmetrized Killback-Leibler divergence is
+outside the read sequence itself. The symmetrized Kullback-Leibler divergence is
 used to summarize the difference in nucleotide frequency compared to a fixed
-estimate of background necleotide frequencies made by sampling many positions
+estimate of background nucleotide frequencies made by sampling many positions
 nearby mapped reads.  Under the assumption that reads are sampled uniformly from
 transcripts, each of the plots should be essentially flat.}
 \label{fig:freqs}
@@ -145,7 +141,7 @@ significant number of reads are required.
 Lastly, \citet{Roberts2011} have very recently published a description of
 another approach, in which sequence probabilities are modeled by variable-order
 Markov chains. The structure of these Markov chains are hard-coded, chosen in
-advance using a hill-climbing algorithm on a representative dataset. This method
+advance using a hill-climbing algorithm on a representative data set. This method
 is implemented in the latest version of Cufflinks \citep{Trapnell2010}, and
 tightly incorporated into its estimation of transcript abundance.
 
@@ -157,19 +153,6 @@ their approach in a way we find to be more robust and effective at correcting
 for bias in a variety of protocols. Due to the weak assumptions required my our
 model, it is applicable and potentially useful in any setting in which short
 reads are aligned to a reference sequence.
-
-
-%% TODO: where should this figure be cited?
-\begin{figure}
-\centerline{\includegraphics[width=0.35\textwidth]{fig/overview.eps}}
-\caption{An overview of the approach taken: (a) foreground sequences are sampled
-from the regions surrounding the starts of mapped reads, (b) background
-sequences are sampled by randomly offsetting foreground positions, (c) a
-Bayesian network is classifier is trained to descriminate between the set of
-sampled foreground and background sequences, (d) and the classifier is evaluated
-at each position within a locus, predicting bias.}
-\label{fig:overview}
-\end{figure}
 
 \section{Methods}
 
@@ -219,13 +202,25 @@ classification, by using the machinery of classification we can avoid a model
 that is over-parametrized. Parameters that are not informative in
 discriminating between foreground and background are not included in the model.
 The Bayesian network can then used to evaluate sequence probability, and thus
-bias, at any genomic position.
+bias, at any genomic position. Figure \ref{fig:overview} gives a brief overview
+of the proposed model.
+
+\begin{figure}
+\centerline{\includegraphics[width=0.35\textwidth]{fig/overview.eps}}
+\caption{An overview of the approach taken: (a) foreground sequences are sampled
+from the regions surrounding the starts of mapped reads, (b) background
+sequences are sampled by randomly offsetting foreground positions, (c) a
+Bayesian network is classifier is trained to discriminate between the set of
+sampled foreground and background sequences, (d) and the classifier is evaluated
+at each position within a locus, predicting bias.}
+\label{fig:overview}
+\end{figure}
 
 However, we have so for ignored one complication: the RNA abundance that we wish
 to estimate is not itself independent of the nucleotide sequence. Notably,
 exonic DNA tends to be more GC-rich than intergenic DNA. If background sequences
 are sampled uniformly from the genome we run the risk of incorrectly adjusting
-for biological sequence bias, rather than techncical sequence bias.  To avoid
+for biological sequence bias, rather than technical sequence bias.  To avoid
 this, we propose using paired training data. Each foreground training
 sequence is paired with a background sequence taken from nearby position
 that is likely to have similar abundance and general nucleotide composition.
@@ -238,7 +233,7 @@ The methods proposed \citet{Hansen2010} and \cite{Roberts2011} also treat bias
 correction as a problem of estimating foreground and background sequence
 probabilities. They differ primarily in how these sequence probabilities are
 estimated. \citet{Li2010} estimate reweighting coefficients ($b_i$, in our
-notation) directly, given training data consistig of long, highly-expressed
+notation) directly, given training data consisting of long, highly-expressed
 transcripts.
 
 
@@ -273,12 +268,12 @@ yet count each read only once, ignoring duplicates
 
 To obtain background training sequences, we randomly offset the positions from
 which the foreground sequences were sampled.  The offset is drawn from a
-zero-mean gaussian, and rounded to the nearest integer, away from zero.
+zero-mean Gaussian, and rounded to the nearest integer, away from zero.
 By using such a scheme, we attempt to mitigate the effects of biological
 sequence bias, sampling positions that are more likely to be biologically
 similar.
 
-This procuder produces a training set of $n$ sequences with accompanying labels
+This procedure produces a training set of $n$ sequences with accompanying labels
 $T = \{ (s_1, x_1), (s_2, x_2), \dots, (s_n, x_n) \}$. The label $x_i$ is
 binary, indicating classification as background ($x_i = 0$) or foreground ($x_i
 = 1$).
@@ -302,18 +297,18 @@ Where $\Pr(x)$ is flat (i.e.  $\Pr( x = 0 ) = \Pr( x = 1 ) =
 
 As we will be estimating parameters and evaluating the likelihood on the same
 set of samples, simply maximizing the likelihood would severely overfit the
-training set. We thus penalize model complexity heuristically using the Akaike
-information criterion. Where $m$ is the number of parameters needed to specify
-the model, we maximize, 
+training set. We thus penalize model complexity heuristically using the Bayesian
+Information Criterion \citep{Schwarz1978a}. Where $m$ is the number of
+parameters needed to specify the model, we maximize, 
 
-$$ \ell' = \ell - m $$
+$$ \ell' = 2 \ell - m \log n $$
 
-Some benifit would be obtained from a more highly tuned complexity penalty.
+Some benefit would be obtained from a more highly tuned complexity penalty.
 However, since the model is trained greedily, additional parameters will be
-decreasingly informitive, and increasingly similar between foreground and
+decreasingly informative, and increasingly similar between foreground and
 background. Adding more parameters will have little effect.  Only when $m$ is
 allowed to grow exponentially does the prediction become polluted by small
-deviations between thousands of uninformitive parameters.
+deviations between thousands of uninformative parameters.
 
 At each step of the optimization procedure, every possible edge or position
 addition, removal, or edge reversal that produces a valid network (i.e., does not
@@ -336,7 +331,7 @@ effectively independent. We choose $p_{\text{max}} = 4$ and $d_{\text{max}} =
 10$, as reasonable default values.
 
 Figure \ref{fig:models} shows examples of the structure learned when this
-procedure is applied to several data sets, using 200,000 reads from each.
+procedure is applied to several data sets, using 100,000 reads from each.
 
 
 \section{Results}
@@ -359,19 +354,19 @@ strategy relies on testing two assumptions we make of an ideal, unbiased experim
 \item Positional nucleotide frequencies (as in Figure \ref{fig:freqs}), measured
 from reads within exons, should not differ greatly from frequencies measured by
 sampling uniformly within the same exons.
-\item Read counts across a single exon should follow, approxmiately, a Poisson
+\item Read counts across a single exon should follow, approximately, a Poisson
 process.
 \end{enumerate}
 
 We applied our procedure (labeled ``BN'') as well as those as well as those of
 \citet{Li2010} (``GLM'' and ``MART'') and \citet{Hansen2010} (``7mer''), which
-are implemented in the R packages \texttt{mseg} and \texttt{Genominator},
-respectively. Thhe procedures were applied to four publically available data
+are implemented in the R packages \texttt{mseq} and \texttt{Genominator},
+respectively. The procedures were applied to four publicly available data
 sets \citep{Bullard2010, Mortazavi2008, Trapnell2010, Wetterbom2010}, as well as
 an unpublished data sets of our own (Table \ref{tab:datasets}).
 
 \begin{table}
-\processtable{Datasets on which the methods are evaluated.\label{tab:datasets}}
+\processtable{Data sets on which the methods are evaluated.\label{tab:datasets}}
 {
 \begin{tabular}{lllr}\toprule
 Experiment & Species & Platform & Read Length \\\midrule
@@ -413,9 +408,9 @@ We evaluated several variations of the heptamer model. The suggested method
 involved averaging the frequencies of the first two heptamers of each read. Yet,
 we found that in every case, this performed worse than simply counting the
 frequencies of the initial heptamer, and thus we report only the latter. The
-background frequences are estimated from positions 18--23 in each read.
+background frequencies are estimated from positions 18--23 in each read.
 
-Our own method was trained on the 200,000 reads from chromosomes 1--8, with the
+Our own method was trained on the 100,000 reads from chromosomes 1--8, with the
 highest number of duplicates.
 
 All data sets were mapped using Bowtie \citep{Langmead2009} against the latest
@@ -439,8 +434,6 @@ $$D_k( f, f' ) = \sum_{x} \left( f_x \log( f_x / f'_x ) + f'_x \log( f'_x / f_x)
 where the sum is over all $k$-mers.
 
 
-%% --------------------
-
 To avoid the risk of a small number of reads with many duplicates dominating the
 measure, we do not count duplicate reads when computing the KL divergence. Since we
 explicitly chose exons with high coverage, not counting duplicates may not
@@ -462,10 +455,10 @@ remaining cases are plotted in Supplementary Section 3.
 %% TODO: what section, for real?
 
 \begin{figure*}
-\centerline{\includegraphics[width=0.9\textwidth]{fig/kl.eps}}
+\centerline{\includegraphics[width=1.00\textwidth]{fig/kl.eps}}
 \caption{The Kullback-Leibler divergence compares the frequency of $k$-mers
 (here, for $k = 1$ and $k = 4$) surrounding the starts of aligned reads to the
-frquencies expected under the assumption of unifom sampling from within exons.
+frequencies expected under the assumption of uniform sampling from within exons.
 A large divergence indicates significant bias. Plotted here is the divergence
 from unadjusted reads counts as well as after adjusting reads counts using each
 method.}
@@ -491,16 +484,16 @@ $$ \lambda'_{ij} = a_i b_{ij} $$
 
 If the null model has log-likelihood $L$, and the bias-corrected model $L'$, a
 simple goodness of fit measure is the improvement in log-likelihood (a statistic
-commonly known as McFadden's pesudo-coefficient of determination
+commonly known as McFadden's pseudo-coefficient of determination
 \citep{McFadden1974}), defined as,
 $$R^2 = 1 - \frac{L'}{L}$$
 
 This measure can be interpreted as the improvement in fit over the null model,
-with $R^2 = 1$ indicating a prefect fit, and a negitve numbers, an increasingly
+with $R^2 = 1$ indicating a prefect fit, and a negative numbers, an increasingly
 worse fit. A more dubious, yet intuitive interpretation of $R^2$ is the
-proportion of variability eplained by the model.
+proportion of variability enplaned by the model.
 
-We compue $R^2$ for each of the test exons, giving us a sense of the variability
+We compute $R^2$ for each of the test exons, giving us a sense of the variability
 of the effectiveness of each model. The results of this analysis are plotted in
 Figure \ref{fig:pois}.  To summarize each model with a single number, we can
 examine the median $R^2$ value, as listed in Table \ref{tab:pois}.
@@ -563,36 +556,43 @@ We have withheld any direct comparison to the method described by
 \citet{Roberts2011} and implemented in Cufflinks \citep{Trapnell2010}. Though
 this method is superficially similar to our own, a proper comparison is
 difficult, as the software can not be applied independently of estimating
-transcript abundance in FPKM using Cufflinks. Fairness would dictate that
-competing methods be substituted in FPKM estimation, or that a seperate
-interface be written to the Cufflinks bias correction method---both comparison
-requiring significant effort.
+transcript abundance in FPKM (fragments per exonic kilobase, per million mapped
+reads) using Cufflinks. Fairness would dictate that competing methods be
+substituted in FPKM estimation, or that a separate interface be written to the
+Cufflinks bias correction method---both comparison requiring significant effort.
 
 Though the Cufflinks method and our own both use graphical models to estimate
 sequence probabilities, we make no restriction on the graph other than
 acyclicity, and go to considerable effort to efficiently approximate the optimal
-structure for each data set, rathor than using a fixed structure, as in
+structure for each data set, rather than using a fixed structure, as in
 Cufflinks. A ``one size fits all'' approach likely works quite well in many
-cases, yet the observed specificity of the bias to protocal and platform argues
+cases, yet the observed specificity of the bias to protocol and platform argues
 against it. For example, the structures learned by our method (Figure
 \ref{fig:models}), are considerably different between those sequenced on an
 Illumina platform versus an AB platform.
 
-%% TODO: discussion of run-time, etc
+Training our model on more reads leads to more accurate estimation of bias, but
+increasingly long training time. For example, in our tests, fitting our model to
+100,000 reads from the Mortazavi data, training time was approximately 45
+minutes, running on one core of a 3Ghz Intel Xeon processor. However, limiting
+the training to 25,000 reads leads to a model that is nearly as accurate while
+requiring under 4 minutes to train. A full discussion of this trade-off is in
+Supplementary Section 6.
+%% TODO: what actual section?
 
 
-Because we do not require annotations, CHiP-Seq, and other high-throughput
+Because we do not require annotations, ChIP-Seq, and other high-throughput
 sequencing experiments may also benefit from our model. In a preliminary
-investigation, we found the sequence bias in one CHiP-Seq experiment
+investigation, we found the sequence bias in one ChIP-Seq experiment
 \cite{Cao2010} was less than that observed in any of the RNA-Seq data we
 evaluated, however our method is still able effectively correct for the bias
 that was observed (see, Supplementary Section 4).
 %% TODO: which actual section ?
 Protocol differences, as we have seen,
 can result in significant differences in observed nucleotide frequencies, so we
-may not safely assert that bias in CHiP-Seq data is always low.  Given the weak
+may not safely assert that bias in ChIP-Seq data is always low.  Given the weak
 assumptions made by our model, our estimation of bias could easily be
-incorporated into CHiP-Seq peak calling algorithms, and potentially improve
+incorporated into ChIP-Seq peak calling algorithms, and potentially improve
 accuracy.
 
 RNA-Seq is most often used to compare levels of expression, and so a natural
@@ -600,11 +600,19 @@ concern is the consistency of the bias between samples. In the data we examined,
 the bias appears to be largely, but not entirely consistent (see,
 Supplementary Section 5).
 %% TODO: which actual section ?
-Similarly, in Figure \ref{fig:freqs}, the three data sets
-sequenced on the Illumina platform display similar patterns of nonuniformity,
-yet differ in magnitude. Batch effects in RNA-Seq remain a legitimate concern,
-that should be evaluated and corrected for.
-%% TODO: better end sentence
+Similarly, in Figure \ref{fig:freqs}, the three data sets sequenced on the
+Illumina platform display similar patterns of nonuniformity, yet differ in
+magnitude, suggesting that batch effects in RNA-Seq remain a legitimate concern
+that should not be dismissed without evaluation.
+
+In summary, we have demonstrated a relatively simple graphical model that
+effectively corrects for sequence bias pervasive in RNA-Seq, and to a lesser
+extent, ChIP-Seq experiments. In our tests, this model performs at least as
+well, and often better than existing methods, and involves fewer requirements or
+assumptions. Our model leads to more accurate quantification, and would likely
+provide a positive benefit when incorporated into downstream analysis.
+
+
 
 
 \bibliographystyle{natbib}
