@@ -48,8 +48,8 @@ CairoSVG('kl.svg', width = 6 * scl, height = 1.8 * scl)
 
 xs$k <- factor(xs$k)
 
-p <- qplot(data = xs, x = pos, y = div, color = method,
-           geom = 'line')
+p <- qplot(data = xs, x = pos, y = div, color = method, geom = 'line')
+p <- p + geom_line(size = 0.7)
 p <- p + facet_grid(k ~ sample, scale = 'free')
 
 

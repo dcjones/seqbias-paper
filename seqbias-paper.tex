@@ -343,8 +343,12 @@ procedure is applied to several data sets, using 200,000 reads from each.
 
 \begin{figure*}
 \centerline{\includegraphics[width=\textwidth]{fig/models.eps}}
-%% TODO: caption
-\caption{Blah blah blah.}
+\caption{
+The network structures learned on each of the data sets are examined. Positions
+are relative to the read start, which is labeled 0. Hollow circles indicate
+position that were not included in the model, being deemed uninformative, give
+the other positions and edges. The number of parameters of parameters needed to
+specify each model is listed in parenthesis below.}
 \label{fig:models}
 \end{figure*}
 
@@ -524,11 +528,11 @@ the span between tho 25\% and 75\% quantiles).
     better fit.\label{tab:pois}}{
     \begin{tabular}{lcccc}\toprule
           & BN    & MART  & GLM   & 7mer \\\midrule
-Wetterbom & 0.173 & 0.016 & 0.066 & -0.079 \\
-Katze     & 0.286 & 0.243 & 0.158 & 0.033 \\
-Bullard   & 0.276 & 0.163 & 0.224 & 0.157 \\
-Mortazavi & 0.248 & 0.210 & 0.197 & 0.091 \\
-Trapnell  & 0.308 & 0.289 & 0.248 & 0.138
+Wetterbom & 0.174 & 0.016 & 0.066 & -0.079 \\
+Katze     & 0.280 & 0.243 & 0.158 & 0.033 \\
+Bullard   & 0.267 & 0.163 & 0.224 & 0.157 \\
+Mortazavi & 0.240 & 0.210 & 0.197 & 0.091 \\
+Trapnell  & 0.289 & 0.289 & 0.248 & 0.138
     \end{tabular}
 }{}
 \end{table}
@@ -600,6 +604,7 @@ Similarly, in Figure \ref{fig:freqs}, the three data sets
 sequenced on the Illumina platform display similar patterns of nonuniformity,
 yet differ in magnitude. Batch effects in RNA-Seq remain a legitimate concern,
 that should be evaluated and corrected for.
+%% TODO: better end sentence
 
 
 \bibliographystyle{natbib}
