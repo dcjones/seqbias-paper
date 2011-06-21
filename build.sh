@@ -6,7 +6,7 @@
 export TEXINPUTS=.:bioinformatics:
 export BSTINPUTS=.:bioinformatics:
 
-TEX=pdflatex
+TEX=latex
 BIB=bibtex
 
 
@@ -15,5 +15,5 @@ $BIB seqbias-paper
 $TEX seqbias-paper.tex
 $TEX seqbias-paper.tex
 
-
+dvipdf seqbias-paper.dvi
 
