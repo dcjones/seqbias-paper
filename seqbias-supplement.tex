@@ -1,5 +1,6 @@
 
 \documentclass[letterpaper]{article}
+\usepackage{dcj}
 \usepackage{lscape}
 \usepackage{comment}
 \usepackage{geometry}
@@ -16,9 +17,10 @@
 
 \begin{document}
 
-\maketitle
+%\maketitle
 
-%\qcjtitle{\sc{(SUPPLEMENTARY)}}{\sc{A Model for Sequencing Bias in RNA-Seq}}{Daniel C. Jones}
+
+\dcjtitle{\sc{(SUPPLEMENTARY)}}{\sc{A Model for Sequencing Bias in RNA-Seq}}{Daniel C. Jones}
 
 %\begin{center}
 %\large{
@@ -45,14 +47,17 @@ that the issue is \emph{sampling bias}, rather than a bias in base calling.
 \end{center}
 
 
-\section{CHiP-Seq}
+\section{ChIP-Seq}
 
-Though we found the MART model \cite{Li2010} to be competitive with our own,
-yet ours offers the advantage that no gene annotations are needed for training. In
+Though the MART model \cite{Li2010} performed very well in several cases, ours
+offers the advantage that no gene annotations are required for training.  In
 RNA-Seq this is useful in applications of de-novo gene discovery, but it also
-allows our method to be applied to CHiP-Seq and another short read data. Here we
-examine one publicly available CHiP-Seq data set from Cao, et. al.
-\cite{Cao2010}.  
+allows our method to be applied to ChIP-Seq and other short read data. Here we
+examine one publicly available ChIP-Seq data set from Cao, et. al.
+\cite{Cao2010}. Specifically, we used one run, with Sequence Read Archive
+accession number SRR034831, containing 3,873,192 reads. These were mapped to the
+reference genome using Bowtie \cite{Langmead2009}, resulting in 1,382,867
+uniquely mapped reads, which were used for this analysis.
 
 Measuring nucleotide frequencies, we find the bias to be significantly less
 than that observed the RNA-Seq data sets we tested, but the data was by no means
@@ -64,26 +69,27 @@ unbiased.
 
 In the analysis of the RNA-Seq data, we used the assumption of continuous
 transcription across annotated exons to evaluate the efficacy of the models, as
-well as to train the GLM and MART models. Evaluating bias correction on CHiP-Seq
+well as to train the GLM and MART models. Evaluating bias correction on ChIP-Seq
 data necessitates dropping the Poisson regression test, as well as the GLM and
 MART models from our comparison, which can not be applied to such data.
 
 We did however repeat our analysis using the Kullback-Leibler divergence.
-We used several variations of the method described by Hanset, et. al.,
+We used several variations of the method described by Hansen, et. al.,
 \cite{Hansen2010}. ``7mer'' estimated the initial heptamer, ``Avg-7mer''
-averages the intial two heptamers, and ``4mer'' averages the initial 4mer.
+averages the initial two heptamers, and ``4mer'' averages the initial 4mer.
 
-We trained each method using reads from reads from chromosomes 1--8. The
+We trained each method using reads from chromosomes 1--8. The
 remaining chromosomes were segmented into 500nt bins, and the KL divergence was
 sampled from the 50,000 segments with the highest read counts.
 
-Below, we plot directly the positional KL divergence, computed identically 
+Below, we plot directly the positional KL divergence, computed in tho same
+manner described in the Results section of the paper.
 
 \begin{center}
 \includegraphics[width=0.5\textwidth]{fig/cao-kl.pdf}
 \end{center}
 
-We see that our method is effective at reducing the bias in this ChiP-Seq data.
+We see that our method is effective at reducing the bias in this ChIP-Seq data.
 
 
 
@@ -116,14 +122,14 @@ those in the results section of the main paper.
 \includegraphics[width=\textwidth]{fig/kl-all.pdf}
 
 
-\section{Runtime-Accuracy Tradeoff}
+\section{Runtime-Accuracy Trade-off}
 
 Training our model on more reads results in more accurate estimation of bias,
 but a longer training time. Here we investigate that trade-off by training our
 model on progressively more reads from the Mortazavi data set. We use the
-median pseuo-coefficient of determination ($R^2$) over exons selected for our
+median pseudo-coefficient of determination ($R^2$) over exons selected for our
 test set. Each point is additionally labeled with the time used to train the
-model on one core of a 3Ghz Inteal Xeon processor.
+model on one core of a 3Ghz Intel Xeon processor.
 
 \includegraphics[width=\textwidth]{fig/pois-n.eps}
 

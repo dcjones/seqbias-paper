@@ -21,7 +21,7 @@ Michael G. Katze$^{3}$
 \history{Received on XXXXX; revised on XXXXX; accepted on XXXXX}
 
 \address{
-$^{1}$Deportment of Computer Science and Engineering, University of
+$^{1}$Department of Computer Science and Engineering, University of
 Washington, Seattle, WA 98195-2350, USA\\
 $^{2}$Fred Hutchinson Cancer Research Center, Seattle, WA 98109, USA\\
 $^{3}$Department of Microbiology, University of Washington, Seattle, WA
@@ -370,8 +370,8 @@ an unpublished data sets of our own (Table \ref{tab:datasets}).
 {
 \begin{tabular}{lllr}\toprule
 Experiment & Species & Platform & Read Length \\\midrule
-\citet{Wetterbom2010} & Chimpanzee & ABI & 33 \\
-Katze (unpublished) & Macaque & ABI & 50 \\
+\citet{Wetterbom2010} & Chimpanzee & AB & 33 \\
+Katze (unpublished) & Macaque & AB & 50 \\
 \citet{Bullard2010} & Human & Illumina & 35 \\
 \citet{Mortazavi2008} & Mouse & Illumina & 33 \\
 \citet{Trapnell2010} & Mouse & Illumina & 75 \\\botrule
@@ -571,7 +571,7 @@ against it. For example, the structures learned by our method (Figure
 Illumina platform versus an AB platform.
 
 Training our model on more reads leads to more accurate estimation of bias, but
-increasingly long training time. For example, in our tests, fitting our model to
+an increasingly long training time. For example, in our tests, fitting our model to
 100,000 reads from the Mortazavi data, training time was approximately 45
 minutes, running on one core of a 3Ghz Intel Xeon processor. However, limiting
 the training to 25,000 reads leads to a model that is nearly as accurate while
@@ -607,6 +607,15 @@ well, and often better than existing methods, and involves fewer requirements or
 assumptions. Our model leads to more accurate quantification, and would likely
 provide a positive benefit when incorporated into downstream analysis.
 
+
+%\section*{Acknowledgement}
+%Text Text Text Text Text Text  Text Text.  \citealp{Boffelli03} might want to know about  text text text text
+
+\paragraph{Funding\textcolon} This project has been funded in whole or in part
+with Federal funds from the National Institute of Allergy and Infectious
+Diseases, National Institutes of Health, Department of Health and Human Services,
+under Contract No.  HHSN272200800060C and by the Public Health Service grant
+P51RR000166 from the National Institutes of Health.
 
 
 
