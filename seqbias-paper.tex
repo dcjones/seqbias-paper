@@ -104,7 +104,7 @@ Section 1), suggesting it is not a result of erroneous base calling, and that a
 more sophisticated means of correction is needed.
 
 \begin{figure*}
-\centerline{\includegraphics[width=0.8\textwidth]{fig/freqs.eps}}
+\centerline{\includegraphics[width=0.8\textwidth]{freqs.eps}}
 \caption{Nucleotide frequencies are plotted relative to the start (labeled,
 position 0) of each mapped read, respecting strand. The sequence is taken from
 the genomic context surrounding the read, so that -40 to -1, for example, fall
@@ -206,7 +206,7 @@ bias, at any genomic position. Figure \ref{fig:overview} gives a brief overview
 of the proposed model.
 
 \begin{figure}
-\centerline{\includegraphics[width=0.35\textwidth]{fig/overview.eps}}
+\centerline{\includegraphics[width=0.35\textwidth]{overview.eps}}
 \caption{An overview of the approach taken: (a) foreground sequences are sampled
 from the regions surrounding the starts of mapped reads, (b) background
 sequences are sampled by randomly offsetting foreground positions, (c) a
@@ -337,7 +337,7 @@ procedure is applied to several data sets, using 100,000 reads from each.
 \section{Results}
 
 \begin{figure*}
-\centerline{\includegraphics[width=\textwidth]{fig/models.eps}}
+\centerline{\includegraphics[width=\textwidth]{models.eps}}
 \caption{
 The network structures learned on each of the data sets are examined. Positions
 are relative to the read start, which is labeled 0. Hollow circles indicate
@@ -453,7 +453,7 @@ analysis are plotted in Figure \ref{fig:kl}, for $k = 1$ and $k = 4$. The
 remaining cases are plotted in Supplementary Section 4.
 
 \begin{figure*}
-\centerline{\includegraphics[width=1.00\textwidth]{fig/kl.eps}}
+\centerline{\includegraphics[width=1.00\textwidth]{kl.eps}}
 \caption{The Kullback-Leibler divergence compares the frequency of $k$-mers
 (here, for $k = 1$ and $k = 4$) surrounding the starts of aligned reads to the
 frequencies expected under the assumption of uniform sampling from within exons.
@@ -497,7 +497,7 @@ Figure \ref{fig:pois}.  To summarize each model with a single number, we can
 examine the median $R^2$ value, as listed in Table \ref{tab:pois}.
 
 \begin{figure}
-\centerline{\includegraphics[width=0.3\textwidth]{fig/pois-boxplot.eps}}
+\centerline{\includegraphics[width=0.3\textwidth]{pois-boxplot.eps}}
 \caption{For each of the 1000 test exons, we measure a pseudo-coefficients of
 determination $R^2$, equivalent to the improvement in log-likelihood under the
 bias corrected model. The statistic is positive when uniformity is increased,
