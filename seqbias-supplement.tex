@@ -23,7 +23,7 @@ Sequencing Data}}{Daniel C. Jones}
 \section{Trimming Reads}
 
 Observing the nonuniform distribution of nucleotide frequencies surrounding the
-5' end reads, a natural step to take would be to trim the 5' end before mapping,
+5' end of reads, a natural step to take would be to trim the 5' end before mapping,
 in the hope that simply removing the portion of the read in which the bias
 occurs will also remove the bias. The figure below demonstrates that this is not
 the case. Trimming the initial heptamer in the Mortazavi data set does nothing to
@@ -34,6 +34,30 @@ that the issue is \emph{sampling bias}, rather than a bias in base calling.
 \begin{center}
 \includegraphics[width=0.35\textwidth]{fig/trimmed-freqs.pdf}
 \end{center}
+
+
+
+\section{Additional Kullback-Leibler Divergence Plots}
+
+Below we plot the adjusted and unadjusted KL divergence plots, supplementing
+those in the results section of the main paper.
+
+
+\includegraphics[width=\textwidth]{fig/kl-all.pdf}
+
+
+
+
+\section{Runtime-Accuracy Trade-off}
+
+Training our model on more reads results in more accurate estimation of bias,
+but a longer training time. Here we investigate that trade-off by training our
+model on progressively more reads from the Mortazavi data set. We use the
+median pseudo-coefficient of determination ($R^2$) over exons selected for our
+test set. Each point is additionally labeled with the time used to train the
+model on one core of a 3Ghz Intel Xeon processor.
+
+\includegraphics[width=\textwidth]{fig/pois-n.eps}
 
 
 \section{ChIP-Seq}
@@ -65,7 +89,7 @@ MART models from our comparison, which can not be applied to such data.
 We did however repeat our analysis using the Kullback-Leibler divergence.
 We used several variations of the method described by Hansen, et. al.,
 \cite{Hansen2010}. ``7mer'' estimated the initial heptamer, ``Avg-7mer''
-averages the initial two heptamers, and ``4mer'' averages the initial 4mer.
+averages the initial two heptamers, and ``4mer'' averages the initial two 4mers.
 
 We trained each method using reads from chromosomes 1--8. The
 remaining chromosomes were segmented into 500nt bins, and the KL divergence was
@@ -99,28 +123,6 @@ there remains the risk that the sequence bias would greatly effect the depth to
 which a locus is sequenced, and thus the statistical significance of
 differential expression tests. This would bias the discovery of differentially
 expressed genes, but not the test itself.
-
-
-
-\section{Additional Kullback-Leibler Divergence Plots}
-
-Below we plot the adjusted and unadjusted KL divergence plots, supplementing
-those in the results section of the main paper.
-
-
-\includegraphics[width=\textwidth]{fig/kl-all.pdf}
-
-
-\section{Runtime-Accuracy Trade-off}
-
-Training our model on more reads results in more accurate estimation of bias,
-but a longer training time. Here we investigate that trade-off by training our
-model on progressively more reads from the Mortazavi data set. We use the
-median pseudo-coefficient of determination ($R^2$) over exons selected for our
-test set. Each point is additionally labeled with the time used to train the
-model on one core of a 3Ghz Intel Xeon processor.
-
-\includegraphics[width=\textwidth]{fig/pois-n.eps}
 
 
 \bibliographystyle{plain}
