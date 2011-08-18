@@ -1,0 +1,188 @@
+
+\documentclass{article}
+\usepackage{dcj}
+
+\begin{document}
+
+%\dcjtitle{One}{Two}{Daniel Jones}
+\textbf{Notes on Reviewers Comments} \\
+\textbf{\today}
+
+
+\begin{quote}
+Reviewer: 1
+Comments to the Author
+(1) Page3, 2.2.1 mentions a correction for bias introduced by PCR amplification.  RNA sequencing methods are available where PCR amplification is not used.  Correcting for bias in these cases removes true duplication.  Could the authors please comment on this?
+\end{quote}
+
+Because model complexity is penalized, a very sparse, or even empty model will
+be trained on a data set without bias.  If PCR amplification is responsible for
+a majority of the bias, and an RNA-Seq method without PCR amplification is used
+producing largely bias-free data, then using the method to correct for bias
+will have little if any effect.
+
+That said, evaluating PCR-free methods of RNA-Seq would be informative to
+determine if they truly are without bias.
+
+
+\begin{quote}
+Reviewer: 2
+Comments to the Author
+The ms presents an approach to estimating the effect of local sequence
+context on the rate of seeing aligned reads at each position within a
+transcript in RNA-Seq data. The method is inspired by Hansen et al.'s,
+which simply determines this bias by comparing heptamer frequencies.
+
+Compared to the brute force approach of Hansen, who estimated model
+parameters (the density of a joint distribution) directly from
+heptamer frequencies, here a Bayesian network approach is taken, which
+allows for a sparser parameterisation. However, the cost for this are
+a plethora of tuning parameters (e.g. the complexity penalty, data
+sampling, $p_{max}$, $d_{max}$) and a greedy algorithm with apparently no
+control of the quality of its solution.
+\end{quote}
+
+The method has precisely the following parameters,
+\begin{enumerate}
+\item The model complexity penality.
+\item The variance of the distance at which background sequences are sampled.
+\item The number of reads the method is trained on.
+\item The size of the window surrounding read starts over which the model should
+be trained.
+\item $p_{\text{max}}, d_{\text{max}}$
+\end{enumerate}
+
+
+Parameters (3), (4), and (5) are introduced only to control the CPU time needed
+to train the algorithm, and the all have an extremely simple interpretation:
+bigger is better, but slower.
+
+The important parameters here are (1) and (2).  The fact that we demonstrate the
+effectiveness of our method across a diverse group of data sets using identical
+parameters, with no specific tuning whatsoever argues that the quality of the
+solution is not particularity sensitive to any of these. The paper could make
+this fact more explicit.
+
+What I might also make explicit is that, while it is true that the simple
+brute-force method has fewer parameters, the two other methods compared here
+actually have more parameters. For example the in the MART method, one must set
+the complexity penalty, the interaction depth, the number of trees, a lower
+bound threshold for read counts, as well as selecting training sequences and
+coercing them into very specific input format. In fact, the actual training
+procedure has even more parameters that are even more cryptic, but the software
+does not provide the means to change these from the default values that the
+authors have somehow divined.
+
+
+
+\begin{quote}
+To justify this cost, the
+authors make the argument that their approach avoids the potential
+overfitting of a brute force approach such as Hansen's. However, I am
+not convinced: they evaluate both methods, theirs and Hansen's, on
+'more than 600,000 reads', yet this seems unrealistic: current
+datasets have hundreds of millions of reads, and that may just solve
+the estimation precision problem in the simple brute force approach.
+
+(I appreciate that the implementation of the brute force approach in
+the Genominator package is ridiculously inefficient, but that can
+easily be fixed by more competent programming.)
+\end{quote}
+
+The paper was a little unclear is this regard. At least 600,000 reads were used
+on each data set, but on several of the data sets far more reads were used.  (I
+did reimplement the Genominator method in order to do this, which I note in the
+paper.) The brute-force solution performs very poorly on every data set,
+suggesting that throwing more reads at the problem will not solve it.  The
+results as presented are fairly unambiguous: the other methods perform far
+better with far fewer reads.
+
+Moreover, even if the brute-force method were effective if trained with hundreds
+of millions of reads, many data sets are not this large, rendering
+it impractical.
+
+
+
+
+\begin{quote}
+The major weakness of the ms, in my view, is the choice of 'figures of
+merit' that the authors made (Fig.1, Sections 3.1, 3.2). What I would
+have expected to see are
+
+1.) Plots closer to the data such as Supplementary Fig.5 of
+reference [1]. That figure shows highly uneven coverage of reads
+within exons.
+- Does this unevenness go away with the proposed adjustment?
+- Also, as is evident from that figure, for some of the experimental
+protocols, some regions within highly expressed exons get vanishingly
+small read coverage.  These are the really hard situations, and much
+more worrying than instances where coverage just fluctuates a bit.
+How does the proposed scaling adjustment of Section 2.1 work in these
+places (i.e. when $s_{i}$ is very small)?
+\end{quote}
+
+I chose not to include such a figure because I assumed it would not be taken
+seriously: it would be far too easy to cherry-pick a minuscule genomic interval
+that makes even a very shoddy method appear favorable.
+
+Instead I implemented Poisson-regression metric and performed a large
+cross-validation experiment to demonstrate that this method is quantifiably more
+effective at reducing the observed unevenness across five data sets and
+thousands of exons, rather than just qualitatively on one exon. I believe the
+figure that the reviewer suggests would be largely uninformative, representing a
+minute, unreliable subset of the analysis already presented.  However, it
+makes some sense to include it anyway, since such a figure is so easily interpreted
+that the point of the analysis can be understood without having to read the text
+of results section.
+
+
+\begin{quote}
+2.) A 'bottom-line', biologically relevant figure of merit: E.g., does
+the identification of differentially expressed genes improve? The
+clustering of gene expression profiles? The identification of
+transcript isoforms?
+\end{quote}
+
+I believe that the paper effectively argues that the accuracy of quantification
+is increased, but it is true that it does not demonstrate what effect this has
+on downstream analysis. This would take considerable time and effort to
+establish this rigorously with a large sample size, but it could be worthwhile
+to include some token examples, which might help address what is admittedly a
+pretty natural question.
+
+
+
+\begin{quote}
+Minor points:
+------------
+1. The ms seems confused between classification and regression.
+Reference [2] might be helpful to resolve some of that.
+\end{quote}
+
+I used the term ``classification'' in the context of noting that the algorithm I
+use is adapted from one typically used for classification. It is correct to say
+that the method here performs regression, not classification, and I was maybe
+unclear.
+
+
+
+\begin{quote}
+2. The chosen Bayesian network is rather complicated, and a spectrum
+of alternative methods exists between that and the brute force
+approach of Hansen (say, lasso or svm regression). In absence of a
+more meaningful benchmark, the choice of method seems arbitrary.
+\end{quote}
+
+This seems to ask, ``might there exist an even better method?'' Which is
+possible, yet not possile to know without implementing and evaluating many
+methods, which is unrealistic. Bayesian networks have a very direct
+probabilistic interpretation in this context, which is why they are used here
+rather than SVMs or Lasso regression, methods whose output would be somewhat
+more opaque.
+
+
+
+\end{document}
+
+
+
