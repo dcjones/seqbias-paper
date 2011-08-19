@@ -72,7 +72,7 @@ p <- p + scale_color_manual(
 
                              
 
-# get rid of grid lines, since they get fucket up on this plot anyway
+# get rid of grid lines, since they get fucked up on this plot anyway
 p <- p + theme_dcjstd()
 
 #p <- p + structure(list(panel.grid.minor = theme_blank(),

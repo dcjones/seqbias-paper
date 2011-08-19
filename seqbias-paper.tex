@@ -588,24 +588,31 @@ the training to 25,000 reads leads to a model that is nearly as accurate while
 requiring less than 4 minutes to train. A full discussion of this trade-off is in
 Supplementary Section 3.
 
-
 Because we do not require annotations, ChIP-Seq, and other high-throughput
 sequencing experiments, may also benefit from our model. In a preliminary
 investigation, we found the sequence bias in one ChIP-Seq experiment
 \cite{Cao2010} was less than that observed in any of the RNA-Seq data we
 evaluated; however, our method is still able to effectively correct for the bias
-that was observed (see, Supplementary Section 4).
-Protocol differences, as we have seen,
-can result in significant differences in observed nucleotide frequencies, so we
-may not safely assert that bias in ChIP-Seq data is always low.  Given the weak
-assumptions made by our model, our estimation of bias could easily be
-incorporated into ChIP-Seq peak-calling algorithms, and potentially improve
-accuracy.
+that was observed (see, Supplementary Section 4).  Protocol differences, as we
+have seen, can result in significant differences in observed nucleotide
+frequencies, so we may not safely assert that bias in ChIP-Seq data is always
+low.  Given the weak assumptions made by our model, our estimation of bias could
+easily be incorporated into ChIP-Seq peak-calling algorithms, and potentially
+improve accuracy.
+
+To determine the extent to which PCR amplification is responsible for the
+observed bias, we evaluated data from the FRT-Seq method proposed by
+\citet{Mamanova2010}.  FRT-Seq avoids the PCR amplification step during library
+preparation with reverse transcription occuring on the flowcell surface. We
+observed that this data is not free from sequence bias, yet unlike other data
+generated on the Illumina platform, it appears to be effected only by relatively
+few positions adjacent to the read start (see, Supplementary Section 5).
+
 
 RNA-Seq is most often used to compare levels of expression, and so a natural
 concern is the consistency of the bias between samples. In the data we examined,
 the bias appears to be largely, but not entirely consistent (see, Supplementary
-Section 5).  Similarly, in Figure \ref{fig:freqs}, the three data sets sequenced
+Section 6).  Similarly, in Figure \ref{fig:freqs}, the three data sets sequenced
 on the Illumina platform display similar patterns of nonuniformity, yet differ
 in magnitude, suggesting that batch effects in RNA-Seq remain a legitimate
 concern that should not be dismissed without evaluation.
