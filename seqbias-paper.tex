@@ -106,7 +106,7 @@ Section 1), suggesting it is not a result of erroneous base calling, and that a
 more sophisticated means of correction is needed.
 
 \begin{figure*}
-\centerline{\includegraphics[width=0.9\textwidth]{freqs.eps}}
+\centerline{\includegraphics[width=0.85\textwidth]{freqs.eps}}
 \caption{Nucleotide frequencies are plotted relative to the start (labeled
 position 0) of each mapped read, respecting strand, and grouped by platform
 (Illumina or ABI SOLiD).  The data sets plotted here are those used
@@ -182,8 +182,7 @@ $$ \Pr[ m_i | s_i ] = \frac{ \Pr[ s_i | m_i ] \Pr[ m_i ] }{ \Pr[ s_i ] } $$
 
 This suggests a natural scheme in which observations may be reweighted to
 correct for bias.  First, define the \emph{sequence bias} $b_i$ at position $i$
-as,
-$$ b_i = \frac{ \Pr[ s_i ] } { \Pr[ s_i | m_i ] } $$
+as $ b_i = \Pr[ s_i ] /  \Pr[ s_i | m_i ]  $.
 
 Now, if we reweight the read count $x_i$ at position $i$ by $b_i$, we
 have,
@@ -213,7 +212,7 @@ bias, at any genomic position. Figure \ref{fig:overview} gives a brief overview
 of the proposed model.
 
 \begin{figure}
-\centerline{\includegraphics[width=0.35\textwidth]{overview.eps}}
+\centerline{\includegraphics[width=0.30\textwidth]{overview.eps}}
 \caption{An overview of the approach taken: (a) foreground sequences are sampled
 from the regions surrounding the starts of mapped reads, (b) background
 sequences are sampled by randomly offsetting foreground positions, (c) a
@@ -336,6 +335,19 @@ number $p_{\text{max}}$.
 The second of these encodes the assumption that distant nucleotides are
 effectively independent. We choose $p_{\text{max}} = 4$ and $d_{\text{max}} =
 10$, as reasonable default values.
+
+Along with $p_{\text{max}}$ and $d_{\text{max}}$, the time required to train the
+model is controlled by the number of reads used (i.e., $n$) and the number of
+positions surrounding the read start to consider. Increasing any of these
+parameters results in a solution that is no worse, and potentially better, at
+the expense of increased training time.
+
+The quality of the solution depends also on two other parameters: the standard
+deviation at which background sequences are sampled, and the weight applied to
+the penalty term of the BIC, yet it is not particularly sensitive to their values
+(see, Supplementary Section 4). In all our evaluation, no special tuning of the
+parameters was performed, suggesting it can be used effectively across data sets
+without any intervention.
 
 Figure \ref{fig:models} shows examples of the structure learned when this
 procedure is applied to several data sets, using 100,000 reads from each.
@@ -460,7 +472,7 @@ analysis are plotted in Figure \ref{fig:kl}, for $k = 1$ and $k = 4$. The
 remaining cases are plotted in Supplementary Section 2.
 
 \begin{figure*}
-\centerline{\includegraphics[width=1.00\textwidth]{kl.eps}}
+\centerline{\includegraphics[width=0.95\textwidth]{kl.eps}}
 \caption{The Kullback-Leibler divergence compares the frequency of $k$-mers
 (here, for $k = 1$ and $k = 4$) surrounding the starts of aligned reads to the
 frequencies expected under the assumption of uniform sampling from within exons.
@@ -473,19 +485,26 @@ method.}
 
 \subsection{Poisson Regression}
 
+\begin{figure}
+\centerline{\includegraphics[width=0.4\textwidth]{uniformity.eps}}
+\caption{Read counts (i.e., the number of reads starting at each position)
+from the Mortazavi data set are plotted along the $3'$ UTR of Apoa2. The upper
+plot shows unadjusted counts, the lower, counts adjusted by our method.}
+\label{fig:unif}
+\end{figure}
+
 In this comparison, we measure how well the counts conform to a Poisson process.
 The assumption of positional read counts following a Poisson distribution is
 known to be a poor fit \citep{Srivastava2010}, but measuring the improvement in
 the fit derived from correcting for bias remains a principled and easily
-interpreted criterion.
+interpreted criterion. This increase in uniformity is illustrated in Figure
+\ref{fig:unif}.
 
 We perform maximum-likelihood fitting of two models. In the null model, the
-Poisson rate is fixed for each exon. That is, for position $j$ within
-exon $i$, the rate is
-$$ \lambda_{ij} = a_i $$
-where $a_i$ is the parameter being fit. For comparison, we then fit a model in
-which the rate is also proportional to the predicted bias coefficients:
-$$ \lambda'_{ij} = a_i b_{ij} $$
+Poisson rate is fixed for each exon. That is, for position $j$ within exon $i$,
+the rate is $ \lambda_{ij} = a_i $ where $a_i$ is the parameter being fit. For
+comparison, we then fit a model in which the rate is also proportional to the
+predicted bias coefficients: $ \lambda'_{ij} = a_i b_{ij} $.
 
 If the null model has log-likelihood $L$, and the bias-corrected model $L'$, a
 simple goodness of fit measure is the improvement in log-likelihood (a statistic
@@ -504,7 +523,7 @@ Figure \ref{fig:pois}.  To summarize each model with a single number, we can
 examine the median $R^2$ value, as listed in Table \ref{tab:pois}.
 
 \begin{figure}
-\centerline{\includegraphics[width=0.35\textwidth]{pois-boxplot.eps}}
+\centerline{\includegraphics[width=0.30\textwidth]{pois-boxplot.eps}}
 \caption{For each of the 1000 test exons, we compute a pseudo-coefficients of
 determination $R^2$, equivalent to the improvement in log-likelihood under the
 bias corrected model. The statistic is positive, and increases as uniformity is
