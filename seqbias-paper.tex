@@ -217,8 +217,8 @@ of the proposed model.
 \caption{An overview of the approach taken: (a) foreground sequences are sampled
 from the regions surrounding the starts of mapped reads, (b) background
 sequences are sampled by randomly offsetting foreground positions, (c) a
-Bayesian network is classifier is trained to discriminate between the set of
-sampled foreground and background sequences, (d) and the classifier is evaluated
+Bayesian network is trained to discriminate between the set of
+sampled foreground and background sequences, (d) and the model is evaluated
 at each position within a locus, predicting bias.}
 \label{fig:overview}
 \end{figure}
@@ -270,7 +270,7 @@ background, sampled from the reference genome. To obtain the foreground
 sequences, we take sequences surrounding (extending 20 nt to either side, by
 default) the starts positions of $n/2$ aligned reads. We wish to avoid
 overfitting to any short locus with a large abundance of reads, yet we must also
-capture the bias introduced by, for exapmle, PCR amplification. We therefore
+capture the bias introduced by, for example, PCR amplification. We therefore
 choose the $n/2$ unique reads with the highest number of duplicates, yet count
 each read only once, ignoring duplicates
 
