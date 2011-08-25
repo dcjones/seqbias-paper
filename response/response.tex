@@ -5,13 +5,24 @@
 \begin{document}
 
 %\dcjtitle{One}{Two}{Daniel Jones}
-\textbf{Notes on Reviewers Comments} \\
-\textbf{\today}
+%\textbf{Notes on Reviewers Comments} \\
+%\textbf{\today} 
 
+We appreciate the time and effort extended by the anonymous reviewers and the
+editorial staff to assess the suitability of the original version of this
+manuscript for publication in Bioinformatics. Upon review, the second of the two
+reviewers raised substantial concerns, compelling the its rejection.  However,
+we found the bulk of the these concerns to be either incongruous with the
+content of the manuscript or addressable with very little effort, and therefore
+not warranting rejection. Here we have provided a detailed response to these
+comments, and have included additional material in the manuscript in an effort
+to clarify these points. Under these circumstances we respectively request that
+the manuscript, in this revised form, be reconsidered for publication.
+
+
+\subsection*{Response to Reviewer 1}
 
 \begin{quote}
-Reviewer: 1
-Comments to the Author
 (1) Page3, 2.2.1 mentions a correction for bias introduced by PCR amplification.  RNA sequencing methods are available where PCR amplification is not used.  Correcting for bias in these cases removes true duplication.  Could the authors please comment on this?
 \end{quote}
 
@@ -21,13 +32,16 @@ a majority of the bias, and an RNA-Seq method without PCR amplification is used
 producing largely bias-free data, then using the method to correct for bias
 will have little if any effect.
 
-That said, evaluating PCR-free methods of RNA-Seq would be informative to
-determine if they truly are without bias.
+We have included new data examining the FRT-Seq protocol of Mamanova, et. al.,
+in which no PCR-amplification in performed during library preparation. We show
+that bias is reduced, but not eliminated in this method, and that our method
+accounts for this reduced bias by constructing a much sparser model, relative to
+the other RNA-Seq data sets we have examined.
 
+
+\subsection*{Response to Reviewer 2}
 
 \begin{quote}
-Reviewer: 2
-Comments to the Author
 The ms presents an approach to estimating the effect of local sequence
 context on the rate of seeing aligned reads at each position within a
 transcript in RNA-Seq data. The method is inspired by Hansen et al.'s,
@@ -44,35 +58,36 @@ control of the quality of its solution.
 
 The method has precisely the following parameters,
 \begin{enumerate}
-\item The model complexity penality.
-\item The variance of the distance at which background sequences are sampled.
 \item The number of reads the method is trained on.
 \item The size of the window surrounding read starts over which the model should
 be trained.
-\item $p_{\text{max}}, d_{\text{max}}$
+\item The maximum in-degree (i.e., $p_{\text{max}}$)
+\item The maximum edge distance (i.e., $d_{\text{max}}$).
+\item The standard deviation at which background sequences are sampled.
+\item The model complexity penalty.
 \end{enumerate}
 
+Parameters (1), (2), (3), and (4) are introduced only to reduce the CPU time
+needed to train the algorithm. Each has the same very simple interpretation: a
+larger value leads to solution that is no worse and potentially better, at the
+cost of increased training time.  We mention these parameters in the manuscript
+only for the sake of transparency.  They generally require no intervention or
+tuning, being essentially an implementation detail. 
 
-Parameters (3), (4), and (5) are introduced only to control the CPU time needed
-to train the algorithm, and the all have an extremely simple interpretation:
-bigger is better, but slower.
+Parameters (5) and (6) are more important to the quality of the solution, yet we
+have demonstrated, with no special tuning, the method is effective across a
+diverse collection of data sets. In this revision we have included new data
+showing explicitly that the quality of the solution is remarkably insensitive to
+values of these two parameters.
 
-The important parameters here are (1) and (2).  The fact that we demonstrate the
-effectiveness of our method across a diverse group of data sets using identical
-parameters, with no specific tuning whatsoever argues that the quality of the
-solution is not particularity sensitive to any of these. The paper could make
-this fact more explicit.
-
-What I might also make explicit is that, while it is true that the simple
-brute-force method has fewer parameters, the two other methods compared here
-actually have more parameters. For example the in the MART method, one must set
-the complexity penalty, the interaction depth, the number of trees, a lower
-bound threshold for read counts, as well as selecting training sequences and
-coercing them into very specific input format. In fact, the actual training
-procedure has even more parameters that are even more cryptic, but the software
-does not provide the means to change these from the default values that the
-authors have somehow divined.
-
+It should also be noted that, while the brute-force method of Hansen, et. al.,
+has fewer parameters. The other methods evaluated in the manuscript (the GLM and
+MART methods of Li, et. al.), involve more more parameters that the method we
+have described. (For example training the MART method of Li, et al., involves
+parameters controlling the complexity penalty, the number of trees, the lower
+bound threshold for read counts, in addition to others that are not described or
+easily changed from the values divined by the authors.) Our method therefore
+presents a simplification over competing methods.
 
 
 \begin{quote}
@@ -89,19 +104,17 @@ the Genominator package is ridiculously inefficient, but that can
 easily be fixed by more competent programming.)
 \end{quote}
 
-The paper was a little unclear is this regard. At least 600,000 reads were used
-on each data set, but on several of the data sets far more reads were used.  (I
-did reimplement the Genominator method in order to do this, which I note in the
-paper.) The brute-force solution performs very poorly on every data set,
-suggesting that throwing more reads at the problem will not solve it.  The
-results as presented are fairly unambiguous: the other methods perform far
+We regret that we more not more explicit on this point. At least 600,000 reads
+on each data set, but as many as 23 million were used. (As noted in the paper,
+we did reimplement the Genominator method in order to do this.) The brute-force
+method performed very poorly on every data set, suggesting that simply throwing
+more data at a suboptimal solution will not adequately solve the problem. The
+results as they were presented are unambiguous: the other methods perform far
 better with far fewer reads.
 
-Moreover, even if the brute-force method were effective if trained with hundreds
-of millions of reads, many data sets are not this large, rendering
-it impractical.
-
-
+Moreover, even if the brute-force method were effective if trained with many
+hundreds of millions of reads, many (possibly, most) existing data sets are not
+this large, rendering it generally impractical.
 
 
 \begin{quote}
@@ -121,19 +134,22 @@ How does the proposed scaling adjustment of Section 2.1 work in these
 places (i.e. when $s_{i}$ is very small)?
 \end{quote}
 
-I chose not to include such a figure because I assumed it would not be taken
-seriously: it would be far too easy to cherry-pick a minuscule genomic interval
-that makes even a very shoddy method appear favorable.
+During preparation we choose not to include a figure such as the one suggested
+by the reviewer as we believed it would not be legitimately informative. It
+would be far too easy to cherry-pick a minuscule genomic interval that makes
+even the very shoddy method appear favorable.
 
-Instead I implemented Poisson-regression metric and performed a large
-cross-validation experiment to demonstrate that this method is quantifiably more
-effective at reducing the observed unevenness across five data sets and
-thousands of exons, rather than just qualitatively on one exon. I believe the
-figure that the reviewer suggests would be largely uninformative, representing a
-minute, unreliable subset of the analysis already presented.  However, it
-makes some sense to include it anyway, since such a figure is so easily interpreted
-that the point of the analysis can be understood without having to read the text
-of results section.
+Instead, we presented data (in Section 3.2) that answers the reviewers question
+(i.e., ``does this unevenness go away with the proposed adjustment?'') in
+rigorous and comprehensive manner. We implemented a Poisson-regression metric
+and performed a large cross-validation study proving the effectiveness of our
+method at increasing uniformity quantitatively, across thousands of exons drawn
+from a diverse group of data sets, rather than qualitatively across one exon.
+
+In this revision, we have included a figure, as suggested, showing an example of
+this increase in uniformity. Yet, we must stress, this figure represents a
+minute, unreliable subset of the analysis that had previously been presented,
+and is included only as an illustration.
 
 
 \begin{quote}
@@ -143,12 +159,17 @@ clustering of gene expression profiles? The identification of
 transcript isoforms?
 \end{quote}
 
-I believe that the paper effectively argues that the accuracy of quantification
-is increased, but it is true that it does not demonstrate what effect this has
-on downstream analysis. This would take considerable time and effort to
-establish this rigorously with a large sample size, but it could be worthwhile
-to include some token examples, which might help address what is admittedly a
-pretty natural question.
+In Section 3, we demonstrate, after correction, a significant improvement in
+the two obvious anomalies associated with the issue of sequence bias:
+non-uniform read coverage, and divergent nucleotide frequencies. We assess these
+aspects in a statistically rigorous manner and with a large sample size. We
+believe that this analysis presents a compelling case that bias correction is
+worthwhile, and that the method we present is competitive with, and quite often
+superior to existing methods.
+
+In this revision, we have included more data, showing that in addition to the
+improvements in uniformity and nucleotide frequencies, increased correlation
+between RNA-Seq and qPCR, after adjusting for bias.
 
 
 
@@ -159,10 +180,10 @@ Minor points:
 Reference [2] might be helpful to resolve some of that.
 \end{quote}
 
-I used the term ``classification'' in the context of noting that the algorithm I
-use is adapted from one typically used for classification. It is correct to say
-that the method here performs regression, not classification, and I was maybe
-unclear.
+The term ``classification'' was used in the context of noting that the algorithm
+is adapted from one typically used in classification. It is correct to say that
+the method here performs regression, and we have tried to clarify this language
+in this revision.
 
 
 
@@ -173,12 +194,18 @@ approach of Hansen (say, lasso or svm regression). In absence of a
 more meaningful benchmark, the choice of method seems arbitrary.
 \end{quote}
 
-This seems to ask, ``might there exist an even better method?'' Which is
-possible, yet not possile to know without implementing and evaluating many
-methods, which is unrealistic. Bayesian networks have a very direct
-probabilistic interpretation in this context, which is why they are used here
-rather than SVMs or Lasso regression, methods whose output would be somewhat
-more opaque.
+Our motivation for adopting a Bayesian network model is the very natural
+probabilistic interpretation that we have described in Section 2.1. We
+disagree with the reviewer's opinion that Bayesian networks are inherently more
+complicated than Lasso regression or support vector machines.  In this
+application, the latter two methods would provide output that is arguably less
+transparent and interpretable, and neither be significantly simpler to
+implement, nor involve fewer parameters.
+
+Naturally, it is possible that another model might perform as well or better
+than the one presented here, yet it is unrealistic or impossible to prove that
+this is not case. What we have demonstrated is a model that is well reasoned,
+efficiently implemented, and effective at reducing sequence bias in RNA-Seq.
 
 
 

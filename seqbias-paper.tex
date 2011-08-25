@@ -246,12 +246,12 @@ transcripts.
 
 \subsection{Estimation}
 
-To estimate sequencing bias, we train a Bayesian network classifier in which
-each node represents a position in the sequence, relative to the read start, and
-edges encode dependency between positions.  Bayesian networks have been applied
-to recognize motifs in nucleotide sequences in the past, in particular in
-modeling splice sites \citep{Cai2000, Chen2005} and transcription factor binding
-sites \citep{Ben-Gal2005, Grau2006, Pudimat2005}. 
+To estimate sequencing bias, we train a Bayesian network in which each node
+represents a position in the sequence, relative to the read start, and edges
+encode dependency between positions.  Bayesian networks have been applied to
+recognize motifs in nucleotide sequences in the past, in particular in modeling
+splice sites \citep{Cai2000, Chen2005} and transcription factor binding sites
+\citep{Ben-Gal2005, Grau2006, Pudimat2005}. 
 
 In our model, we do not rely on constraining the set of networks (e.g., to
 trees), and instead approximate the NP-Hard problem of determining the optimal
@@ -362,7 +362,9 @@ The network structures learned on each of the data sets are displayed. Positions
 are relative to the read start, which is labeled 0. Hollow circles indicate
 positions that were not included in the model, being deemed uninformative, given
 the other positions and edges. The number of parameters needed to
-specify each model is listed in parenthesis below.}
+specify each model is listed in parenthesis below. Applied to data with less
+bias, a sparser model is trained, as evinced by the Wetterbom data set.
+}
 \label{fig:models}
 \end{figure*}
 
