@@ -212,7 +212,7 @@ bias, at any genomic position. Figure \ref{fig:overview} gives a brief overview
 of the proposed model.
 
 \begin{figure}
-\centerline{\includegraphics[width=0.30\textwidth]{overview.eps}}
+\centerline{\includegraphics[width=0.25\textwidth]{overview.eps}}
 \caption{An overview of the approach taken: (a) foreground sequences are sampled
 from the regions surrounding the starts of mapped reads, (b) background
 sequences are sampled by randomly offsetting foreground positions, (c) a
@@ -293,8 +293,8 @@ hill-climbing approach similar to the algorithm described by \citet{Grossman2004
 The network structure is determined by greedily optimizing the conditional
 log-likelihood:
 \begin{align*}
-\ell &= \sum_{i=1}^{n} \log \Pr( x_i | s_i ) \\
-&=
+\ell &= \sum_{i=1}^{n} \log \Pr( x_i | s_i ) 
+=
 \sum_{i=1}^{n} \log \frac{ \Pr(s_i | x_i) \Pr( x_i ) }{
 \sum_{x \in \{0,1\}} \Pr( s_i | x ) \Pr(x) } \\
 \end{align*}
@@ -306,7 +306,6 @@ set of samples, simply maximizing the likelihood would severely overfit the
 training set. We thus penalize model complexity heuristically using the Bayesian
 Information Criterion \citep{Schwarz1978a}. Where $m$ is the number of
 parameters needed to specify the model, we maximize, 
-
 $$ \ell' = 2 \ell - m \log n $$
 
 Some benefit would be obtained from a more highly tuned complexity penalty.
@@ -512,7 +511,7 @@ If the null model has log-likelihood $L$, and the bias-corrected model $L'$, a
 simple goodness of fit measure is the improvement in log-likelihood (a statistic
 commonly known as McFadden's pseudo-coefficient of determination
 \citep{McFadden1974}), defined as,
-$$R^2 = 1 - \frac{L'}{L}$$
+$R^2 = 1 - L'/L$.
 
 This measure can be interpreted as the improvement in fit over the null model,
 with $R^2 = 1$ indicating a prefect fit, and smaller numbers, an increasingly
@@ -567,14 +566,21 @@ Trapnell  & 0.289 & 0.289 & 0.248 & 0.138
 We have demonstrated that sequence bias can confound, sometimes severely,
 quantification in RNA-Seq experiments, and we have introduced an effective
 method to account for this bias without the need of existing gene annotations.
+The analysis provided demonstrates that our method shows significant improvement
+in two aspects: uniformity of read coverage, and consistency of nucleotide
+frequencies. These results strongly suggest an increase in accuracy, and we show
+in Supplementary Section 8, that this conclusion is further justified by
+comparison to qRT-PCR.
+
 
 In our results, estimating initial heptamer frequencies was not seen to be as
 effective as the other models, even when data generated using random hexamer
 priming was used. Given the large number of parameters needed to estimate
 heptamer frequencies, a likely explanation is that the model is overfit to the
-training set. Though we trained the 7mer model on at least 600,000 reads in each
-experiment, it seems more reads, or a greater diversity of reads are needed
-to produce an accurate or useful estimate.
+training set.  We trained the 7mer model on a minimum of 600,000 reads (with the
+Bullard data set), and up to 23 million reads (with the Wetterbom data set), yet
+it seems more reads, or a greater diversity of reads are needed to produce an
+accurate or useful estimate.
 
 Our method generalizes this approach, attempting to overcome this problem by
 using an estimation of sequence probability that is more robust to overfitting
