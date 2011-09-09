@@ -1,29 +1,56 @@
 
 \documentclass{article}
-\usepackage{dcj}
+\usepackage{amsmath}
+%\usepackage{dcj}
 
 \begin{document}
 
-%\dcjtitle{One}{Two}{Daniel Jones}
-%\textbf{Notes on Reviewers Comments} \\
-%\textbf{\today} 
 
 We appreciate the time and effort extended by the anonymous reviewers and the
-editorial staff to assess the suitability of the original version of this
-manuscript for publication in Bioinformatics. Upon review, the second of the two
-reviewers raised substantial concerns, compelling the its rejection.  However,
-we found the bulk of the these concerns to be either incongruous with the
-content of the manuscript or addressable with very little effort, and therefore
-not warranting rejection. Here we have provided a detailed response to these
-comments, and have included additional material in the manuscript in an effort
-to clarify these points. Under these circumstances we respectively request that
-the manuscript, in this revised form, be reconsidered for publication.
+editorial staff to evaluate the original version of this manuscript, which was
+submitted on July 8. Upon review, the second of the two reviewers raised some
+concerns, compelling its rejection. However, we believe that the bulk of these
+concerns are either incongruous with the content of the manuscript or
+addressable with very little effort, and therefore do not warrant its rejection.
+Here we have provided a detailed response to these comments, and have included
+additional material in an effort to clarify these points.
+
+The second reviewer raised three major concerns. The first concern raised is
+that the method we present is unjustifiably complex, involving a ``plethora of
+tuning parameters'', and that the much simpler method of Hansen, et al., would
+perform as well is trained on enough data.  In the data we presented, the simple
+method developed by Hansen, et al., performed poorly regardless of the number of
+reads used in training, which varied between hundreds of thousands to tens of
+millions.  The methods presented by Li, et al., are more effective, yet involve
+more parameters, and require more time to train, so that our method, while often
+being more effective, also offers a significant simplification.
+
+Secondly, it is asserted that we did not demonstrate that uniformity of read
+coverage is increased ofter correcting for bias using our method.  Yet, in
+section 3.2 we had presented a rigorous statistical analysis over a large and
+diverse collection of data sets showing that this is indeed the case. This
+section of the paper was evidently overlooked by the reviewer, as it received
+no mention in this criticism.
+
+Finally, the reviewer doubts the biological relevance of the bias correction
+methods. Having demonstrated an increase in uniformity (section 3.2) and a
+decrease in nucleotide frequency divergence (section 3.1), we believe a
+compelling case was made that correcting for bias increases the accuracy of
+quantification. In this revision we have supplied another line of evidence:
+analysis showing that correlation between RNA-Seq and qRT-PCR is increased after
+correcting for bias.
+
+Under these circumstances we respectively request that the manuscript, in this
+revised form, be reconsidered for publication.
 
 
 \subsection*{Response to Reviewer 1}
 
 \begin{quote}
-(1) Page3, 2.2.1 mentions a correction for bias introduced by PCR amplification.  RNA sequencing methods are available where PCR amplification is not used.  Correcting for bias in these cases removes true duplication.  Could the authors please comment on this?
+(1) Page3, 2.2.1 mentions a correction for bias introduced by PCR amplification.
+RNA sequencing methods are available where PCR amplification is not used.
+Correcting for bias in these cases removes true duplication.  Could the authors
+please comment on this?
 \end{quote}
 
 Because model complexity is penalized, a very sparse, or even empty model will
@@ -81,11 +108,11 @@ showing explicitly that the quality of the solution is remarkably insensitive to
 values of these two parameters.
 
 It should also be noted that, while the brute-force method of Hansen, et. al.,
-has fewer parameters. The other methods evaluated in the manuscript (the GLM and
-MART methods of Li, et. al.), involve more more parameters that the method we
-have described. (For example training the MART method of Li, et al., involves
-parameters controlling the complexity penalty, the number of trees, the lower
-bound threshold for read counts, in addition to others that are not described or
+has fewer parameters, the other methods evaluated in the manuscript (the GLM and
+MART methods of Li, et. al.), involve more parameters that the method we
+have described. (For example training the MART method involves parameters
+controlling the complexity penalty, the number of trees, the lower bound
+threshold for read counts, in addition to others that are not described or
 easily changed from the values divined by the authors.) Our method therefore
 presents a simplification over competing methods.
 
@@ -113,7 +140,7 @@ results as they were presented are unambiguous: the other methods perform far
 better with far fewer reads.
 
 Moreover, even if the brute-force method were effective if trained with many
-hundreds of millions of reads, many (possibly, most) existing data sets are not
+hundreds of millions of reads, many (possibly most) existing data sets are not
 this large, rendering it generally impractical.
 
 
@@ -141,7 +168,7 @@ even the very shoddy method appear favorable.
 
 Instead, we presented data (in Section 3.2) that answers the reviewers question
 (i.e., ``does this unevenness go away with the proposed adjustment?'') in
-rigorous and comprehensive manner. We implemented a Poisson-regression metric
+rigorous and comprehensive manner. We implemented a Poisson regression metric
 and performed a large cross-validation study proving the effectiveness of our
 method at increasing uniformity quantitatively, across thousands of exons drawn
 from a diverse group of data sets, rather than qualitatively across one exon.
@@ -169,8 +196,8 @@ superior to existing methods.
 
 In this revision, we have included more data, showing that in addition to the
 improvements in uniformity and nucleotide frequencies, increased correlation
-between RNA-Seq and qPCR, after adjusting for bias.
-
+between RNA-Seq and qRT-PCR, after adjusting for bias in RNA-Seq. These results
+are consistent with, and reinforce our previous results.
 
 
 \begin{quote}
@@ -198,7 +225,7 @@ Our motivation for adopting a Bayesian network model is the very natural
 probabilistic interpretation that we have described in Section 2.1. We
 disagree with the reviewer's opinion that Bayesian networks are inherently more
 complicated than Lasso regression or support vector machines.  In this
-application, the latter two methods would provide output that is arguably less
+application, the latter two methods would generate output that is arguably less
 transparent and interpretable, and neither be significantly simpler to
 implement, nor involve fewer parameters.
 
@@ -210,6 +237,5 @@ efficiently implemented, and effective at reducing sequence bias in RNA-Seq.
 
 
 \end{document}
-
 
 

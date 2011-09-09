@@ -344,7 +344,7 @@ the expense of increased training time.
 The quality of the solution depends also on two other parameters: the standard
 deviation at which background sequences are sampled, and the weight applied to
 the penalty term of the BIC, yet it is not particularly sensitive to their values
-(see, Supplementary Section 4). In all our evaluation, no special tuning of the
+(see, Supplementary Section 2). In all our evaluation, no special tuning of the
 parameters was performed, suggesting it can be used effectively across data sets
 without any intervention.
 
@@ -470,7 +470,7 @@ redistributing reads uniformly at random within their exons.
 
 We repeated the procedure for $k \in \{1, 2, 3, 4, 5, 6\}$. The results of this
 analysis are plotted in Figure \ref{fig:kl}, for $k = 1$ and $k = 4$. The
-remaining cases are plotted in Supplementary Section 2.
+remaining cases are plotted in Supplementary Section 3.
 
 \begin{figure*}
 \centerline{\includegraphics[width=0.95\textwidth]{kl.eps}}
@@ -569,7 +569,7 @@ method to account for this bias without the need of existing gene annotations.
 The analysis provided demonstrates that our method shows significant improvement
 in two aspects: uniformity of read coverage, and consistency of nucleotide
 frequencies. These results strongly suggest an increase in accuracy, and we show
-in Supplementary Section 8, that this conclusion is further justified by
+in Supplementary Section 4, that this conclusion is further justified by
 comparison to qRT-PCR.
 
 
@@ -613,14 +613,14 @@ an increasingly long training time. For example, in our tests, fitting our model
 minutes, running on one core of a 3 Ghz Intel Xeon processor. However, limiting
 the training to 25,000 reads leads to a model that is nearly as accurate while
 requiring less than 4 minutes to train. A full discussion of this trade-off is in
-Supplementary Section 3.
+Supplementary Section 5.
 
 Because we do not require annotations, ChIP-Seq, and other high-throughput
 sequencing experiments, may also benefit from our model. In a preliminary
 investigation, we found the sequence bias in one ChIP-Seq experiment
 \cite{Cao2010} was less than that observed in any of the RNA-Seq data we
 evaluated; however, our method is still able to effectively correct for the bias
-that was observed (see, Supplementary Section 4).  Protocol differences, as we
+that was observed (see, Supplementary Section 6).  Protocol differences, as we
 have seen, can result in significant differences in observed nucleotide
 frequencies, so we may not safely assert that bias in ChIP-Seq data is always
 low.  Given the weak assumptions made by our model, our estimation of bias could
@@ -633,13 +633,12 @@ observed bias, we evaluated data from the FRT-Seq method proposed by
 preparation with reverse transcription occuring on the flowcell surface. We
 observed that this data is not free from sequence bias, yet unlike other data
 generated on the Illumina platform, it appears to be effected only by relatively
-few positions adjacent to the read start (see, Supplementary Section 5).
-
+few positions adjacent to the read start (see, Supplementary Section 7).
 
 RNA-Seq is most often used to compare levels of expression, and so a natural
 concern is the consistency of the bias between samples. In the data we examined,
 the bias appears to be largely, but not entirely consistent (see, Supplementary
-Section 6).  Similarly, in Figure \ref{fig:freqs}, the three data sets sequenced
+Section 8).  Similarly, in Figure \ref{fig:freqs}, the three data sets sequenced
 on the Illumina platform display similar patterns of nonuniformity, yet differ
 in magnitude, suggesting that batch effects in RNA-Seq remain a legitimate
 concern that should not be dismissed without evaluation.
@@ -651,9 +650,6 @@ well, and often better than existing methods, and involves fewer requirements or
 assumptions. Our model leads to more accurate quantification, and would likely
 provide a positive benefit when incorporated into downstream analysis.
 
-
-%\section*{Acknowledgement}
-%Text Text Text Text Text Text  Text Text.  \citealp{Boffelli03} might want to know about  text text text text
 
 \paragraph{Funding\textcolon} This project has been funded in whole or in part
 with Federal funds from the National Institute of Allergy and Infectious
