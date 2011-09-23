@@ -369,13 +369,15 @@ bias, a sparser model is trained, as evinced by the Wetterbom data set.
 
 
 Because we cannot observe directly the underlying RNA-abundance, our evaluation
-strategy relies on testing two assumptions we make of an ideal, unbiased experiment.
+strategy relies on testing three assumptions we make of an ideal, unbiased experiment.
 \begin{enumerate}
 \item Positional nucleotide frequencies (as in Figure \ref{fig:freqs}), measured
 from reads within exons, should not differ greatly from frequencies measured by
 sampling uniformly within the same exons.
 \item Read counts across a single exon should follow, approximately, a Poisson
 process.
+\item Adjusting for bias should increase the agreement between RNA-Seq and
+qRT-PCR.
 \end{enumerate}
 
 We applied our procedure (labeled ``BN'') as well as those of
@@ -560,6 +562,60 @@ Trapnell  & 0.289 & 0.289 & 0.248 & 0.138
 \end{table}
 
 
+\subsection{qRT-PCR Correlation}
+
+We used sequencing data previously published by \citet{Au2010} to evaluate the
+effect bias correction has on correlation to measurements made by TaqMan RT-PCR,
+made available by the the Microarray Quality Control project \cite{Shi2006}. The
+RNA-Seq data shows a pattern of bias similar to that seen in the other samples
+sequenced on an Illumina platform.
+%% TODO: refer to supplement for figure of bias
+
+To evaluate the efficacy of each of the bias correction methods considered, we
+counted reads overlapping each gene, defining the gene by the union of every
+transcript in release 62 of the Ensembl gene annotations, excluding UTRs, and
+100 additional bases from both ends of the gene. Counts were then normalized
+(divided) by the length of these genes. We then removed any genes with a read
+count less than 10, or that did not correspond to a unique TaqMan probe, leaving
+592 genes.
+
+%% TODO: something goes here
+After adjusting read counts according to the predicted sequence bias, we
+computed the Pearson correlation between log read counts and log TaqMan
+expression values, which are averaged across three replicates.
+
+
+\begin{figure}
+\centerline{\includegraphics[width=0.4\textwidth]{pcrcor.eps}}
+\caption{
+    Pearson correlation is computed betweer TaqMan values and (bias-corrected)
+    read counts, on a logarithmic scale.
+    %%TODO
+    Error bars show a 95\% confidence interval, estimated using the Fisher
+    transformation, as computed by the R function \texttt{cor.test}.
+}
+\label{fig:pcrcor}
+\end{figure}
+
+
+%\begin{table}
+%\processtable{
+    %Pearson correlation between log-adjusted read counts and log-adjusted TaqMan
+    %values.\label{tab:pcr}}{
+%\begin{tabular}{ll} \toprule
+%Method & Correlation \\ \midrule
+%Unadjusted &  0.6665 \\
+%7mer &  0.6677 \\
+%GLM & 0.6854 \\
+%MART & 0.6921 \\
+%BN & 0.7016
+%\end{tabular}
+%}
+%{
+%}
+%\end{table}
+
+
 
 \section{Discussion}
 
@@ -571,7 +627,6 @@ in two aspects: uniformity of read coverage, and consistency of nucleotide
 frequencies. These results strongly suggest an increase in accuracy, and we show
 in Supplementary Section 4, that this conclusion is further justified by
 comparison to qRT-PCR.
-
 
 In our results, estimating initial heptamer frequencies was not seen to be as
 effective as the other models, even when data generated using random hexamer
