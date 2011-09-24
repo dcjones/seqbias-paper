@@ -390,13 +390,14 @@ an unpublished data set of our own (Table \ref{tab:datasets}).
 \begin{table}
 \processtable{Data sets on which the methods are evaluated.\label{tab:datasets}}
 {
-\begin{tabular}{lllr}\toprule
-Experiment & Species & Platform & Read Length \\\midrule
-\citet{Wetterbom2010} & Chimpanzee & ABI & 33 \\
-Katze (unpublished) & Macaque & ABI & 50 \\
-\citet{Bullard2010} & Human & Illumina & 35 \\
-\citet{Mortazavi2008} & Mouse & Illumina & 33 \\
-\citet{Trapnell2010} & Mouse & Illumina & 75 \\\botrule
+\begin{tabular}{lllcc}\toprule
+ & & & Read & Num. of \\
+Experiment & Species & Platform & length & reads \\\midrule
+\citet{Wetterbom2010} & Chimpanzee & ABI & 33 & $3.9 \times 10^7$ \\
+Katze (unpublished) & Macaque & ABI & 50  & $4.8 \times 10^7$ \\
+\citet{Bullard2010} & Human & Illumina & 35 & $1.2 \times 10^7$ \\
+\citet{Mortazavi2008} & Mouse & Illumina & 33 & $3.9 \times 10^6$ \\
+\citet{Trapnell2010} & Mouse & Illumina & 75 & $6.6 \times 10^7$ \\\botrule
 \end{tabular}
 }{}
 \end{table}
@@ -530,10 +531,13 @@ examine the median $R^2$ value, as listed in Table \ref{tab:pois}.
 \caption{For each of the 1000 test exons, we compute a pseudo-coefficients of
 determination $R^2$, equivalent to the improvement in log-likelihood under the
 bias corrected model. The statistic is positive, and increases as uniformity is
-increased, and negative when uniformity is decreased. Boxes are plotted to mark
-the 25\%, 50\%, and 75\% quantiles, with whiskers extending to 1.5 times the
-inter-quartile range (i.e., the span between the 25\% and 75\% quantiles), and
-dots marking more extreme values.
+increased, and negative when uniformity is decreased.  Marked with stars are
+methods over which our approach showed a statistically significant improvement
+when applied to the same data, according to a one-sided Wilcoxon signed-rank
+test. In each of those marked, we observed p-values less than $10^{-23}$.  Boxes
+are plotted to mark the 25\%, 50\%, and 75\% quantiles, with whiskers extending
+to 1.5 times the inter-quartile range (i.e., the span between the 25\% and 75\%
+quantiles), and dots marking more extreme values.
 }
 
 
@@ -547,11 +551,11 @@ dots marking more extreme values.
 \label{tab:pois}}{
     \begin{tabular}{lcccc}\toprule
           & BN    & MART  & GLM   & 7mer \\\midrule
-Wetterbom & 0.174 & 0.016 & 0.066 & -0.079 \\
-Katze     & 0.280 & 0.243 & 0.158 & 0.033 \\
-Bullard   & 0.267 & 0.163 & 0.224 & 0.157 \\
-Mortazavi & 0.240 & 0.210 & 0.197 & 0.091 \\
-Trapnell  & 0.289 & 0.289 & 0.248 & 0.138
+Wetterbom & \textbf{0.174} & 0.016 & 0.066 & -0.079 \\
+Katze     & \textbf{0.280} & 0.243 & 0.158 & 0.033 \\
+Bullard   & \textbf{0.267} & 0.163 & 0.224 & 0.157 \\
+Mortazavi & \textbf{0.240} & 0.210 & 0.197 & 0.091 \\
+Trapnell  & \textbf{0.289} & \textbf{0.289} & 0.248 & 0.138
     \end{tabular}
 }
 {
@@ -585,35 +589,50 @@ computed the Pearson correlation between log read counts and log TaqMan
 expression values, which are averaged across three replicates.
 
 
-\begin{figure}
-\centerline{\includegraphics[width=0.4\textwidth]{pcrcor.eps}}
-\caption{
-    Pearson correlation is computed betweer TaqMan values and (bias-corrected)
-    read counts, on a logarithmic scale.
-    %%TODO
-    Error bars show a 95\% confidence interval, estimated using the Fisher
-    transformation, as computed by the R function \texttt{cor.test}.
+%\begin{figure}
+%\centerline{\includegraphics[width=0.4\textwidth]{pcrcor.eps}}
+%\caption{
+    %Pearson correlation is computed betweer TaqMan values and (bias-corrected)
+    %read counts, on a logarithmic scale.
+    %%%TODO
+    %Error bars show a 95\% confidence interval, estimated using the Fisher
+    %transformation, as computed by the R function \texttt{cor.test}.
+%}
+%\label{fig:pcrcor}
+%\end{figure}
+
+
+\begin{table}
+
+\processtable{
+    Pearson correlation between log-adjusted read counts and log-adjusted TaqMan
+    values.\label{tab:pcr}}{
+    \centerline{
+\begin{tabular*}{0.4\textwidth}{lrl}
+\toprule
+Method & Correlation & \\ \midrule
+Unadjusted &  0.6665 & $\ast\ast$ \\
+7mer &  0.6677 & $\ast\ast$ \\
+GLM & 0.6854 & $\ast\ast$ \\
+MART & 0.6921 & $\ast$ \\
+BN & \textbf{0.7016}
+\end{tabular*}}
+
 }
-\label{fig:pcrcor}
-\end{figure}
-
-
-%\begin{table}
-%\processtable{
-    %Pearson correlation between log-adjusted read counts and log-adjusted TaqMan
-    %values.\label{tab:pcr}}{
-%\begin{tabular}{ll} \toprule
-%Method & Correlation \\ \midrule
-%Unadjusted &  0.6665 \\
-%7mer &  0.6677 \\
-%GLM & 0.6854 \\
-%MART & 0.6921 \\
-%BN & 0.7016
-%\end{tabular}
-%}
-%{
-%}
-%\end{table}
+{
+We estimated the statistical significance of the improvement in correlation
+using the BN method over the other methods using a simple boostrap procedure. A
+bootstrap sample is formed by sampling, with replacement, 592 genes from the
+original set of the same size. The correlation is then computed for this set,
+using the adjusted count from each method. We repeated this procedure one
+million times, and counted the number of times each of the competing method achieves a
+higher correlation than the BN method.  Those marked with a sigle asterisk
+achieved a higher correlation fewer than 1000 times, resulting in a p-value of
+less than $10^{-3}$ Those marked with two asterisks achieved a higher
+correlation in none of the bootstrap samples, indicating a p-value less than
+$10^{-6}$.
+}
+\end{table}
 
 
 
