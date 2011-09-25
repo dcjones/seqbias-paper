@@ -87,51 +87,9 @@ those in the results section of the main paper.
 
 \includegraphics[width=\textwidth]{fig/kl-all.pdf}
 
-
-
-\section{Comparison to qRT-PCR}
-
-We used sequencing data previously published by Au, et al, \cite{Au2010} to
-evalute the effect bias correction has on correlation to measurements made by
-TaqMan RT-PCR, made available by the Microarray Quality Control project
-\cite{Shi2006}. The RNA-Seq data shows a pattern of bias similar to that seen in
-other samples sequenced on an Illumina platform, as plotted below.
+\section{Sequence bias in data from Au, et al., 2010}
 
 \centerline{\includegraphics[width=0.6\textwidth]{fig/au-freqs.pdf}}
-
-To evaluate the efficacy of each of the bias correction methods considered, 
-
-We counted reads overlapping each gene, defining the gene by the union of every
-transcript annotated in release 62 of the Ensembl gene annotations, excluding
-UTRs, and 100 additional bases from both ends of the gene. Counts were then
-normalized (divided) by the adjusted length of these genes.  We then remove any
-genes with reads fewer than 10 reads, or without a unique TaqMan probe, leaving
-592 genes.
-
-Each bias correction method was trained using a procedure identical to the one
-described in the results section. After adjusting read counts according to the
-predicted sequence bias, we compute the Pearson correlation between log read counts
-and log TaqMan expression values, which are averaged across three replicates.
-
-These correlations are listed below.
-
-\begin{center}
-\begin{tabular}{ll}
-\textbf{Method} & \textbf{Correlation} \\ \hline
-Unadjusted &  0.6665 \\
-7mer &  0.6677 \\
-GLM & 0.6854 \\
-MART & 0.6921 \\
-BN & 0.7016
-\end{tabular}
-\end{center}
-
-These results are consistent with with the KL-divergence and Poisson regression
-analysis presented in Section 3. We see only very small gains with the
-brute-force 7mer method. The GLM and MART models show much better performance,
-and our Baysian network (BN) method shows moderate increase in correlation over
-these.
-
 
 
 \section{Runtime-Accuracy Trade-off}

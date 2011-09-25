@@ -383,12 +383,12 @@ process.
 qRT-PCR.
 \end{enumerate}
 
-We applied our procedure (labeled ``BN'') as well as those of
-\citet{Li2010} (``GLM'' and ``MART'') and \citet{Hansen2010} (``7mer''), which
-are implemented in the R packages \texttt{mseq} and \texttt{Genominator},
-respectively. The procedures were applied to four publicly available data
-sets \citep{Bullard2010, Mortazavi2008, Trapnell2010, Wetterbom2010}, as well as
-an unpublished data set of our own (Table \ref{tab:datasets}).
+To evaluate the first two assumption, we applied our procedure (labeled ``BN'')
+as well as those of \citet{Li2010} (``GLM'' and ``MART'') and \citet{Hansen2010}
+(``7mer''), which are implemented in the R packages \texttt{mseq} and
+\texttt{Genominator}, respectively, to four publicly available data sets
+\citep{Bullard2010, Mortazavi2008, Trapnell2010, Wetterbom2010}, as well as an
+unpublished data set of our own (Table \ref{tab:datasets}).
 
 \begin{table}
 \processtable{Data sets on which the methods are evaluated.\label{tab:datasets}}
@@ -409,11 +409,11 @@ Katze (unpublished) & Macaque & ABI & 50  & $4.8 \times 10^7$ \\
 Testing was performed by cross-validation. Each method was trained on data taken
 from chromosomes 1--8 of the genome from which the reads were mapped (including
 chromosomes 2a and 2b of the Chimpanzee genome). For evaluation, we drew a set
-of long, highly expressed exons from the remaining chromosomes. In particular, for
-each reference sequence, beginning with the set of exons annotated by Ensembl
-release 60 \cite{Hubbard2009}, we removed any exons with known alternate splice
-sites, then chose the top 1000 exons by read count, restricting ourselves those
-at least 100 nt long.
+of long, highly expressed exons from the remaining chromosomes. In particular,
+for each reference sequence, beginning with the set of exons annotated by
+Ensembl release 60 \cite{Hubbard2009}, we removed any exons with known alternate
+splice sites, then chose the top 1000 exons by read count, restricting ourselves
+to those at least 100 nt long.
 
 The differences in the methods being tested necessitated training procedures
 unique to each.
@@ -440,14 +440,12 @@ Our own method was trained on the 100,000 reads from chromosomes 1--8, with the
 highest number of duplicate reads.
 
 All data sets were mapped using Bowtie \citep{Langmead2009} against,
-respectively, the hg19, mm9, and panTro2 genome assemblies obtained from the
-UCSC Genome Browser \citep{Karolchik2008}.
+respectively, the hg19, mm9, rheMac2, and panTro2 genome assemblies obtained
+from the UCSC Genome Browser \citep{Karolchik2008}.
 
 
 
 \subsection{Kullback-Leibler Divergence}
-
-
 
 Plotting the nucleotide frequencies (Figure  \ref{fig:freqs}) we observe an
 obvious bias. To quantify the non-uniformity observed in these plots, we use the
@@ -567,38 +565,23 @@ We used sequencing data previously published by \citet{Au2010} to evaluate the
 effect bias correction has on correlation to measurements made by TaqMan RT-PCR,
 made available by the the Microarray Quality Control project \citep{Shi2006}. The
 RNA-Seq data shows a pattern of bias similar to that seen in the other samples
-sequenced on an Illumina platform.
-%% TODO: refer to supplement for figure of bias
+sequenced on an Illumina platform (see, Supplementary Section 5).
 
 To evaluate the efficacy of each of the bias correction methods considered, we
 counted reads overlapping each gene, defining the gene by the union of every
 transcript in release 62 of the Ensembl gene annotations, excluding UTRs, and
-100 additional bases from both ends of the gene. Counts were then normalized
-(divided) by the length of these genes. We then removed any genes with a read
-count less than 10, or that did not correspond to a unique TaqMan probe, leaving
-592 genes.
+100 additional bases from both ends of the gene. Counts were then normalized by
+dividing by the length of these genes. We then removed any genes with a read
+count less than 10, or that did not correspond to 
 
-%% TODO: something goes here
-After adjusting read counts according to the predicted sequence bias, we
-computed the Pearson correlation between log read counts and log TaqMan
-expression values, which are averaged across three replicates.
-
-
-%\begin{figure}
-%\centerline{\includegraphics[width=0.4\textwidth]{pcrcor.eps}}
-%\caption{
-    %Pearson correlation is computed betweer TaqMan values and (bias-corrected)
-    %read counts, on a logarithmic scale.
-    %%%TODO
-    %Error bars show a 95\% confidence interval, estimated using the Fisher
-    %transformation, as computed by the R function \texttt{cor.test}.
-%}
-%\label{fig:pcrcor}
-%\end{figure}
-
+Each method was trained in a manner identical to that used in the analysis of
+section 3.1 and 3.2, but without restricting the training data to the first
+eight chromosomes.  After adjusting read counts according to the predicted
+sequence bias, we computed the Pearson correlation between log read counts and
+log TaqMan expression values, which are averaged across three replicates. These
+correlations are listed in Table \ref{tab:pcr}.
 
 \begin{table}
-
 \processtable{
     Pearson correlation between log-adjusted read counts and log-adjusted TaqMan
     values.\label{tab:pcr}}{
@@ -612,7 +595,6 @@ GLM & 0.6854 & $\ast\ast$ \\
 MART & 0.6921 & $\ast$ \\
 BN & \textbf{0.7016}
 \end{tabular*}}
-
 }
 {
 We estimated the statistical significance of the improvement in correlation
@@ -622,8 +604,8 @@ original set of the same size. The correlation is then computed for this set,
 using the adjusted count from each method. We repeated this procedure one
 million times, and counted the number of times each of the competing method achieves a
 higher correlation than the BN method.  Those marked with a sigle asterisk
-achieved a higher correlation fewer than 1000 times, resulting in a p-value of
-less than $10^{-3}$ Those marked with two asterisks achieved a higher
+achieved a higher correlation fewer than 1000 times, resulting in a p-value
+less than $10^{-3}$.  Those marked with two asterisks achieved a higher
 correlation in none of the bootstrap samples, indicating a p-value less than
 $10^{-6}$.
 }
