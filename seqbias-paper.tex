@@ -212,13 +212,16 @@ bias, at any genomic position. Figure \ref{fig:overview} gives a brief overview
 of the proposed model.
 
 \begin{figure}
-\centerline{\includegraphics[width=0.25\textwidth]{overview.eps}}
+\centerline{\includegraphics[width=0.4\textwidth]{overview.eps}}
 \caption{An overview of the approach taken: (a) foreground sequences are sampled
 from the regions surrounding the starts of mapped reads, (b) background
 sequences are sampled by randomly offsetting foreground positions, (c) a
 Bayesian network is trained to discriminate between the set of
 sampled foreground and background sequences, (d) and the model is evaluated
-at each position within a locus, predicting bias.}
+at each position within a locus, predicting bias. The predicted bias can then be
+used to adjust read counts, as in (e). In (d) and (e) we show the results of
+this method applied to the $3'$ UTR of Apoa2, using data from
+\citet{Mortazavi2008}.}
 \label{fig:overview}
 \end{figure}
 
@@ -489,20 +492,12 @@ method.}
 
 \subsection{Poisson Regression}
 
-\begin{figure}
-\centerline{\includegraphics[width=0.4\textwidth]{uniformity.eps}}
-\caption{Read counts (i.e., the number of reads starting at each position)
-from the Mortazavi data set are plotted along the $3'$ UTR of Apoa2. The upper
-plot shows unadjusted counts, the lower, counts adjusted by our method.}
-\label{fig:unif}
-\end{figure}
-
 In this comparison, we measure how well the counts conform to a Poisson process.
 The assumption of positional read counts following a Poisson distribution is
 known to be a poor fit \citep{Srivastava2010}, but measuring the improvement in
 the fit derived from correcting for bias remains a principled and easily
 interpreted criterion. This increase in uniformity is illustrated in Figure
-\ref{fig:unif}.
+\ref{fig:overview}.
 
 We perform maximum-likelihood fitting of two models. In the null model, the
 Poisson rate is fixed for each exon. That is, for position $j$ within exon $i$,
@@ -570,7 +565,7 @@ Trapnell  & \textbf{0.289} & \textbf{0.289} & 0.248 & 0.138
 
 We used sequencing data previously published by \citet{Au2010} to evaluate the
 effect bias correction has on correlation to measurements made by TaqMan RT-PCR,
-made available by the the Microarray Quality Control project \cite{Shi2006}. The
+made available by the the Microarray Quality Control project \citep{Shi2006}. The
 RNA-Seq data shows a pattern of bias similar to that seen in the other samples
 sequenced on an Illumina platform.
 %% TODO: refer to supplement for figure of bias
