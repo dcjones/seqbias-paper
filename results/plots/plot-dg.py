@@ -173,7 +173,10 @@ def compute_num_params(G):
         name = e.get_destination()
         node_params[name] *= 4
 
-    return sum(node_params.values())
+    for name in node_params:
+        node_params[name] -= 1
+
+    return 2 * sum(node_params.values())
 
 
 def main():

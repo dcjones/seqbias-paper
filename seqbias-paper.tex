@@ -37,12 +37,11 @@ $^{4}$Department of Microbiology, University of Washington, Seattle, WA
 
 \section{Motivation:}
 Quantification of sequence abundance in RNA-Seq and ChiP-Seq experiments is
-often conflated by protocol-specific sequence bias, influenced by PCR
-amplification, or differing primer affinities and mixtures, for example.  The
-result is decreased accuracy in many applications, such as de novo gene
-annotation and isoform quantification in RNA-Seq, and peak calling in
-ChIP-Seq.
-
+often conflated by protocol-specific sequence bias. The sources of the bias are
+unknown, but may influenced by PCR amplification, or differing primer affinities
+and mixtures, for example.  The result is decreased accuracy in many
+applications, such as de novo gene annotation and isoform quantification in
+RNA-Seq, and peak calling in ChIP-Seq.
 
 \section{Results:}
 We present a method to measure and correct for these influences using a simple
@@ -117,7 +116,7 @@ Kullback-Leibler divergence is used to summarize the difference in nucleotide
 frequency compared to a fixed estimate of background nucleotide frequencies made
 by sampling many positions near mapped reads.  Under the assumption that reads
 are sampled uniformly from transcripts, each of the plots should be essentially
-flat}
+flat.}
 \label{fig:freqs}
 \end{figure*}
 
@@ -174,12 +173,12 @@ read maps to position $i$.
 $$ E[x_i] = N \Pr[m_i] $$
 
 The experiment may be considered unbiased  with regards to sequence if, having
-observed the nucleotide sequence $s_i$ surrounding position $i$,
-$$ E[ x_i | s_i ] = N \Pr[ m_i | s_i ] = N \Pr[ m_i ] = E[ x_i ] $$
+observed the nucleotide sequence $s_i$ surrounding position $i$, the expected
+number of reads sampled from position $i$ is independent of $s_i$, i.e., if
 
+$$ E[ x_i | s_i ] = N \Pr[ m_i | s_i ] = N \Pr[ m_i ] = E[ x_i ] $$
 From Bayes' rule,
 $$ \Pr[ m_i | s_i ] = \frac{ \Pr[ s_i | m_i ] \Pr[ m_i ] }{ \Pr[ s_i ] } $$
-
 This suggests a natural scheme in which observations may be reweighted to
 correct for bias.  First, define the \emph{sequence bias} $b_i$ at position $i$
 as $ b_i = \Pr[ s_i ] /  \Pr[ s_i | m_i ]  $.
@@ -208,7 +207,7 @@ classification, by using the machinery of classification we can avoid a model
 that is over-parametrized. Parameters that are not informative in
 discriminating between foreground and background are not included in the model.
 The Bayesian network can then be used to evaluate sequence probability, and thus
-bias, at any genomic position. Figure \ref{fig:overview} gives a brief overview
+bias, at any genomic position. Figure \ref{fig:overview} gives a schematic overview
 of the proposed model.
 
 \begin{figure}
@@ -225,7 +224,7 @@ this method applied to the $3'$ UTR of Apoa2, using data from
 \label{fig:overview}
 \end{figure}
 
-However, we have so for ignored one complication: the RNA abundance that we wish
+However, we have so far ignored one complication: the RNA abundance that we wish
 to estimate is not itself independent of the nucleotide sequence. Notably,
 exonic DNA tends to be more GC-rich than intergenic DNA. If background sequences
 are sampled uniformly from the genome we run the risk of incorrectly adjusting
@@ -238,12 +237,12 @@ within the same transcript, but we prefer to avoid dependence on existing
 gene annotations as such a model would be limited to RNA-Seq analysis in which
 trustworthy and reasonably complete gene annotations are available.
 
-The methods proposed by \citet{Hansen2010} and \cite{Roberts2011} also treat bias
-correction as a problem of estimating foreground and background sequence
+The methods proposed by \citet{Hansen2010} and \cite{Roberts2011} also treat
+bias correction as a problem of estimating foreground and background sequence
 probabilities. They differ primarily in how these sequence probabilities are
 estimated. \citet{Li2010} estimate reweighting coefficients ($b_i$, in our
-notation) directly, given training data consisting of long, highly expressed
-transcripts.
+notation) directly, given training data consisting of long annotated, highly
+expressed transcripts.
 
 
 
@@ -270,11 +269,8 @@ including uninformative parameters that would only increase variance.
 The model is trained on $n$ sequences, one half labeled as foreground, the other
 background, sampled from the reference genome. To obtain the foreground
 sequences, we take sequences surrounding (extending 20 nt to either side, by
-default) the starts positions of $n/2$ aligned reads. We wish to avoid
-overfitting to any short locus with a large abundance of reads, yet we must also
-capture the bias introduced by, for example, PCR amplification. We therefore
-choose the $n/2$ unique reads with the highest number of duplicates, yet count
-each read only once, ignoring duplicates
+default) the start positions of a randomly sampled set of $n/2$ aligned reads,
+ignoring duplicate reads.
 
 To obtain background training sequences, we randomly offset the positions from
 which the foreground sequences were sampled.  The offset is drawn from a
@@ -302,7 +298,7 @@ log-likelihood:
 \sum_{x \in \{0,1\}} \Pr( s_i | x ) \Pr(x) } \\
 \end{align*}
 where $\Pr(x)$ is flat (i.e.  $\Pr( x = 0 ) = \Pr( x = 1 ) =
-0.5$) if we sample foreground and background positions equally.
+0.5$) since we sample foreground and background positions equally.
 
 As we will be estimating parameters and evaluating the likelihood on the same
 set of samples, simply maximizing the likelihood would severely overfit the
@@ -311,7 +307,7 @@ Information Criterion \citep{Schwarz1978a}. Where $m$ is the number of
 parameters needed to specify the model, we maximize, 
 $$ \ell' = 2 \ell - m \log n $$
 
-Some benefit would be obtained from a more highly tuned complexity penalty.
+Some benefit might be obtained from a more highly tuned complexity penalty.
 However, since the model is trained greedily, additional parameters will be
 decreasingly informative, and increasingly similar between foreground and
 background. Adding more parameters will have little effect.  Only when $m$ is
@@ -498,7 +494,7 @@ interpreted criterion. This increase in uniformity is illustrated in Figure
 \ref{fig:overview}.
 
 We perform maximum-likelihood fitting of two models. In the null model, the
-Poisson rate is fixed for each exon. That is, for position $j$ within exon $i$,
+Poisson rate is fixed for each test exon. That is, for position $j$ within exon $i$,
 the rate is $ \lambda_{ij} = a_i $ where $a_i$ is the parameter being fit. For
 comparison, we then fit a model in which the rate is also proportional to the
 predicted bias coefficients: $ \lambda'_{ij} = a_i b_{ij} $.
@@ -524,8 +520,8 @@ examine the median $R^2$ value, as listed in Table \ref{tab:pois}.
 \caption{For each of the 1000 test exons, we compute a pseudo-coefficients of
 determination $R^2$, equivalent to the improvement in log-likelihood under the
 bias corrected model. The statistic is positive, and increases as uniformity is
-increased, and negative when uniformity is decreased.  Marked with stars are
-methods over which our approach showed a statistically significant improvement
+increased, and negative when uniformity is decreased.  Marked with asterisks are
+methods over which the BN approach showed a statistically significant improvement
 when applied to the same data, according to a one-sided Wilcoxon signed-rank
 test. In each of those marked, we observed p-values less than $10^{-23}$.  Boxes
 are plotted to mark the 25\%, 50\%, and 75\% quantiles, with whiskers extending
@@ -635,7 +631,7 @@ accurate or useful estimate.
 
 Our method generalizes this approach, attempting to overcome this problem by
 using an estimation of sequence probability that is more robust to overfitting
-and can account for bias beyond the initial heptamer. In all our tests, this
+and can account for bias outside of the initial heptamer. In all our tests, this
 approach was at least as effective as those of \citet{Li2010}, despite not
 requiring gene annotations or manual selection of training examples.
 
@@ -656,7 +652,7 @@ Cufflinks. A ``one size fits all'' approach likely works quite well in many
 cases, yet the observed specificity of the bias to protocol and platform argues
 against it. For example, the structures learned by our method (Figure
 \ref{fig:models}) are considerably different between those sequenced on an
-Illumina platform versus an ABI platform.
+Illumina platform versus an ABI platform, and even vary within platform.
 
 Training our model on more reads leads to more accurate estimation of bias, but
 an increasingly long training time. For example, in our tests, fitting our model to
