@@ -197,6 +197,110 @@ differential expression tests. This would bias the discovery of differentially
 expressed genes, but not the test itself.
 
 
+\section{KL Divergence}
+
+\subsection{TODO: Title}
+
+Suppose $P$ and $Q$ are probability distributions defined on a discrete sample
+space. E.g., in the context of this paper, think of them as the probabilities of
+DNA $k$-mers for some fixed $k$. The \emph{Kullback-Leibler divergence}, also
+known as \emph{relative entropy}, of $Q$ with respect to $P$ is defined as
+$$H(Q||P) = \sum_{i} q_i \ln \frac{q_{i}}{p_{i}}$$
+where $q_{i}$ ($p_{i}$) is the probability of observing the i$^{\text{th}}$
+event according to the distribution $Q$ (resp., $P$), and the summation is taken
+over all events in the sample space (e.g., all $k$-mers). In some sense, this is
+a measure of the dissimilarity between the distributions: if $p_{i} \approx
+q_{i}$ everywhere, their log rations will be near zero and $H$ will be small; as
+$q_{i}$ and $p_{i}$ diverge, their log rotions will deviate from zero and $H$
+will increase.
+
+For a more quantitative and (perhaps) intuitive interpretation, consider the
+following hypothesis-testing scenario. Given $m$ independent samples from either
+$P$ (arbitrarily called the ``null'') or from $Q$ (the ``alternative''), how
+large should $m$ be to cenfidently choose between these cases? A natural
+approach is to use a likelihood ratio test: letting $Y_i$ be the number of times
+event $i$ is observed in $m$ trials ($\sum Y_i = m$), the likelihood of the
+sequence of observations under model $P$ is $$\prod_{i} p_{i}^{Y_{i}}$$
+and similarily for $Q$. So, the logarithm of the likelihood ratios is
+$$
+\text{LLR} =
+\ln \frac{\prod_{i} q_{i} ^ {Y_{i}}}{\prod_{i} p_{i} ^ {Y_{i}}}
+= \sum_{i} Y_{i} \ln \frac{q_{i}}{p_{i}}
+= m \sum_{i} \frac{Y_{i}}{m} \ln \frac{q_{i}}{p_{i}} $$
+
+If the sample is drawn from the alternative distribution $Q$, then the
+expectation of $frac{Y_{i}}{m}$ is $q_i$, so the expected value of the LLR is
+$$ m \sum_{i} q_{i} \ln \frac{q_{i}}{p_{i}} = m H(Q || P) $$
+That is, the KL divergence is exactly the expected per-sample contribution to
+the log-likelihood ratio.
+%% when comparing these two hypotheses ??
+So, assuming the null hypothesis is false, in order for it to be rejected with
+$1000:1$ odds, one should choose $m$ to be inversely proportional to $H(Q ||
+P)$:
+\begin{align*}
+m H(Q||P) \ge \ln 1000 \\
+m \ge \frac{\ln 1000}{H(Q || P)}
+\end{align*}
+
+As a concrete example, all of the RNA-Seq data sets examined in this paper show
+a KL divergence between the 1$^{\text{st}}$ positon of reads versus the
+transcriptomic background nucleotide distribution of $0.05$ or greater. Thus,
+one can confidently reject the hypothesis that reads are beeing uniformly
+sampled across the transcriptome by examining only a few hundred randomly
+selected reads (i.e., $\ln 1000 / 0.05 \approx 140$).
+
+
+\subsection{Accuracy of Multinomial Parameter Estimation}
+
+Continuing the notation above, suppose $P$ as an unknown distribution with
+parameters $p_1, \dots, p_r$, $\sum p_i = 1$ where $r$ is the number of points
+in the sample space (e.g. $r = 4^{k}$ in the case of $k$-mers). Given a random
+ample $X_1, X_2, \dots, X_r$ of size $n = \sum_{i} X_i$ from $P$, it is well
+known that the maximum likelihood estimators for the parameters are $q_i =
+\frac{X_i}{n} \approx p_i$. How good an estimate for $P$ is this distribution
+$Q$?
+
+$$E[q_i] = E\left[\frac{X_i}{n}\right] = \frac{E[X_i]}{n} = \frac{np_i}{n} =
+p_i$$
+And the standard deviation of each estimate is proportional to $1/\sqrt{n}$. So
+these estimates are increasingly accurate as the sample size increases. A more
+quantitative assessment of the accuracy of the estimator is obtained by
+evaluating the KL divergence:
+$$H(Q||P)
+= \sum_{i = 1}^{r} q_i \ln \frac{q_i}{p_i}
+= \sum_{i = 1}^{r} q_i \ln \left(1 + \frac{q_i - p_i}{p_i} \right) $$
+Using the first two terms of he Taylor series for $\ln (1 + x)$, this is
+\begin{align*}
+H(Q||P) &\approx \sum_{i = 1}^{r} q_i \left( \frac{q_i - p_i}{p_i} -
+\frac{1}{2} \left( \frac{q_i - p_i}{p_i} \right)^2 \right ) \\
+&= \sum_{i = 1}^{r} q_i \frac{q_i - p_i}{p_i} -
+\frac{q_i}{2 p_i} \frac{(q_i - p_i)^2} {p_i}
+\end{align*}
+Since $\sum_{i = 1}^{r} q_i = \sum_{i = 1}^{r} pi = 1$,
+$\sum_{i = 1}^{r} p_i \frac{q_i - p_i}{p_i} = 0$, so
+\begin{align*}
+H(Q||P) &\approx \sum_{i=1}^{r} q_i \frac{q_i - p_i}{p_i} - p_i \frac{q_i -
+p_i}{p_i} - \frac{q_i}{2 p_i} \frac{(q_i - p_i)^2}{p_i} \\
+&= \sum_{i=1}^{r} \frac{(q_i - p_i)^2}{p_i}\left(1 - \frac{q_i}{2 p_i}\right) \\
+&\approx \frac{1}{2} \sum_{i=1}^{r} \frac{(q_i - p_i)^2}{p_i}
+\end{align*}
+since $q_i \approx p_i$. Multiplying by $n^2 / n^2$ we have,
+\begin{align*}
+H(Q||P) &\approx \frac{1}{2n} \sum_{i=1}^{r} \frac{n q_i - n p_i)^2}{n p_i} \\
+        &= \frac{1}{2n} \sum_{i=1}^{r} \frac{(X_i - E[X_i])^2}{E[X_i]}
+\end{align*}
+
+The summation is the test statistic for the $\chi^2$ goodness-of-fit test for a
+multinomial distribution, and as $n \rightarrow \infty$ is known to follow a
+$\chi^2$ distribution with $r - 1$ degrees of freedom. Finally, the expected
+value of such a random variable is $r - 1$, hence the expected KL divergence of
+the MLE inferred distribution $Q$ with respect to the true distribution $P$ is
+$$E[H(Q||P)] = \frac{r - 1}{2n}$$
+
+Stochastic simulations of this proves when $P$ is uniform show that the above
+formula is a very good fit when $n > r$.
+%% TODO: see figure X
+
 \bibliographystyle{plain}
 \bibliography{seqbias-paper}
 
