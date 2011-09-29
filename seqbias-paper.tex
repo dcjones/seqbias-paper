@@ -93,11 +93,13 @@ These biases may adversely effect transcript discovery, as low level noise may
 be over-reported in some regions, and in others, active transcription may be
 under-reported. They render untrustworthy comparisons of relative abundance
 between genes or isoforms, and any test of differential expression hangs on the
-assumption that these biases are identical between replicates.  Additionally, in
-many tests of differential expression---similar to the effects of transcript
-length---a higher read count will result in higher statistical confidence. It
-follows that the sensitivity of such a test will also be biased by sequence,
-affecting downstream analysis such as gene ontology enrichment tests.
+assumption that these biases are identical between replicates, an undesirable
+assumption given that the causes of the bias are not well understood.
+Additionally, in many tests of differential expression---similar to the effects
+of transcript length---a higher read count will result in higher statistical
+confidence. It follows that the sensitivity of such a test will also be biased
+by sequence, affecting downstream analysis such as gene ontology enrichment
+tests.
 
 This bias, though observed primarily in the $5'$ end of a read, is not resolved by
 trimming the reads prior to mapping \citep{Hansen2010} (see also, Supplementary
@@ -120,10 +122,10 @@ flat.}
 \label{fig:freqs}
 \end{figure*}
 
-\citet{Li2010} propose two models. The first is a Poisson linear
-model, in which read counts across a transcript follow an inhomogeneous Poisson
-process. The read count at position $i$ within the transcript is Poisson
-distributed with parameter $\lambda_i$, where, $\log(\lambda_i)$ is the sum of
+\citet{Li2010} propose two models. The first is a Poisson linear model, in which
+read counts across a transcript follow an inhomogeneous Poisson process. The
+read count at position $i$ within the transcript is Poisson distributed with
+parameter $\lambda_i$, where, $\log(\lambda_i)$ is the sum of independent
 weights determined by the nucleotide at each position surrounding the read
 start, in addition to a term capturing the abundance of the transcript.
 
@@ -139,9 +141,9 @@ background heptamer distribution, sampled from the ends of reads. The read count
 at a given position is then adjusted by the ratio of the foreground and
 background heptamer probabilities. Specifying two distributions over heptamers
 (i.e. foreground and background distributions) requires \mbox{$2(4^7-1) =
-32,766$}
-parameters, so while no gene annotations are needed to train such a model, a
-significant number of reads are required.
+32,766$} parameters, so while no gene annotations are needed to train such a
+model, a significant number of reads are required, and a number that increases
+exponentially with $k$, if it were desirable to to model $k$-mers for $k > 7$.
 
 Lastly, \citet{Roberts2011} have very recently published a description of
 another approach, in which sequence probabilities are modeled by variable-order
@@ -220,7 +222,10 @@ sampled foreground and background sequences, (d) and the model is evaluated
 at each position within a locus, predicting bias. The predicted bias can then be
 used to adjust read counts, as in (e). In (d) and (e) we show the results of
 this method applied to the $3'$ UTR of Apoa2, using data from
-\citet{Mortazavi2008}.}
+\citet{Mortazavi2008}. In bias coefficients predicted across 10 million positions
+of chromosome 1, the log10 bias of 95\% of the positions were between -1.14 and
+0.63, suggesting that most adjustments are not large.
+}
 \label{fig:overview}
 \end{figure}
 
@@ -363,7 +368,11 @@ are relative to the read start, which is labeled 0. Hollow circles indicate
 positions that were not included in the model, being deemed uninformative, given
 the other positions and edges. The number of parameters needed to
 specify each model is listed in parenthesis below. Applied to data with less
-bias, a sparser model is trained, as evinced by the Wetterbom data set.
+bias, a sparser model is trained, as evinced by the Wetterbom data set. Note
+that dependencies (i.e., arrows) tend to span a short distances, and nodes tend
+to have a small in-degree (i.e., have few inward arrows). In practice, we save
+time in training by prohibiting very distant dependencies (greater than 10, by
+default) or very high in-degrees (greater than 4, by default).
 }
 \label{fig:models}
 \end{figure*}
@@ -380,6 +389,18 @@ process.
 \item Adjusting for bias should increase the agreement between RNA-Seq and
 qRT-PCR.
 \end{enumerate}
+
+Evident from Figure \ref{fig:overview}, the assumption of uniform read coverage
+often does not hold in typical RNA-Seq data sets. Although the bias corrected
+read counts across the exon pictured in this example are visibly more uniform,
+we sought a simple, objective tests that could be applied genome-wide. To this
+end, we used cross-validation tests (i.e., methods were trained and tested on
+disjoint subsets of the same RNA-Seq data sets) of a quantitative measure of the
+increase in uniformity of nucleotide frequencies (Kullback-Leibler divergence in
+Section 3.1) and increase in uniformity of read coverage (Poisson regression in
+Section 3.2). Additionally, we compare RNA-seq based estimate of gene expression
+to qRT-PCR based estimated for the same genes, showing increased correlation
+between the two methods after bias correction (Section 3.3).
 
 To evaluate the first two assumption, we applied our procedure (labeled ``BN'')
 as well as those of \citet{Li2010} (``GLM'' and ``MART'') and \citet{Hansen2010}
@@ -455,8 +476,12 @@ symmetrized Kullback-Leibler (KL) divergence \citep{Kullback1951}.
 If $f_x$ is the background frequency of a $k$-mer $x$, and $f'_x$ the observed
 frequency, the KL divergence is computed as
 $$D_k( f, f' ) = \sum_{x} \left( f_x \log_{2}( f_x / f'_x ) + f'_x \log_{2}( f'_x / f_x) \right)$$
-where the sum is over all $k$-mers.
-
+where the sum is over all $k$-mers. This can be thought of a measure
+dissimilarity between two probability distributions. If $f_x$ and $f'_x$ for a
+$k$-mer $x$ are approximately equal, their log-ratio will also be approximately
+zero, leading to a small KL divergence (zero, when the distributions are equal).
+Conversely, very different $k$-mer frequencies will result in a larger KL
+divergence.
 
 To avoid the risk of a small number of reads with many duplicates dominating the
 measure, we do not count duplicate reads when computing the KL divergence. Since we
@@ -511,9 +536,14 @@ commonly known as McFadden's pseudo-coefficient of determination
 $R^2 = 1 - L'/L$.
 
 This measure can be interpreted as the improvement in fit over the null model,
-with $R^2 = 1$ indicating a prefect fit, and smaller numbers, an increasingly
-worse fit. A more dubious, yet intuitive interpretation of $R^2$ is the
-proportion of variability explained by the model.
+with $R^2 = 1$ indicating a prefect fit, occurring model being evaluated
+achieves a likelihood of 1. Smaller number indicate an increasingly worse fit,
+with $R^2 = 0$ representing no improvement over the null model, and $R^2 = 0.5$,
+for example, indicating the model has a log-likelihood equal to half that of the
+null model (a large improvement, as log-likelihoods negative or zero). This
+measure can also take on values less than 0, indicating that the model has worse
+fit than the null model (i.e., when adjusting read counts according the bias
+coefficients leads to less uniform read coverage).
 
 We compute $R^2$ for each of the test exons, giving us a sense of the variability
 of the effectiveness of each model. The results of this analysis are plotted in
