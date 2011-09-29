@@ -6,6 +6,7 @@
 \usepackage{geometry}
 \usepackage{graphicx}
 \usepackage{fontspec}
+\usepackage{float}
 
 \geometry{left=1.5in,right=1.5in, top=1in, bottom=1in}
 
@@ -23,17 +24,22 @@ Sequencing Data}}{Daniel C. Jones, Walter L. Ruzzo, Xinxia Peng, Michael G. Katz
 \section{Trimming Reads}
 
 Observing the nonuniform distribution of nucleotide frequencies surrounding the
-5' end of reads, a natural step to take would be to trim the 5' end before mapping,
-in the hope that simply removing the portion of the read in which the bias
-occurs will also remove the bias. The figure below demonstrates that this is not
-the case. Trimming the initial heptamer in the Mortazavi data set does nothing to
-reduce the bias, and simply shifts the plot by seven positions. This indicates
-that the issue is \emph{sampling bias}, rather than a bias in base calling.
+5' end of reads, a natural step to take would be to trim the 5' end before
+mapping, in the hope that simply removing the portion of the read in which the
+bias occurs will also remove the bias. Figure \ref{fig:trimmedfreqs}
+demonstrates that this is not the case. Trimming the initial heptamer in the
+Mortazavi data set does nothing to reduce the bias, and simply shifts the plot
+by seven positions. This indicates that the issue is \emph{sampling bias},
+rather than a bias in base calling.
 
-
+\begin{figure}[H]
 \begin{center}
 \includegraphics[width=0.35\textwidth]{fig/trimmed-freqs.pdf}
 \end{center}
+\caption{Nucleotide frequencies observed before (plotted in red) and after
+(plotted in black) trimming the initial heptamer.}
+\label{fig:trimmedfreqs}
+\end{figure}
 
 
 \section{Sensitivity of Parameters}
@@ -50,60 +56,89 @@ Here we retrain the model on 50,000 reads from the Mortazavi data
 set, varying these first two parameters to assess the sensitivity of the
 observed results to their values.
 
+\begin{figure}[H]
 \begin{center}
 \includegraphics[width=0.8\textwidth]{fig/pois-sampstd.pdf}
 \end{center}
+\caption{Sensitivity of the parameter control he standard deviation at which
+background sequences are sampled.}
+\label{fig:poissampstd}
+\end{figure}
 
-The above plot show the standard deviation used to draw background samples
-varied from 1 to 10,000. Apparent from this plot is that, while the optimal
-choice lies somewhere between 10 and 100, the model performs competitively for
-any reasonable value.
+Figure \ref{fig:poissampstd} show the standard deviation used to draw background
+samples varied from 1 to 10,000. Apparent from this plot is that, while the
+optimal choice lies somewhere between 10 and 100, the model performs
+competitively for any reasonable value.
 
 
+\begin{figure}[H]
 \begin{center}
 \includegraphics[width=0.8\textwidth]{fig/pois-comppen.pdf}
 \end{center}
+\caption{Sensitivity over adjustments to the complexity penalty.}
+\label{fig:poiscomppen}
+\end{figure}
 
-Here we multiply the complexity penalty term of the BIC by constants varying
+Next we multiplied the complexity penalty term of the BIC by a constants varying
 from $10^{-6}$ to $10^{3}$. (Recall that the BIC is $2\ell - m \log n$ where
 $\ell$ is the log-likelihood, $m$ is the number of parameters needed to specify
 the model, and $n$ is the number of training examples. Here we compute $2 \ell -
 c m \log n$, varying $c$.)
 
-It is clear from the above figure, that a very severe complexity penalty will
-result in a poor model. Here, for constants larger than 100, an empty model is
-trained, resulting in the goodness of fit of 0. Conversely, if this constant is
-very small, a overly-dense model will be trained.  In this data, for constants
-less than 0.01, the maximally dense model is trained (given the restraints on
-in-degree and edge distance). This result is a sub-optimal but entirely adequate
-solution.
+It is clear from Figure \ref{fig:poiscomppen}, that a very severe complexity
+penalty will result in a poor model. Here, for constants larger than 100, an
+empty model is trained, resulting in a median $R^2$ of 0. Conversely, if
+this constant is very small, a overly-dense model will be trained.  In this
+data, for constants less than 0.01, the maximally dense model is trained (given
+the restraints on in-degree and edge distance). This result is a sub-optimal but
+entirely adequate solution.
 
 
 \section{Additional Kullback-Leibler Divergence Plots}
 
-Below we plot the adjusted and unadjusted KL divergence plots, supplementing
-those in the results section of the main paper.
+Figure \ref{fig:klall} plots the adjusted and unadjusted KL divergence plots,
+supplementing those in the results section of the main paper.
 
-
+\begin{figure}[H]
+\centerline{
 \includegraphics[width=\textwidth]{fig/kl-all.pdf}
+}
+\caption{}
+\label{fig:klall}
+\end{figure}
+
 
 \section{Sequence bias in data from Au, et al., 2010}
 
+Figure \ref{fig:aufreqs} plots sequence bias and KL divergence in the data
+published by Au, et al. \cite{Au2010} and examined by us in Section 3.3.
+
+\begin{figure}[H]
 \centerline{\includegraphics[width=0.6\textwidth]{fig/au-freqs.pdf}}
+\caption{}
+\label{fig:aufreqs}
+\end{figure}
 
 
 \section{Runtime-Accuracy Trade-off}
 
 Training our model on more reads results in more accurate estimation of bias,
 but a longer training time. Here we investigate that trade-off by training our
-model on progressively more reads from the Mortazavi data set. We use the
-median pseudo-coefficient of determination ($R^2$) over exons selected for our
-test set. Each point is additionally labeled with the time used to train the
-model on one core of a 3Ghz Intel Xeon processor.
+model on progressively more reads from the Mortazavi data set. For each subset
+we train our method, evaluate the median pseudo-coefficient of determination
+($R^2$) over exons selected for our test set, and record the training time
+required on one core of a 3Ghz Intel Xeon processor. These results are plotted
+in Figure \ref{fig:poisn}.
 
+\begin{figure}[H]
 \includegraphics[width=\textwidth]{fig/pois-n.eps}
+\caption{Median $R^2$ is plotted against training set size. Each point is
+additionally labeled with the run time of the training procedure.}
+\label{fig:poisn}
+\end{figure}
 
 
+%% TODO: coptions/labels below this point
 
 \section{ChIP-Seq}
 
@@ -121,9 +156,13 @@ Measuring nucleotide frequencies, we find the bias to be significantly less
 than that observed the RNA-Seq data sets we tested, but the data was by no means
 unbiased.
 
+\begin{figure}[H]
 \begin{center}
 \includegraphics[width=0.7\textwidth]{fig/freqs_cao.pdf}
 \end{center}
+% TODO: caption
+\label{fig:trimmedfreqs}
+\end{figure}
 
 In the analysis of the RNA-Seq data, we used the assumption of continuous
 transcription across annotated exons to evaluate the efficacy of the models, as
@@ -143,9 +182,13 @@ sampled from the 50,000 segments with the highest read counts.
 Below, we plot directly the positional KL divergence, computed in tho same
 manner described in the Results section of the paper.
 
+\begin{figure}[H]
 \begin{center}
 \includegraphics[width=0.5\textwidth]{fig/cao-kl.pdf}
 \end{center}
+% TODO: caption
+\label{fig:trimmedfreqs}
+\end{figure}
 
 We see that our method is effective at reducing the bias in this ChIP-Seq data.
 
@@ -163,19 +206,26 @@ mapped them to the hg19 assembly of the human genome with Bowtie
 \cite{Langmead2009}. The nucleotide frequencies and divergence are plotted
 below.
 
+\begin{figure}[H]
 \begin{center}
 \includegraphics[width=0.6\textwidth]{fig/frt-all.pdf}
 \end{center}
+% TODO: caption
+\label{fig:trimmedfreqs}
+\end{figure}
 
 It is clear from this analysis that the FRT-Seq method, as implemented to
 generate this data, is not without bias, yet there is significant divergence at
 only a small number of positions surrounding the read start. When our method is
 trained on this data we obtain the suitably sparse model pictured below.
 
+\begin{figure}[H]
 \begin{center}
 \includegraphics[width=0.4\textwidth]{fig/frt-graph.pdf}
 \end{center}
-
+% TODO: caption
+\label{fig:trimmedfreqs}
+\end{figure}
 
 
 \section{Variability Between Replicates}
@@ -186,9 +236,13 @@ question the accuracy of such tests. In our experiments, we have observed the
 bias to be mostly, but not entirely consistent between replicates. Below, we
 plot the frequencies from the four runs in the Trapnell data set.
 
+\begin{figure}[H]
 \begin{center}
-\includegraphics[width=0.5\textwidth]{fig/replicates.pdf}
+\includegraphics[width=0.7\textwidth]{fig/replicates.pdf}
 \end{center}
+% TODO: caption
+\label{fig:trimmedfreqs}
+\end{figure}
 
 Though we do not know if the variability is always minor, assuming this is so,
 there remains the risk that the sequence bias would greatly effect the depth to
@@ -295,11 +349,24 @@ multinomial distribution, and as $n \rightarrow \infty$ is known to follow a
 $\chi^2$ distribution with $r - 1$ degrees of freedom. Finally, the expected
 value of such a random variable is $r - 1$, hence the expected KL divergence of
 the MLE inferred distribution $Q$ with respect to the true distribution $P$ is
-$$E[H(Q||P)] = \frac{r - 1}{2n}$$
+\begin{equation}
+\label{eq:entropy}
+E[H(Q||P)] = \frac{r - 1}{2n}
+\end{equation}
 
 Stochastic simulations of this proves when $P$ is uniform show that the above
 formula is a very good fit when $n > r$.
-%% TODO: see figure X
+
+\begin{figure}[H]
+\centerline{\includegraphics[width=0.8\textwidth]{fig/entropy.pdf}}
+\caption{For each value of $n$ plotted, the circles indicate the value of
+$H(Q||P)$, averaged over 100 samples of size $n$, where $P$ is uniform and $Q$
+is the MLE estimator for $P$ basen on $n$ random samples drawn from $r$ bins.
+The asterisks and the straight line interpolating them are the theoretical
+approximation from Equation \ref{eq:entropy}.
+}
+\label{fig:entropy}
+\end{figure}
 
 \bibliographystyle{plain}
 \bibliography{seqbias-paper}

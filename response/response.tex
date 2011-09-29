@@ -1,7 +1,7 @@
 
 \documentclass{article}
 \usepackage{amsmath}
-%\usepackage{dcj}
+\usepackage{dcj}
 
 \begin{document}
 
@@ -9,27 +9,30 @@
 We appreciate the time and effort extended by the anonymous reviewers and the
 editorial staff to evaluate the original version of this manuscript, which was
 submitted on July 8. Upon review, the second of the two reviewers raised some
-concerns, compelling its rejection. However, we believe that the bulk of these
+concerns leading to its rejection. However, we believe that the bulk of these
 concerns are either incongruous with the content of the manuscript or
 addressable with very little effort, and therefore do not warrant its rejection.
 Here we have provided a detailed response to these comments, and have included
 additional material in an effort to clarify these points.
 
-The second reviewer raised three major concerns. The first concern raised is
+The second reviewer raised three major concerns. We summarize our
+responses to these issues here.  The first concern raised is
 that the method we present is unjustifiably complex, involving a ``plethora of
 tuning parameters'', and that the much simpler method of Hansen, et al., would
-perform as well is trained on enough data.  In the data we presented, the simple
+perform as well if trained on enough data.  In the data we presented, the simple
 method developed by Hansen, et al., performed poorly regardless of the number of
 reads used in training, which varied between hundreds of thousands to tens of
 millions.  The methods presented by Li, et al., are more effective, yet involve
 more parameters, and require more time to train, so that our method, while often
 being more effective, also offers a significant simplification.
+Additionally, we believe the structure of our models give some
+theoretical insight into these differences in efficacy.
 
 Secondly, it is asserted that we did not demonstrate that uniformity of read
-coverage is increased ofter correcting for bias using our method.  Yet, in
+coverage is increased after correcting for bias using our method.  Yet, in
 section 3.2 we had presented a rigorous statistical analysis over a large and
 diverse collection of data sets showing that this is indeed the case. This
-section of the paper was evidently overlooked by the reviewer, as it received
+section of the paper was perhaps overlooked by the reviewer, as it received
 no mention in this criticism.
 
 Finally, the reviewer doubts the biological relevance of the bias correction
@@ -41,30 +44,42 @@ analysis showing that correlation between RNA-Seq and qRT-PCR is increased after
 correcting for bias.
 
 Under these circumstances we respectively request that the manuscript, in this
-revised form, be reconsidered for publication.
+revised form, be reconsidered for publication.  Detailed responses to
+the reviewers concerns are presented below.
 
 
 \subsection*{Response to Reviewer 1}
 
 \begin{quote}
-(1) Page3, 2.2.1 mentions a correction for bias introduced by PCR amplification.
+(1) Page 3, 2.2.1 mentions a correction for bias introduced by PCR amplification.
 RNA sequencing methods are available where PCR amplification is not used.
 Correcting for bias in these cases removes true duplication.  Could the authors
 please comment on this?
 \end{quote}
 
-Because model complexity is penalized, a very sparse, or even empty model will
-be trained on a data set without bias.  If PCR amplification is responsible for
-a majority of the bias, and an RNA-Seq method without PCR amplification is used
-producing largely bias-free data, then using the method to correct for bias
-will have little if any effect.
+First, we emphasize that PCR bias is only one of a number of technical steps
+involved in sequencing that potentially introduce bias.  Our method is agnostic
+to the source of bias, and because model complexity is penalized, a very sparse,
+or even empty model will be trained on a data set without bias.  Thus, if PCR
+amplification is responsible for a majority of the bias, and an RNA-Seq method
+without PCR amplification is used producing largely bias-free data, then using
+the method to correct for bias will have little if any effect.
 
-We have included new data examining the FRT-Seq protocol of Mamanova, et. al.,
-in which no PCR-amplification in performed during library preparation. We show
-that bias is reduced, but not eliminated in this method, and that our method
-accounts for this reduced bias by constructing a much sparser model, relative to
-the other RNA-Seq data sets we have examined.
+As a concrete example, we have included new data examining the FRT-Seq protocol
+of Mamanova, et al., in which no PCR-amplification is performed during library
+preparation. We observe that bias is still present in this data set, albeit at
+lower levels than other uncorrected RNAseq data examined.  Our method accounts
+for this reduced bias by constructing a much sparser model, relative to the
+other RNA-Seq data sets we have examined.
 
+To further explore the point raised, we repeatedly trained our model on sets of
+10,000 random simulated reads, drawn uniformly from within exons. We repeated
+this 100 times, and in each trial an empty model was trained.  Reducing the
+number of reads increases the risk of a spuriously non-empty model, but
+repeating this evaluating with only 100 reads led to only 3 out of 100 models
+being non-empty. This is indicative that the default BIC scoring, as predicted
+by statistical theory, is adequately protecting against false discovery of
+``bias'' when there is none.
 
 \subsection*{Response to Reviewer 2}
 
@@ -83,7 +98,7 @@ sampling, $p_{max}$, $d_{max}$) and a greedy algorithm with apparently no
 control of the quality of its solution.
 \end{quote}
 
-The method has precisely the following parameters,
+The method has precisely the following six parameters,
 \begin{enumerate}
 \item The number of reads the method is trained on.
 \item The size of the window surrounding read starts over which the model should
@@ -96,25 +111,29 @@ be trained.
 
 Parameters (1), (2), (3), and (4) are introduced only to reduce the CPU time
 needed to train the algorithm. Each has the same very simple interpretation: a
-larger value leads to solution that is no worse and potentially better, at the
-cost of increased training time.  We mention these parameters in the manuscript
-only for the sake of transparency.  They generally require no intervention or
-tuning, being essentially an implementation detail. 
+larger value leads to a potentially better solution, at the cost of increased
+training time. 
+
+We mention these parameters in the manuscript only for the sake of transparency.
+They generally require no intervention or tuning, being essentially an
+implementation detail. 
 
 Parameters (5) and (6) are more important to the quality of the solution, yet we
 have demonstrated, with no special tuning, the method is effective across a
 diverse collection of data sets. In this revision we have included new data
-showing explicitly that the quality of the solution is remarkably insensitive to
-values of these two parameters.
+(Supplementary Section 2) showing explicitly that the quality of the solution is
+remarkably insensitive to values of these two parameters over a range spanning 4
+orders of magnitude. 
 
 It should also be noted that, while the brute-force method of Hansen, et. al.,
-has fewer parameters, the other methods evaluated in the manuscript (the GLM and
-MART methods of Li, et. al.), involve more parameters that the method we
-have described. (For example training the MART method involves parameters
+has fewer tuning parameters, the other methods evaluated in the manuscript (the
+GLM and MART methods of Li, et. al.), involve more parameters than the method we
+have described. (For example, training the MART method involves parameters
 controlling the complexity penalty, the number of trees, the lower bound
 threshold for read counts, in addition to others that are not described or
-easily changed from the values divined by the authors.) Our method therefore
-presents a simplification over competing methods.
+easily changed from the values divined by the authors.  Additionally, their
+method requires selection of a set of annotated genes for training.)  Our method
+therefore presents a simplification over competing methods.
 
 
 \begin{quote}
@@ -131,18 +150,66 @@ the Genominator package is ridiculously inefficient, but that can
 easily be fixed by more competent programming.)
 \end{quote}
 
-We regret that we more not more explicit on this point. At least 600,000 reads
-on each data set, but as many as 23 million were used. (As noted in the paper,
-we did reimplement the Genominator method in order to do this.) The brute-force
-method performed very poorly on every data set, suggesting that simply throwing
-more data at a suboptimal solution will not adequately solve the problem. The
-results as they were presented are unambiguous: the other methods perform far
-better with far fewer reads.
+We regret that we were not more explicit on this point. At least
+600,000 reads on each data set, but as many as 23 million were used:
+see the revised table X. (As noted in the paper, we did reimplement
+the Genominator method in order to do this.)
 
-Moreover, even if the brute-force method were effective if trained with many
-hundreds of millions of reads, many (possibly most) existing data sets are not
-this large, rendering it generally impractical.
+We do not wish to ``pick on'' Hansen, et al.  Theirs was a pioneering
+paper and presents a simple, intuitive approach for tackling the
+problem they identified.  Nevertheless, their brute-force method
+performed poorly on every data set we tested, even the largest ones,
+suggesting that simply throwing more data at a suboptimal solution
+will not adequately solve the problem.  In our opinion, the results we
+presented were unambiguous: the other methods perform far better with
+far fewer reads.
 
+%Moreover, even if the brute-force method were effective if trained
+%with many hundreds of millions of reads, many (possibly most) existing
+%data sets are not this large, rendering it generally impractical.
+
+Understanding this failure of a simple, appealing method is important
+for making progress, and we feel that our paper provides a theoretical
+basis for understanding these differences in efficacy, and we have
+amplified these points in the revision.  Intuitively, one expects
+model accuracy to increase as the number $n$ of training reads
+increases, but to decrease as the number $r$ of model parameters
+grows, since the training data is ``spread more thinly.''  For the
+particular case of estimating a multinomial distribution (as in
+Hansen), Supplementary Section YY quantifies this intuition very
+precisely, showing that the expected KL divergence of the learned
+model with respect to the true distribution converges to $(r-1)/(2n)$,
+where $r=4^7=16384$ is the number of model parameters learned.  The
+same analysis does not directly apply to the MART, GLM or BN models,
+but we expect their behavior to be qualitatively similar.  Thus, to
+the extent that a more parsimonious model such as ours adequately
+captures the structure of the data, it is potentially orders of
+magnitude more accurate for a given quantity of training data, simply
+by virtue of having only a few hundred parameters learned from counts
+(Figure 3), as opposed to tens of thousands.  [KL divergence between
+two distributions is inversely proportional to the number of samples
+one needs to confidently test the hypothesis that the samples arise
+from one distribution versus the other; see Supplementary Section XX.]
+%% TODO: why the brackets here?
+
+Of course, training data is plentiful in NGS data sets, so,
+pragmatically, the above analysis probably identifies a contributor
+but not the root cause of Hansen et al.'s relatively poor performance
+in our experiments.  Rather, we believe the problem is that bias is
+not confined to the initial heptamer.  The model structures
+illustrated in Figure 3 show that nucleotides well outside that region
+are often biased.  (The randomization study sketched above shows that
+our model building algorithm is not prone to spurious discovery of
+overly-complex models.)  Furthermore, these examples show that the
+read sampling is often biased by positions \emph{in front of the
+  read}, which are not currently considered by Hansen.  Their method
+could be modified easily to consider $k$-mers spanning the read start,
+but the entropy analysis shows that extending it to $k \gg 7$ is
+infeasible, since the exponential growth in $r=4^k$ will destroy the
+model's accuracy even in large data sets.  E.g., $k \ge 20$ would be
+necessary to cover the biased regions in all data sets shown in Figure
+3, necessitating trillions of training reads to build an adequate
+model by Hansen's method.
 
 \begin{quote}
 The major weakness of the ms, in my view, is the choice of 'figures of
@@ -153,6 +220,36 @@ have expected to see are
 reference [1]. That figure shows highly uneven coverage of reads
 within exons.
 - Does this unevenness go away with the proposed adjustment?
+\end{quote}
+
+During preparation we chose not to include a figure such as the one suggested
+by the reviewer as we believed it would not be legitimately informative. It
+would be far too easy to cherry-pick a miniscule genomic interval that makes
+even a very shoddy method appear favorable.
+
+Instead, we presented data (in Section 3.2) that answers the
+reviewer's question (i.e., ``does this unevenness go away with the
+proposed adjustment?'') in rigorous and comprehensive manner. We
+implemented a Poisson regression metric, which quantitatively measures
+``uniformity'' by calculating the likelihood that the reads sampled
+across a given exon were sampled from a uniform distribution.  Using
+this, we performed a large cross-validation study proving the
+effectiveness of our method at increasing uniformity across thousands
+of exons drawn from a diverse group of data sets, rather than
+qualitatively across one exon.  In broad terms, our method increases
+likelihood of the uniform model by XXX-fold across thousands of exons
+(Figure 6).
+
+In this revision, as suggested, we have revised Figure 2 to show an
+example of this increase in uniformity.  We believe the figure is a
+nice, graphic illustration of the benefits of our method and thank the
+reviewer for causing us to reconsider it.  We stress, however, that
+this figure represents a minute subset of the analysis that had
+previously been presented, and is included only as an illustration.
+The results in sections 3.1 and especially in 3.2 are far more
+comprehensive.
+
+\begin{quote}
 - Also, as is evident from that figure, for some of the experimental
 protocols, some regions within highly expressed exons get vanishingly
 small read coverage.  These are the really hard situations, and much
@@ -161,22 +258,10 @@ How does the proposed scaling adjustment of Section 2.1 work in these
 places (i.e. when $s_{i}$ is very small)?
 \end{quote}
 
-During preparation we choose not to include a figure such as the one suggested
-by the reviewer as we believed it would not be legitimately informative. It
-would be far too easy to cherry-pick a minuscule genomic interval that makes
-even the very shoddy method appear favorable.
+%% TODO
 
-Instead, we presented data (in Section 3.2) that answers the reviewers question
-(i.e., ``does this unevenness go away with the proposed adjustment?'') in
-rigorous and comprehensive manner. We implemented a Poisson regression metric
-and performed a large cross-validation study proving the effectiveness of our
-method at increasing uniformity quantitatively, across thousands of exons drawn
-from a diverse group of data sets, rather than qualitatively across one exon.
-
-In this revision, we have included a figure, as suggested, showing an example of
-this increase in uniformity. Yet, we must stress, this figure represents a
-minute, unreliable subset of the analysis that had previously been presented,
-and is included only as an illustration.
+%The revised Figure 2 also graphically illustrates the range of
+%adjustment factors, which genome-wide are very cool and we hope we can say something soothing about.......
 
 
 \begin{quote}
@@ -221,20 +306,36 @@ approach of Hansen (say, lasso or svm regression). In absence of a
 more meaningful benchmark, the choice of method seems arbitrary.
 \end{quote}
 
-Our motivation for adopting a Bayesian network model is the very natural
-probabilistic interpretation that we have described in Section 2.1. We
-disagree with the reviewer's opinion that Bayesian networks are inherently more
-complicated than Lasso regression or support vector machines.  In this
-application, the latter two methods would generate output that is arguably less
-transparent and interpretable, and neither be significantly simpler to
-implement, nor involve fewer parameters.
+Our motivation for adopting a Bayesian network model is the very
+natural probabilistic interpretation that we have described in Section
+2.1. We disagree with the reviewer's opinion that Bayesian networks
+are inherently more complicated than Lasso regression or support
+vector machines.  In this application, the latter two methods would
+generate output that is arguably less transparent and interpretable,
+and would neither be significantly simpler to implement, nor involve
+fewer parameters.  Our hypotheses (above) concerning the reasons for
+the weakness of Hansen's method illustrate the benefit of this
+approach; we do not believe svm regression, say, would have yielded
+similar insights.
 
 Naturally, it is possible that another model might perform as well or better
 than the one presented here, yet it is unrealistic or impossible to prove that
 this is not case. What we have demonstrated is a model that is well reasoned,
 efficiently implemented, and effective at reducing sequence bias in RNA-Seq.
 
+%\subsection*{Other Changes}
 
+%We have modified the title to more clearly acknowledge the existence of
+%the prior work upon which we build.
+
+%...more...?
+
+\subsection*{Conclusion}
+In summary, we believe the revised manuscript addresses all concerns
+raised by the reviewers, and provides a substantive improvement to the
+state of the art for an important problem.  We respectfully request
+that the manuscript, in this revised form, be reconsidered for
+publication.
 
 \end{document}
 

@@ -323,8 +323,8 @@ found, in which no single alteration to the network will increase the score.
 Given the network structure, the parameters are estimated directly from the
 observed nucleotide frequencies in the training data.
 
-The run time of the training procedure is further reduced in practice by imposing the
-following two restrictions on the structure of the network,
+The run time of the training procedure is further reduced in practice by
+imposing the following two restrictions on the structure of the network,
 \begin{enumerate}
 \item The in-degree (i.e. number of parents) of any node must be less than some
 number $p_{\text{max}}$.
@@ -337,13 +337,15 @@ effectively independent. We choose $p_{\text{max}} = 4$ and $d_{\text{max}} =
 Along with $p_{\text{max}}$ and $d_{\text{max}}$, the time required to train the
 model is controlled by the number of reads used (i.e., $n$) and the number of
 positions surrounding the read start to consider. Increasing any of these
-parameters results in a solution that is no worse, and potentially better, at
+parameters results in a  solution that is potentially better, at
 the expense of increased training time.
 
 The quality of the solution depends also on two other parameters: the standard
 deviation at which background sequences are sampled, and the weight applied to
-the penalty term of the BIC, yet it is not particularly sensitive to their values
-(see, Supplementary Section 2). In all our evaluation, no special tuning of the
+the penalty term of the BIC, yet it is not particularly sensitive to their
+values. (The median $R^2$ goodness-of-fit statistic used in section 3.2 varied
+by less that 25\% as these parameters were varied over a range of $10^4$. See
+Supplementary Section 2.) In all our evaluation, no special tuning of the
 parameters was performed, suggesting it can be used effectively across data sets
 without any intervention.
 
@@ -417,7 +419,9 @@ unique to each.
 \citet{Li2010} recommends that their MART and GLM models be trained using the
 100 most abundant genes. We used 1000 exons from chromosomes 1--8, otherwise
 chosen in a manner identical to that which was used to select the test exons.
-Both the GLM and MART models were trained using the default parameters.
+Both the GLM and MART models were trained considering the initial read position
+and 20 nucleotides upstream and downsream, and otherwise using default
+parameters.
 
 \citet{Hansen2010} recommends using all of the reads to estimate heptamer
 frequencies used by their model. The training procedure works by simple tallying
@@ -432,12 +436,13 @@ we found that in every case, this performed worse than simply counting the
 frequencies of the initial heptamer, and thus we report only the latter. The
 background frequencies are estimated from positions 18--23 in each read.
 
-Our own method was trained on the 100,000 reads from chromosomes 1--8, with the
-highest number of duplicate reads.
+Our own method was trained on the 100,000 randomly selected reads from
+chromosomes 1--8, considering the initial read position and 20 nucleotides
+upstream and downstream.
 
-All data sets were mapped using Bowtie \citep{Langmead2009} against,
-respectively, the hg19, mm9, rheMac2, and panTro2 genome assemblies obtained
-from the UCSC Genome Browser \citep{Karolchik2008}.
+All data sets were mapped using Bowtie \citep{Langmead2009} using default
+parameters against, respectively, the hg19, mm9, rheMac2, and panTro2 genome
+assemblies obtained from the UCSC Genome Browser \citep{Karolchik2008}.
 
 
 
@@ -449,7 +454,7 @@ symmetrized Kullback-Leibler (KL) divergence \citep{Kullback1951}.
 
 If $f_x$ is the background frequency of a $k$-mer $x$, and $f'_x$ the observed
 frequency, the KL divergence is computed as
-$$D_k( f, f' ) = \sum_{x} \left( f_x \log( f_x / f'_x ) + f'_x \log( f'_x / f_x) \right)$$
+$$D_k( f, f' ) = \sum_{x} \left( f_x \log_{2}( f_x / f'_x ) + f'_x \log_{2}( f'_x / f_x) \right)$$
 where the sum is over all $k$-mers.
 
 
@@ -615,22 +620,25 @@ We have demonstrated that sequence bias can confound, sometimes severely,
 quantification in RNA-Seq experiments, and we have introduced an effective
 method to account for this bias without the need of existing gene annotations.
 The analysis provided demonstrates that our method shows significant improvement
-in two aspects: uniformity of read coverage, and consistency of nucleotide
-frequencies. These results strongly suggest an increase in accuracy, and we show
-in Supplementary Section 4, that this conclusion is further justified by
-comparison to qRT-PCR.
+in three aspects: uniformity of read coverage, and consistency of nucleotide
+frequencies, and agreement with qRT-PCR.
 
 In our results, estimating initial heptamer frequencies was not seen to be as
 effective as the other models, even when data generated using random hexamer
-priming was used. Given the large number of parameters needed to estimate
-heptamer frequencies, a likely explanation is that the model is overfit to the
-training set.  We trained the 7mer model on a minimum of 600,000 reads (with the
-Bullard data set), and up to 23 million reads (with the Wetterbom data set), yet
-it seems more reads, or a greater diversity of reads are needed to produce an
-accurate or useful estimate.
+priming was used. A possible explaination is, given the large number of
+parameters needed to estimate heptamer frequencies ($4^{7} = 16,383$), these
+parameters are estimated with less accuracy than in models requiring fewer
+parameters. Yet, we trained the 7mer model on a minimum of 600,000 reads (with
+the Bullard data set), and up to 23 million reads (with the Wetterbom data set),
+numbers which our theoretical results, detailed in Supplementary Section 9,
+suggest should lead to accurate estimates. A perhaps more significant factor is
+that this method does not capture bias outside of the initial heptamer, though
+many data sets clearly are affected by bias in other positions.  However, if we
+were to incease the size of the $k$-mer being considered, exponentially more
+reads would be required for an accurate estimate.
 
 Our method generalizes this approach, attempting to overcome this problem by
-using an estimation of sequence probability that is more robust to overfitting
+using an estimation of sequence probability that requires fewer parameters
 and can account for bias outside of the initial heptamer. In all our tests, this
 approach was at least as effective as those of \citet{Li2010}, despite not
 requiring gene annotations or manual selection of training examples.
