@@ -7,13 +7,14 @@
 
 
 We appreciate the time and effort extended by the anonymous reviewers and the
-editorial staff to evaluate the original version of this manuscript, which was
-submitted on July 8. Upon review, the second of the two reviewers raised some
-concerns leading to its rejection. However, we believe that the bulk of these
-concerns are either incongruous with the content of the manuscript or
-addressable with very little effort, and therefore do not warrant its rejection.
-Here we have provided a detailed response to these comments, and have included
-additional material in an effort to clarify these points.
+editorial staff to evaluate the original version of this manuscript (titled
+``Correcting for bias in high-throughput sequencing data''), which was submitted
+on July 8. Upon review, the second of the two reviewers raised some concerns
+leading to its rejection. However, we believe that the bulk of these concerns
+are either incongruous with the content of the manuscript or addressable with
+very little effort, and therefore do not warrant its rejection.  Here we have
+provided a detailed response to these comments, and have included additional
+material in an effort to clarify these points.
 
 The second reviewer raised three major concerns. We summarize our
 responses to these issues here.  The first concern raised is
@@ -72,14 +73,21 @@ lower levels than other uncorrected RNAseq data examined.  Our method accounts
 for this reduced bias by constructing a much sparser model, relative to the
 other RNA-Seq data sets we have examined.
 
-To further explore the point raised, we repeatedly trained our model on sets of
-10,000 random simulated reads, drawn uniformly from within exons. We repeated
-this 100 times, and in each trial an empty model was trained.  Reducing the
-number of reads increases the risk of a spuriously non-empty model, but
-repeating this evaluating with only 100 reads led to only 3 out of 100 models
-being non-empty. This is indicative that the default BIC scoring, as predicted
-by statistical theory, is adequately protecting against false discovery of
-``bias'' when there is none.
+We have included additional material in Supplementary Section 10 exploring this
+point in detail. We first prove an upper bound on the probability of the model
+predicting the presence of bias when there is none, demonstrating that is less
+than 0.0004 when more than 10,000 reads are used. We then investigate this
+empirically by simulating random reads, drawn uniformly from exonic sequences
+within the human genome.  We trained our model 100 times with 10,000 simulated
+reads, and in no instance was bias predicted (i.e., a non-empty model trained).
+We repeated this with using only 100 reads, and in only 3 out of 100 trials was
+bias incorrectly predicted.
+
+This is indicative that the default BIC scoring, as predicted by statistical
+theory, is adequately protecting against false discovery of bias when there is
+none, and there is very little risk in applying the method to an unbiased
+experiment.
+
 
 \subsection*{Response to Reviewer 2}
 
@@ -186,10 +194,12 @@ the extent that a more parsimonious model such as ours adequately
 captures the structure of the data, it is potentially orders of
 magnitude more accurate for a given quantity of training data, simply
 by virtue of having only a few hundred parameters learned from counts
-(Figure 3), as opposed to tens of thousands.  [KL divergence between
-two distributions is inversely proportional to the number of samples
-one needs to confidently test the hypothesis that the samples arise
-from one distribution versus the other; see Supplementary Section XX.]
+(Figure 3), as opposed to tens of thousands.  
+
+%[KL divergence between
+%two distributions is inversely proportional to the number of samples
+%one needs to confidently test the hypothesis that the samples arise
+%from one distribution versus the other; see Supplementary Section XX.]
 %% TODO: why the brackets here?
 
 Of course, training data is plentiful in NGS data sets, so,
@@ -258,10 +268,13 @@ How does the proposed scaling adjustment of Section 2.1 work in these
 places (i.e. when $s_{i}$ is very small)?
 \end{quote}
 
-%% TODO
-
-%The revised Figure 2 also graphically illustrates the range of
-%adjustment factors, which genome-wide are very cool and we hope we can say something soothing about.......
+In Figure 2, we now indicate that the adjustments made by the method to read
+counts tend to be small. In our test, 95\% of a sample of 10 million predicted
+bias coefficients were between 0.07 and 4.27. The lack of large adjustments is
+also reflected indirectly in the results in Section 3.  This is reflected
+indirectly in the results of Section 3: extremely large adjustments would result
+in large variance of the predictions, leading to poor performance in our
+evaluations, which we do not see.
 
 
 \begin{quote}
@@ -323,10 +336,11 @@ than the one presented here, yet it is unrealistic or impossible to prove that
 this is not case. What we have demonstrated is a model that is well reasoned,
 efficiently implemented, and effective at reducing sequence bias in RNA-Seq.
 
-%\subsection*{Other Changes}
 
-%We have modified the title to more clearly acknowledge the existence of
-%the prior work upon which we build.
+\subsection*{Other Changes}
+
+We have modified the title to more clearly acknowledge the existence of
+the prior work upon which we build.
 
 %...more...?
 
