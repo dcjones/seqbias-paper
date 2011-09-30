@@ -98,7 +98,7 @@ by sequence, affecting downstream analysis such as gene ontology enrichment
 tests.
 
 This bias, though observed primarily in the $5'$ end of a read, is not resolved by
-trimming the reads prior to mapping \citep{Hansen2010} (see also, Supplementary
+trimming the reads prior to mapping \citep{Hansen2010} (see also Supplementary
 Section 1), suggesting it is not a result of erroneous base calling, and that a
 more sophisticated means of correction is needed.
 
@@ -209,7 +209,7 @@ bias, at any genomic position. Figure \ref{fig:overview} gives a schematic overv
 of the proposed model.
 
 \begin{figure}
-\centerline{\includegraphics[width=0.4\textwidth]{overview.eps}}
+\centerline{\includegraphics[width=0.37\textwidth]{overview.eps}}
 \caption{An overview of the approach taken: (a) foreground sequences are sampled
 from the regions surrounding the starts of mapped reads, (b) background
 sequences are sampled by randomly offsetting foreground positions, (c) a
@@ -323,20 +323,16 @@ addition, removal, or edge reversal that produces a valid network (i.e., does no
 introduce a cycle) is evaluated, and the alteration that increases the score
 $\ell'$ the most is kept.  This process is repeated until a local maximum is
 found, in which no single alteration to the network will increase the score.
-
 Given the network structure, the parameters are estimated directly from the
 observed nucleotide frequencies in the training data.
 
 The run time of the training procedure is further reduced in practice by
-imposing the following two restrictions on the structure of the network,
-\begin{enumerate}
-\item The in-degree (i.e., number of parents) of any node must be less than some
-number $p_{\text{max}}$.
-\item $|j - i| \le d_{\text{max}}$ for all edges $(i,j)$ and some number $d_{\text{max}}$.
-\end{enumerate}
-The second of these encodes the assumption that distant nucleotides are
-effectively independent. We choose $p_{\text{max}} = 4$ and $d_{\text{max}} =
-10$, as reasonable default values.
+imposing the following two restrictions on the structure of the network, First,
+the in-degree (i.e., number of parents) of any node must be less than some
+number $p_{\text{max}}$. Secondly, for all edges $(i,j)$, $|j - i| \le
+d_{\text{max}}$ for some number $d_{\text{max}}$.  This encodes the assumption
+that distant nucleotides are effectively independent. We choose $p_{\text{max}}
+= 4$ and $d_{\text{max}} = 10$, as reasonable default values.
 
 Along with $p_{\text{max}}$ and $d_{\text{max}}$, the time required to train the
 model is controlled by the number of reads used (i.e., $n$) and the number of
@@ -703,16 +699,15 @@ priming was used. A possible explaination is, given the large number of
 parameters needed to estimate heptamer frequencies ($4^{7} = 16,383$), these
 parameters are estimated with less accuracy than in models requiring fewer
 parameters. Yet, we trained the 7mer model on a minimum of 1.9 million reads
-(with the Mortazavi data set), and up to 23 million reads (with the Wetterbom
-data set), numbers which our theoretical results, detailed in Supplementary
-Section 9, suggest should lead to accurate estimates. A perhaps more significant
-factor is that this method does not capture bias outside of the initial
-heptamer, though many data sets clearly are affected by bias in other positions.
-Thus to improve the performance, it seems necessary to incease the size of the
-$k$-mers being considered. However, exponentially more reads would be required
-for an accurate estimate since the accuracy of the model, as quantified by its
-KL divergence from the true distribution, is $(r-1)/2n$, where $r=4^k$ is the
-number of parameters that must be estimated (See Supplementary Section 9).
+(see Table \ref{tab:counts}), a number which our theoretical results, detailed
+in Supplementary Section 9, suggest should lead to accurate estimates. A perhaps
+more significant factor is that this method does not capture bias outside of the
+initial heptamer, though many data sets clearly are affected by bias in other
+positions.  Thus to improve the performance, it seems necessary to incease the
+size of the $k$-mers being considered. Yet, exponentially more reads would be
+required for an accurate estimate since the accuracy of the model, as quantified
+by its KL divergence from the true distribution, is $(r-1)/2n$, where $r=4^k$ is
+the number of parameters that must be estimated (See Supplementary Section 9).
 
 Our method generalizes this approach, attempting to overcome this problem by
 using an estimation of sequence probability that requires fewer parameters
@@ -739,7 +734,6 @@ against it. For example, the structures learned by our method (Figure
 \ref{fig:models}) are considerably different between those sequenced on an
 Illumina platform versus an ABI platform, and even vary within platform.
 
-
 Because we do not require annotations, ChIP-Seq, and other high-throughput
 sequencing experiments, may also benefit from our model. In a preliminary
 investigation, we found the sequence bias in one ChIP-Seq experiment
@@ -747,7 +741,7 @@ investigation, we found the sequence bias in one ChIP-Seq experiment
 evaluated; however, our method is still able to effectively correct for the bias
 that was observed (see Supplementary Section 6).  Protocol differences, as we
 have seen, can result in significant differences in observed nucleotide
-frequencies, so we may not safely assert that bias in ChIP-Seq data is always
+frequencies, so we can not safely assert that bias in ChIP-Seq data is always
 low.  Given the weak assumptions made by our model, our estimation of bias could
 easily be incorporated into ChIP-Seq peak-calling algorithms, and potentially
 improve accuracy.
@@ -782,7 +776,7 @@ Diseases, National Institutes of Health, Department of Health and Human Services
 under Contract No.  HHSN272200800060C and by the Public Health Service grant
 P51RR000166 from the National Institutes of Health.
 
-
+%\vspace{-8em}
 
 \bibliographystyle{natbib}
 \bibliography{seqbias-paper}
