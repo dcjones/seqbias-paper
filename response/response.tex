@@ -22,7 +22,7 @@ that the method we present is unjustifiably complex, involving a ``plethora of
 tuning parameters'', and that the much simpler method of Hansen, et al., would
 perform as well if trained on enough data.  In the data we presented, the simple
 method developed by Hansen, et al., performed poorly regardless of the number of
-reads used in training, which varied between hundreds of thousands to tens of
+reads used in training, which varied from hundreds of thousands to tens of
 millions.  The methods presented by Li, et al., are more effective, yet involve
 more parameters, and require more time to train, so that our method, while often
 being more effective, also offers a significant simplification.
@@ -44,9 +44,9 @@ quantification. In this revision we have supplied another line of evidence:
 analysis showing that correlation between RNA-Seq and qRT-PCR is increased after
 correcting for bias.
 
-Under these circumstances we respectively request that the manuscript, in this
-revised form, be reconsidered for publication.  Detailed responses to
-the reviewers concerns are presented below.
+Under these circumstances we respectfully request that the manuscript, in this
+revised form, be reconsidered for publication. Detailed responses to the
+reviewers concerns are presented below.
 
 
 \subsection*{Response to Reviewer 1}
@@ -58,7 +58,7 @@ Correcting for bias in these cases removes true duplication.  Could the authors
 please comment on this?
 \end{quote}
 
-First, we emphasize that PCR bias is only one of a number of technical steps
+First, we emphasize that PCR amplification is only one of a number of technical steps
 involved in sequencing that potentially introduce bias.  Our method is agnostic
 to the source of bias, and because model complexity is penalized, a very sparse,
 or even empty model will be trained on a data set without bias.  Thus, if PCR
@@ -80,7 +80,7 @@ than 0.0004 when more than 10,000 reads are used. We then investigate this
 empirically by simulating random reads, drawn uniformly from exonic sequences
 within the human genome.  We trained our model 100 times with 10,000 simulated
 reads, and in no instance was bias predicted (i.e., a non-empty model trained).
-We repeated this with using only 100 reads, and in only 3 out of 100 trials was
+We repeated this using only 100 reads, and in only 3 out of 100 trials was
 bias incorrectly predicted.
 
 This is indicative that the default BIC scoring, as predicted by statistical
@@ -158,10 +158,12 @@ the Genominator package is ridiculously inefficient, but that can
 easily be fixed by more competent programming.)
 \end{quote}
 
-We regret that we were not more explicit on this point. At least
-600,000 reads on each data set, but as many as 23 million were used:
-see the revised table X. (As noted in the paper, we did reimplement
-the Genominator method in order to do this.)
+We regret that we were not more accurate or explicit on this point. The 600,000
+figure somewhat underestimated the actual number used. Table 2 now given the
+correct numbers of reads used to train each method. The minimum number of reads
+used to train the Hansen method was in fact 1.9 million, and we used as many as
+23 million.  (As noted in the paper, we did reimplement the Genominator method
+in order to do this.)
 
 We do not wish to ``pick on'' Hansen, et al.  Theirs was a pioneering
 paper and presents a simple, intuitive approach for tackling the
@@ -176,50 +178,41 @@ far fewer reads.
 %with many hundreds of millions of reads, many (possibly most) existing
 %data sets are not this large, rendering it generally impractical.
 
-Understanding this failure of a simple, appealing method is important
-for making progress, and we feel that our paper provides a theoretical
-basis for understanding these differences in efficacy, and we have
-amplified these points in the revision.  Intuitively, one expects
-model accuracy to increase as the number $n$ of training reads
-increases, but to decrease as the number $r$ of model parameters
-grows, since the training data is ``spread more thinly.''  For the
-particular case of estimating a multinomial distribution (as in
-Hansen), Supplementary Section YY quantifies this intuition very
-precisely, showing that the expected KL divergence of the learned
-model with respect to the true distribution converges to $(r-1)/(2n)$,
-where $r=4^7=16384$ is the number of model parameters learned.  The
-same analysis does not directly apply to the MART, GLM or BN models,
-but we expect their behavior to be qualitatively similar.  Thus, to
-the extent that a more parsimonious model such as ours adequately
-captures the structure of the data, it is potentially orders of
-magnitude more accurate for a given quantity of training data, simply
-by virtue of having only a few hundred parameters learned from counts
-(Figure 3), as opposed to tens of thousands.  
+Understanding this failure of a simple, appealing method is important for making
+progress, and we feel that our paper provides a theoretical basis for
+understanding these differences in efficacy, and we have amplified these points
+in the revision.  Intuitively, one expects model accuracy to increase as the
+number $n$ of training reads increases, but to decrease as the number $r$ of
+model parameters grows, since the training data is ``spread more thinly.''  For
+the particular case of estimating a multinomial distribution (as in Hansen),
+Supplementary Section 9 quantifies this intuition very precisely, showing that
+the expected KL divergence of the learned model with respect to the true
+distribution very closely approximates $(r-1)/(2n)$, where $r=4^7=16384$ is the
+number of model parameters learned.  The same analysis does not directly apply
+to the MART, GLM or BN models, but we expect their behavior to be qualitatively
+similar.  Thus, to the extent that a more parsimonious model such as ours
+adequately captures the structure of the data, it is potentially orders of
+magnitude more accurate for a given quantity of training data, simply by virtue
+of having only a few hundred parameters learned from counts (Figure 3), as
+opposed to tens of thousands.  
 
-%[KL divergence between
-%two distributions is inversely proportional to the number of samples
-%one needs to confidently test the hypothesis that the samples arise
-%from one distribution versus the other; see Supplementary Section XX.]
-%% TODO: why the brackets here?
-
-Of course, training data is plentiful in NGS data sets, so,
-pragmatically, the above analysis probably identifies a contributor
-but not the root cause of Hansen et al.'s relatively poor performance
-in our experiments.  Rather, we believe the problem is that bias is
-not confined to the initial heptamer.  The model structures
-illustrated in Figure 3 show that nucleotides well outside that region
-are often biased.  (The randomization study sketched above shows that
-our model building algorithm is not prone to spurious discovery of
-overly-complex models.)  Furthermore, these examples show that the
-read sampling is often biased by positions \emph{in front of the
-  read}, which are not currently considered by Hansen.  Their method
-could be modified easily to consider $k$-mers spanning the read start,
-but the entropy analysis shows that extending it to $k \gg 7$ is
-infeasible, since the exponential growth in $r=4^k$ will destroy the
-model's accuracy even in large data sets.  E.g., $k \ge 20$ would be
-necessary to cover the biased regions in all data sets shown in Figure
-3, necessitating trillions of training reads to build an adequate
-model by Hansen's method.
+Of course, training data is plentiful in NGS data sets, so, pragmatically, the
+above analysis probably identifies a contributor but not the root cause of
+Hansen et al.'s relatively poor performance in our experiments. Rather, we
+believe the problem is that \emph{bias is not confined to the initial
+heptamer}.The model structures illustrated in Figure 3 show that nucleotides
+well outside that region are often biased.  (The the theoretical results and
+randomization studies sketched above, and presented in Supplementary Section 10
+show that our model building algorithm is not prone to spurious discovery of
+overly-complex models.)  Furthermore, these examples show that the read sampling
+is often biased by positions \emph{in front of the read}, which are not
+currently considered by Hansen.  Their method could be modified easily to
+consider $k$-mers spanning the read start, but the entropy analysis in
+Supplementary Section 9 shows that extending it to $k \gg 7$ is infeasible,
+since the exponential growth in $r=4^k$ will destroy the model's accuracy even
+in large data sets. E.g., $k \ge 20$ would be necessary to cover the biased
+regions in all data sets shown in Figure 3, necessitating trillions of training
+reads to build an adequate model by Hansen's method.
 
 \begin{quote}
 The major weakness of the ms, in my view, is the choice of 'figures of
@@ -237,18 +230,15 @@ by the reviewer as we believed it would not be legitimately informative. It
 would be far too easy to cherry-pick a miniscule genomic interval that makes
 even a very shoddy method appear favorable.
 
-Instead, we presented data (in Section 3.2) that answers the
-reviewer's question (i.e., ``does this unevenness go away with the
-proposed adjustment?'') in rigorous and comprehensive manner. We
-implemented a Poisson regression metric, which quantitatively measures
-``uniformity'' by calculating the likelihood that the reads sampled
-across a given exon were sampled from a uniform distribution.  Using
-this, we performed a large cross-validation study proving the
-effectiveness of our method at increasing uniformity across thousands
-of exons drawn from a diverse group of data sets, rather than
-qualitatively across one exon.  In broad terms, our method increases
-likelihood of the uniform model by XXX-fold across thousands of exons
-(Figure 6).
+Instead, we presented data (in Section 3.2) that answers the reviewer's question
+(i.e., ``does this unevenness go away with the proposed adjustment?'') in
+rigorous and comprehensive manner. We implemented a Poisson regression metric,
+which quantitatively measures ``uniformity'' by calculating the likelihood that
+the reads sampled across a given exon were sampled from a uniform distribution.
+Using this, we performed a large cross-validation study proving the
+effectiveness of our method at increasing uniformity across thousands of exons
+drawn from a diverse group of data sets (Figure 5), rather than qualitatively
+across one exon.
 
 In this revision, as suggested, we have revised Figure 2 to show an
 example of this increase in uniformity.  We believe the figure is a
@@ -257,7 +247,7 @@ reviewer for causing us to reconsider it.  We stress, however, that
 this figure represents a minute subset of the analysis that had
 previously been presented, and is included only as an illustration.
 The results in sections 3.1 and especially in 3.2 are far more
-comprehensive.
+quantitative and comprehensive.
 
 \begin{quote}
 - Also, as is evident from that figure, for some of the experimental
@@ -270,11 +260,10 @@ places (i.e. when $s_{i}$ is very small)?
 
 In Figure 2, we now indicate that the adjustments made by the method to read
 counts tend to be small. In our test, 95\% of a sample of 10 million predicted
-bias coefficients were between 0.07 and 4.27. The lack of large adjustments is
-also reflected indirectly in the results in Section 3.  This is reflected
-indirectly in the results of Section 3: extremely large adjustments would result
-in large variance of the predictions, leading to poor performance in our
-evaluations, which we do not see.
+bias coefficients were between 0.07 and 4.27. This is also reflected indirectly
+in the results of Section 3: extremely large adjustments would result in large
+variance of the predictions, leading to poor performance in our evaluations,
+which we do not see.
 
 
 \begin{quote}
@@ -292,10 +281,10 @@ believe that this analysis presents a compelling case that bias correction is
 worthwhile, and that the method we present is competitive with, and quite often
 superior to existing methods.
 
-In this revision, we have included more data, showing that in addition to the
-improvements in uniformity and nucleotide frequencies, increased correlation
-between RNA-Seq and qRT-PCR, after adjusting for bias in RNA-Seq. These results
-are consistent with, and reinforce our previous results.
+In this revision, we have included more data (Section 3.3), showing, in addition
+to the improvements in uniformity and nucleotide frequencies, significantly
+increased correlation between RNA-Seq and qRT-PCR, after adjusting for bias in
+RNA-Seq.  These results are consistent with, and reinforce our previous results.
 
 
 \begin{quote}
@@ -319,17 +308,17 @@ approach of Hansen (say, lasso or svm regression). In absence of a
 more meaningful benchmark, the choice of method seems arbitrary.
 \end{quote}
 
-Our motivation for adopting a Bayesian network model is the very
-natural probabilistic interpretation that we have described in Section
-2.1. We disagree with the reviewer's opinion that Bayesian networks
-are inherently more complicated than Lasso regression or support
-vector machines.  In this application, the latter two methods would
-generate output that is arguably less transparent and interpretable,
-and would neither be significantly simpler to implement, nor involve
-fewer parameters.  Our hypotheses (above) concerning the reasons for
-the weakness of Hansen's method illustrate the benefit of this
-approach; we do not believe svm regression, say, would have yielded
-similar insights.
+We agree completely that a spectrum that a spectrum of methodhs are available.
+Our motivation for adopting a Bayesian network model is the very natural
+probabilistic interpretation that we have described in Section 2.1. We disagree
+however with the reviewer's opinion that Bayesian networks are inherently more
+complicated than Lasso regression or support vector machines.  In this
+application, the latter two methods would generate output that is arguably less
+transparent and interpretable, and would neither be significantly simpler to
+implement, nor involve fewer parameters.  Our hypotheses (above) concerning the
+reasons for the weakness of Hansen's method illustrate the benefit of this
+approach; we do not believe svm regression, say, would have yielded similar
+insights.
 
 Naturally, it is possible that another model might perform as well or better
 than the one presented here, yet it is unrealistic or impossible to prove that

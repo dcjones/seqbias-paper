@@ -13,9 +13,10 @@
 \title{A new approach to bias correction in high-throughput sequencing data}
 \author[Jones \textit{et~al}]
 {Daniel C. Jones\,$^{1,}$
-\footnote{to whom correspondence should be addressed}\hspace{0.5em}
-Walter L. Ruzzo\,$^{1,2,3}$
-Xinxia Peng\,$^{4}$
+\hspace{-0.5em}\footnote{to whom correspondence should be addressed}\hspace{0.5em},
+Walter L. Ruzzo\,$^{1,2,3}$,
+Xinxia Peng$^{4}$
+and
 Michael G. Katze$^{4}$
 }
 
@@ -38,18 +39,18 @@ $^{4}$Department of Microbiology, University of Washington, Seattle, WA
 
 \section{Motivation:}
 Quantification of sequence abundance in RNA-Seq and ChiP-Seq experiments is
-often conflated by protocol-specific sequence bias. The sources of the bias are
-unknown, but may influenced by PCR amplification, or differing primer affinities
-and mixtures, for example.  The result is decreased accuracy in many
-applications, such as de novo gene annotation and isoform quantification in
+often conflated by protocol-specific sequence bias. The exact sources of the
+bias are unknown, but may be influenced by PCR amplification, or differing
+primer affinities and mixtures, for example.  The result is decreased accuracy
+in many applications, such as de novo gene annotation, isoform quantification in
 RNA-Seq, and peak calling in ChIP-Seq.
 
 \section{Results:}
-We present a method to measure and correct for these influences using a simple
-graphical model. Our model does not rely on existing gene annotations, making it
-applicable to any high throughput sequencing data. We evaluate our method on
-several data sets, and by multiple criteria, demonstrating that it effectively
-decreases bias and increases uniformity.
+We present a new method to measure and correct for these influences using a
+simple graphical model. Our model does not rely on existing gene annotations,
+making it applicable to any quantitative high throughput sequencing data. We
+evaluate our method on several data sets, and by multiple criteria,
+demonstrating that it effectively decreases bias and increases uniformity.
 
 
 \section{Availability:}
@@ -70,15 +71,9 @@ In the last few years, RNA-Seq has emerged as a promising alternative to
 microarrays in quantifying RNA abundance. But, as microarray technology has
 brought with it technical challenges ranging from developing robust
 normalization to accounting for cross-hybridization, RNA-Seq presents a new set
-of problems.
-
-A significant example is the effect of transcript length on quantification.  As
-noted by \citet{Oshlack2009} transcript length biases discovery of
-differential expression, since more reads are aligned to longer transcripts,
-granting higher statistical significance in tests of differential expression.
-Recently, some methods have been developed attempting to account for this effect
-in gene set enrichment tests \citep{Young2010,Gao2011}, leading to more accurate
-downstream analysis.
+of challenges. A significant example is the effect that transcript length has in
+biasing quantification, as first explored by \citet{Oshlack2009}, and
+subsequently addressed by \cite{Young2010, Gao2011}.
 
 The underlying nucleotide sequence also influences quantification in a manner
 that is complex and protocol-specific. In an ideal experiment, the number of
@@ -86,7 +81,7 @@ reads mapping to a particular position in the genome is a function of RNA
 abundance and should not be additionally dependent on the sequence at that
 position. As noted first by \citet{Dohm2008}, this is not the case.  As
 illustration, Figure \ref{fig:freqs} plots this nonuniformity in nucleotide
-frequencies on five data sets (see, Table \ref{tab:datasets}), each using a
+frequencies on five data sets (see Table \ref{tab:datasets}), each using a
 different protocol.
 
 
@@ -141,10 +136,10 @@ distribution of initial heptamers within reads, then estimates a presumed
 background heptamer distribution, sampled from the ends of reads. The read count
 at a given position is then adjusted by the ratio of the foreground and
 background heptamer probabilities. Specifying two distributions over heptamers
-(i.e. foreground and background distributions) requires \mbox{$2(4^7-1) =
+(i.e., foreground and background distributions) requires \mbox{$2(4^7-1) =
 32,766$} parameters, so while no gene annotations are needed to train such a
 model, a significant number of reads are required, and a number that increases
-exponentially with $k$, if it were desirable to to model $k$-mers for $k > 7$.
+exponentially with $k$, if it were desirable to model $k$-mers for $k > 7$.
 
 Lastly, \citet{Roberts2011} have very recently published a description of
 another approach, in which sequence probabilities are modeled by variable-order
@@ -172,7 +167,7 @@ assumed, whether implicitly or otherwise). The number of reads $x_i$ aligned to
 genomic position $i$ is an unbiased estimate of RNA abundance. Furthermore, we
 assume reads may be treated as independent and identically distributed samples.
 That is, if $N$ reads are generated, and $m_i$ is the event that a generated
-read maps to position $i$.
+read maps to position $i$, then
 $$ E[x_i] = N \Pr[m_i] $$
 
 The experiment may be considered unbiased  with regards to sequence if, having
@@ -225,7 +220,10 @@ used to adjust read counts, as in (e). In (d) and (e) we show the results of
 this method applied to the $3'$ UTR of Apoa2, using data from
 \citet{Mortazavi2008}. In bias coefficients predicted across 10 million positions
 of chromosome 1, the log10 bias of 95\% of the positions were between -1.14 and
-0.63, suggesting that most adjustments are not large.
+0.63, suggesting that most adjustments are not large. The $R^2$ measure,
+detailed in Section 3.2, gives the relative increase in log-likeliood under a
+uniform sampling model, after correcting for bias, with 1.0 indicating a perfect
+fit, and the score of 0.38 here indicating a significant increase.
 }
 \label{fig:overview}
 \end{figure}
@@ -311,14 +309,14 @@ set of samples, simply maximizing the likelihood would severely overfit the
 training set. We thus penalize model complexity heuristically using the Bayesian
 Information Criterion \citep{Schwarz1978a}. Where $m$ is the number of
 parameters needed to specify the model, we maximize, 
-$$ \ell' = 2 \ell - m \log n $$
+$ \ell' = 2 \ell - m \log n $.
 
 Some benefit might be obtained from a more highly tuned complexity penalty.
 However, since the model is trained greedily, additional parameters will be
 decreasingly informative, and increasingly similar between foreground and
 background. Adding more parameters will have little effect.  Only when $m$ is
 allowed to grow exponentially does the prediction become polluted by small
-deviations between thousands of uninformative parameters.
+deviations between thousands of uninformative parameters. 
 
 At each step of the optimization procedure, every possible edge or position
 addition, removal, or edge reversal that produces a valid network (i.e., does not
@@ -332,7 +330,7 @@ observed nucleotide frequencies in the training data.
 The run time of the training procedure is further reduced in practice by
 imposing the following two restrictions on the structure of the network,
 \begin{enumerate}
-\item The in-degree (i.e. number of parents) of any node must be less than some
+\item The in-degree (i.e., number of parents) of any node must be less than some
 number $p_{\text{max}}$.
 \item $|j - i| \le d_{\text{max}}$ for all edges $(i,j)$ and some number $d_{\text{max}}$.
 \end{enumerate}
@@ -345,15 +343,6 @@ model is controlled by the number of reads used (i.e., $n$) and the number of
 positions surrounding the read start to consider. Increasing any of these
 parameters results in a  solution that is potentially better, at
 the expense of increased training time.
-
-The quality of the solution depends also on two other parameters: the standard
-deviation at which background sequences are sampled, and the weight applied to
-the penalty term of the BIC, yet it is not particularly sensitive to their
-values. (The median $R^2$ goodness-of-fit statistic used in section 3.2 varied
-by less that 25\% as these parameters were varied over a range of $10^4$. See
-Supplementary Section 2.) In all our evaluation, no special tuning of the
-parameters was performed, suggesting it can be used effectively across data sets
-without any intervention.
 
 Figure \ref{fig:models} shows examples of the structure learned when this
 procedure is applied to several data sets, using 100,000 reads from each.
@@ -387,8 +376,8 @@ from reads within exons, should not differ greatly from frequencies measured by
 sampling uniformly within the same exons.
 \item Read counts across a single exon should follow, approximately, a Poisson
 process.
-\item Adjusting for bias should increase the agreement between RNA-Seq and
-qRT-PCR.
+\item Adjusting for bias in RNA-Seq should increase the agreement between RNA-Seq and
+an other methods of quantification.
 \end{enumerate}
 
 Evident from Figure \ref{fig:overview}, the assumption of uniform read coverage
@@ -399,8 +388,8 @@ end, we used cross-validation tests (i.e., methods were trained and tested on
 disjoint subsets of the same RNA-Seq data sets) of a quantitative measure of the
 increase in uniformity of nucleotide frequencies (Kullback-Leibler divergence in
 Section 3.1) and increase in uniformity of read coverage (Poisson regression in
-Section 3.2). Additionally, we compare RNA-seq based estimate of gene expression
-to qRT-PCR based estimated for the same genes, showing increased correlation
+Section 3.2). Additionally, we compare RNA-Seq based estimate of gene expression
+to qRT-PCR based estimates for the same genes, showing increased correlation
 between the two methods after bias correction (Section 3.3).
 
 To evaluate the first two assumption, we applied our procedure (labeled ``BN'')
@@ -414,15 +403,35 @@ unpublished data set of our own (Table \ref{tab:datasets}).
 \processtable{Data sets on which the methods are evaluated.\label{tab:datasets}}
 {
 \begin{tabular}{lllcc}\toprule
- & & & Read & Num. of \\
-Experiment & Species & Platform & length & reads \\\midrule
-\citet{Wetterbom2010} & Chimpanzee & ABI & 33 & $3.9 \times 10^7$ \\
-Katze (unpublished) & Macaque & ABI & 50  & $4.8 \times 10^7$ \\
-\citet{Bullard2010} & Human & Illumina & 35 & $1.2 \times 10^7$ \\
-\citet{Mortazavi2008} & Mouse & Illumina & 33 & $3.9 \times 10^6$ \\
-\citet{Trapnell2010} & Mouse & Illumina & 75 & $6.6 \times 10^7$ \\\botrule
+ & & & Read  \\
+Experiment & Species & Platform & length \\\midrule
+\citet{Wetterbom2010} & Chimpanzee & ABI & 33  \\
+Katze (unpublished) & Macaque & ABI & 50  & \\
+\citet{Bullard2010} & Human & Illumina & 35 \\
+\citet{Mortazavi2008} & Mouse & Illumina & 33 \\
+\citet{Trapnell2010} & Mouse & Illumina & 75 \\\botrule
 \end{tabular}
 }{}
+\end{table}
+ 
+\begin{table}
+\processtable{Numbers of reads used to train each method.\label{tab:counts}}
+{
+\begin{tabular}{lcccc}\toprule
+Experiment & Total & 7mer & GLM/MART & BN \\\midrule
+Wetterbom & $3.9 \times 10^7$ & $2.3 \times 10^7$ & $5.9 \times
+10^6$ & $1 \times 10^5$ \\
+Katze & $4.8 \times 10^7$ & $2.0 \times 10^7$ & $3.1 \times 10^6$ & $1 \times
+10^5$ \\
+Bullard & $1.2 \times 10^7$ & $3.1 \times 10^6$ & $1.8 \times 10^5$ & $1 \times
+10^5$\\
+Mortazavi & $3.9 \times 10^6$ & $1.9 \times 10^6$ & $3.8 \times 10^5$ & $1
+\times 10^5$ \\
+Trapnell & $3.4 \times 10^7$ & $1.6 \times 10^7$ & $5.9 \times 10^6$ & $1 \times
+10^5$
+\end{tabular}
+}{Note that in the Trapnell data set (the only paired-end set considered) we
+count only the first mate of each read.}
 \end{table}
 
 
@@ -436,7 +445,9 @@ splice sites, then chose the top 1000 exons by read count, restricting ourselves
 to those at least 100 nt long.
 
 The differences in the methods being tested necessitated training procedures
-unique to each.
+unique to each. The total number of reads used to train each method is listed in
+Table \ref{tab:counts}, and below we describe the procedure used for
+each.
 
 \citet{Li2010} recommends that their MART and GLM models be trained using the
 100 most abundant genes. We used 1000 exons from chromosomes 1--8, otherwise
@@ -477,10 +488,10 @@ symmetrized Kullback-Leibler (KL) divergence \citep{Kullback1951}.
 If $f_x$ is the background frequency of a $k$-mer $x$, and $f'_x$ the observed
 frequency, the KL divergence is computed as
 $$D_k( f, f' ) = \sum_{x} \left( f_x \log_{2}( f_x / f'_x ) + f'_x \log_{2}( f'_x / f_x) \right)$$
-where the sum is over all $k$-mers. This can be thought of a measure
+where the sum is over all $k$-mers. This can be thought of as a measure
 dissimilarity between two probability distributions. If $f_x$ and $f'_x$ for a
-$k$-mer $x$ are approximately equal, their log-ratio will also be approximately
-zero, leading to a small KL divergence (zero, when the distributions are equal).
+$k$-mer $x$ are approximately equal, their log-ratio will be approximately
+zero, leading to a small KL divergence (exactly zero, when the distributions are equal).
 Conversely, very different $k$-mer frequencies will result in a larger KL
 divergence.
 
@@ -517,12 +528,12 @@ method.}
 
 \subsection{Poisson Regression}
 
-In this comparison, we measure how well the counts conform to a Poisson process.
-The assumption of positional read counts following a Poisson distribution is
-known to be a poor fit \citep{Srivastava2010}, but measuring the improvement in
-the fit derived from correcting for bias remains a principled and easily
-interpreted criterion. This increase in uniformity is illustrated in Figure
-\ref{fig:overview}.
+In this comparison, we measure the uniformity of the data, or more precisely
+how well the counts conform to a Poisson process.  The assumption of positional
+read counts following a Poisson distribution is known to be a poor fit
+\citep{Srivastava2010}, but measuring the improvement in the fit derived from
+correcting for bias remains a principled and easily interpreted criterion. This
+increase in uniformity is illustrated in Figure \ref{fig:overview}.
 
 We perform maximum-likelihood fitting of two models. In the null model, the
 Poisson rate is fixed for each test exon. That is, for position $j$ within exon $i$,
@@ -537,23 +548,27 @@ commonly known as McFadden's pseudo-coefficient of determination
 $R^2 = 1 - L'/L$.
 
 This measure can be interpreted as the improvement in fit over the null model,
-with $R^2 = 1$ indicating a prefect fit, occurring model being evaluated
-achieves a likelihood of 1. Smaller number indicate an increasingly worse fit,
-with $R^2 = 0$ representing no improvement over the null model, and $R^2 = 0.5$,
-for example, indicating the model has a log-likelihood equal to half that of the
-null model (a large improvement, as log-likelihoods negative or zero). This
-measure can also take on values less than 0, indicating that the model has worse
-fit than the null model (i.e., when adjusting read counts according the bias
+with $R^2 = 1$ indicating a perfect fit, occurring when the model being
+evaluated achieves a likelihood of 1. Smaller number indicate an increasingly
+worse fit, with $R^2 = 0$ representing no improvement over the null model, and
+$R^2 = 0.5$, for example, indicating the model has a log-likelihood equal to
+half that of the null model (a large improvement, corresponding to, for example,
+the likelihood increasing over 100-fold if the initial log-likelihood was -9.6,
+which is the mean per-position log-likehood under the null model). This measure
+can also take on values less than 0, indicating that the model has worse fit
+than the null model (i.e., when adjusting read counts according the bias
 coefficients leads to less uniform read coverage).
 
 We compute $R^2$ for each of the test exons, giving us a sense of the variability
 of the effectiveness of each model. The results of this analysis are plotted in
 Figure \ref{fig:pois}.  To summarize each model with a single number, we can
-examine the median $R^2$ value, as listed in Table \ref{tab:pois}.
+examine the median $R^2$ value, as listed in Table \ref{tab:pois}. Our method
+shows a highly statistically significant improvement in performance over other
+methods in all but one comparison, in which the MART method performs equally.
 
 \begin{figure}
 \centerline{\includegraphics[width=0.30\textwidth]{pois-boxplot.eps}}
-\caption{For each of the 1000 test exons, we compute a pseudo-coefficients of
+\caption{For each of the 1000 test exons, we compute McFadden's pseudo-coefficient of
 determination $R^2$, equivalent to the improvement in log-likelihood under the
 bias corrected model. The statistic is positive, and increases as uniformity is
 increased, and negative when uniformity is decreased.  Marked with asterisks are
@@ -564,8 +579,6 @@ are plotted to mark the 25\%, 50\%, and 75\% quantiles, with whiskers extending
 to 1.5 times the inter-quartile range (i.e., the span between the 25\% and 75\%
 quantiles), and dots marking more extreme values.
 }
-
-
     \label{fig:pois}
 \end{figure}
 
@@ -586,7 +599,8 @@ Trapnell  & \textbf{0.289} & \textbf{0.289} & 0.248 & 0.138
 {
     The $R^2$ statistic measures increased uniformity in read coverage, after
     correcting for bias.  Here the median $R^2$ across the test exons is listed
-    for each method and sample. A higher $R^2$ indicates a better fit.
+    for each method and sample. A higher $R^2$ indicates a better fit. The
+    highest value in each row is highlighted in bold.
 }
 \end{table}
 
@@ -597,21 +611,25 @@ We used sequencing data previously published by \citet{Au2010} to evaluate the
 effect bias correction has on correlation to measurements made by TaqMan RT-PCR,
 made available by the the Microarray Quality Control project \citep{Shi2006}. The
 RNA-Seq data shows a pattern of bias similar to that seen in the other samples
-sequenced on an Illumina platform (see, Supplementary Section 5).
+sequenced on an Illumina platform (see Supplementary Section 5). This evaluation
+does not rely on an assumption that qRT-PCR necissarily more accurate than
+RNA-Seq based quantification, only that qRT-PCR is not biased in the same way as
+the RNA-Seq data.
 
 To evaluate the efficacy of each of the bias correction methods considered, we
 counted reads overlapping each gene, defining the gene by the union of every
 transcript in release 62 of the Ensembl gene annotations, excluding UTRs, and
 100 additional bases from both ends of the gene. Counts were then normalized by
 dividing by the length of these genes. We then removed any genes with a read
-count less than 10, or that did not correspond to 
+count less than 10, or that did not correspond to a unique TaqMan probe.
 
 Each method was trained in a manner identical to that used in the analysis of
 section 3.1 and 3.2, but without restricting the training data to the first
 eight chromosomes.  After adjusting read counts according to the predicted
 sequence bias, we computed the Pearson correlation between log read counts and
 log TaqMan expression values, which are averaged across three replicates. These
-correlations are listed in Table \ref{tab:pcr}.
+correlations are listed in Table \ref{tab:pcr}. Our method shows a statistically
+significant increase in correlation compared to the other methods.
 
 \begin{table}
 \processtable{
@@ -634,16 +652,41 @@ using the BN method over the other methods using a simple boostrap procedure. A
 bootstrap sample is formed by sampling, with replacement, 592 genes from the
 original set of the same size. The correlation is then computed for this set,
 using the adjusted count from each method. We repeated this procedure one
-million times, and counted the number of times each of the competing method achieves a
-higher correlation than the BN method.  Those marked with a sigle asterisk
-achieved a higher correlation fewer than 1000 times, resulting in a p-value
-less than $10^{-3}$.  Those marked with two asterisks achieved a higher
+million times, and counted the number of times each of the competing methods
+achieved a higher correlation than the BN method.  Those marked with a sigle
+asterisk achieved a higher correlation fewer than 1000 times, resulting in a
+p-value less than $10^{-3}$.  Those marked with two asterisks achieved a higher
 correlation in none of the bootstrap samples, indicating a p-value less than
 $10^{-6}$.
 }
 \end{table}
 
+\subsection{Robustness}
 
+Training our model on more reads leads to more accurate estimation of bias, but
+an increasingly long training time. For example, in our tests, fitting our model to
+100,000 reads from the Mortazavi data, training time was approximately 45
+minutes, running on one core of a 3 Ghz Intel Xeon processor. However, limiting
+the training to 25,000 reads leads to a model that is nearly as accurate while
+requiring less than 4 minutes to train. A full discussion of this trade-off is in
+Supplementary Section 5.
+
+The quality of the solution depends also on two other parameters: the standard
+deviation at which background sequences are sampled, and the weight applied to
+the penalty term of the BIC, yet it is not particularly sensitive to their
+values. (The median $R^2$ goodness-of-fit statistic used in section 3.2 varied
+by less that 25\% as these parameters were varied over a range of $10^4$. See
+Supplementary Section 2.) In all our evaluation, no special tuning of the
+parameters was performed, suggesting it can be used effectively across data sets
+without any intervention.
+
+Additionally, experimental and theoritical analysis suggest that the procedure
+is very resistant to inclusion of extranious parameters. In Supplementary
+Section 10 we prove an upper bound on the probability of our model predicting
+any bias, if the experiment is in fact unbiased, showing that there very little
+risk in the applying the method to an unbiased data set. In particular, if more
+than 10,000 reads are used in the training procedure, the probability that any
+adjustment at all will is made is less than 0.0004.
 
 \section{Discussion}
 
@@ -659,14 +702,17 @@ effective as the other models, even when data generated using random hexamer
 priming was used. A possible explaination is, given the large number of
 parameters needed to estimate heptamer frequencies ($4^{7} = 16,383$), these
 parameters are estimated with less accuracy than in models requiring fewer
-parameters. Yet, we trained the 7mer model on a minimum of 600,000 reads (with
-the Bullard data set), and up to 23 million reads (with the Wetterbom data set),
-numbers which our theoretical results, detailed in Supplementary Section 9,
-suggest should lead to accurate estimates. A perhaps more significant factor is
-that this method does not capture bias outside of the initial heptamer, though
-many data sets clearly are affected by bias in other positions.  However, if we
-were to incease the size of the $k$-mer being considered, exponentially more
-reads would be required for an accurate estimate.
+parameters. Yet, we trained the 7mer model on a minimum of 1.9 million reads
+(with the Mortazavi data set), and up to 23 million reads (with the Wetterbom
+data set), numbers which our theoretical results, detailed in Supplementary
+Section 9, suggest should lead to accurate estimates. A perhaps more significant
+factor is that this method does not capture bias outside of the initial
+heptamer, though many data sets clearly are affected by bias in other positions.
+Thus to improve the performance, it seems necessary to incease the size of the
+$k$-mers being considered. However, exponentially more reads would be required
+for an accurate estimate since the accuracy of the model, as quantified by its
+KL divergence from the true distribution, is $(r-1)/2n$, where $r=4^k$ is the
+number of parameters that must be estimated (See Supplementary Section 9).
 
 Our method generalizes this approach, attempting to overcome this problem by
 using an estimation of sequence probability that requires fewer parameters
@@ -693,20 +739,13 @@ against it. For example, the structures learned by our method (Figure
 \ref{fig:models}) are considerably different between those sequenced on an
 Illumina platform versus an ABI platform, and even vary within platform.
 
-Training our model on more reads leads to more accurate estimation of bias, but
-an increasingly long training time. For example, in our tests, fitting our model to
-100,000 reads from the Mortazavi data, training time was approximately 45
-minutes, running on one core of a 3 Ghz Intel Xeon processor. However, limiting
-the training to 25,000 reads leads to a model that is nearly as accurate while
-requiring less than 4 minutes to train. A full discussion of this trade-off is in
-Supplementary Section 5.
 
 Because we do not require annotations, ChIP-Seq, and other high-throughput
 sequencing experiments, may also benefit from our model. In a preliminary
 investigation, we found the sequence bias in one ChIP-Seq experiment
 \cite{Cao2010} was less than that observed in any of the RNA-Seq data we
 evaluated; however, our method is still able to effectively correct for the bias
-that was observed (see, Supplementary Section 6).  Protocol differences, as we
+that was observed (see Supplementary Section 6).  Protocol differences, as we
 have seen, can result in significant differences in observed nucleotide
 frequencies, so we may not safely assert that bias in ChIP-Seq data is always
 low.  Given the weak assumptions made by our model, our estimation of bias could
@@ -719,11 +758,11 @@ observed bias, we evaluated data from the FRT-Seq method proposed by
 preparation with reverse transcription occuring on the flowcell surface. We
 observed that this data is not free from sequence bias, yet unlike other data
 generated on the Illumina platform, it appears to be effected only by relatively
-few positions adjacent to the read start (see, Supplementary Section 7).
+few positions adjacent to the read start (see Supplementary Section 7).
 
 RNA-Seq is most often used to compare levels of expression, and so a natural
 concern is the consistency of the bias between samples. In the data we examined,
-the bias appears to be largely, but not entirely consistent (see, Supplementary
+the bias appears to be largely, but not entirely consistent (see Supplementary
 Section 8).  Similarly, in Figure \ref{fig:freqs}, the three data sets sequenced
 on the Illumina platform display similar patterns of nonuniformity, yet differ
 in magnitude, suggesting that batch effects in RNA-Seq remain a legitimate

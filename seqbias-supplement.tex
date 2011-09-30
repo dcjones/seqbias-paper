@@ -10,15 +10,16 @@
 
 \geometry{left=1.5in,right=1.5in, top=1in, bottom=1in}
 
-\title{SUPPLEMENTARY:\\Correcting for bias in high-throughput sequencing data}
+\title{SUPPLEMENTARY:\\A new approach to bias correction in high-throughput sequencing data}
 \author{Daniel C. Jones, Walter L. Ruzzo, Xinxia Peng, Michael G. Katze}
 
 
 \begin{document}
 
 
-\dcjtitle{\sc{(SUPPLEMENTARY)}}{\sc{Correcting for Bias in High-Throughput
-Sequencing Data}}{Daniel C. Jones, Walter L. Ruzzo, Xinxia Peng, Michael G. Katze}
+\dcjtitle{\sc{(SUPPLEMENTARY)}}
+{\sc{A new approach to bias correction in high-throughput sequencing data}}
+{Daniel C. Jones, Walter L. Ruzzo, Xinxia Peng, Michael G. Katze}
 
 
 \section{Trimming Reads}
@@ -60,22 +61,25 @@ observed results to their values.
 \begin{center}
 \includegraphics[width=0.8\textwidth]{fig/pois-sampstd.pdf}
 \end{center}
-\caption{Sensitivity of the parameter control he standard deviation at which
-background sequences are sampled.}
+\caption{Sensitivity of the parameter controling the standard deviation at which
+background sequences are sampled, as evaluated with McFadden's $R^2$
+goodness-of-fit statistic.}
 \label{fig:poissampstd}
 \end{figure}
 
-Figure \ref{fig:poissampstd} show the standard deviation used to draw background
-samples varied from 1 to 10,000. Apparent from this plot is that, while the
-optimal choice lies somewhere between 10 and 100, the model performs
-competitively for any reasonable value.
+Figure \ref{fig:poissampstd} shows the median McFaddens $R^2$ goodness-of-fit
+statastic across 1000 test exons (as described in Section 3.2 of the main paper)
+versus the standard deviation used to draw background samples varied from 1 to
+10,000. Apparent from this plot is that, while the optimal choice lies somewhere
+between 10 and 100, the model performs competitively for any reasonable value.
 
 
 \begin{figure}[H]
 \begin{center}
 \includegraphics[width=0.8\textwidth]{fig/pois-comppen.pdf}
 \end{center}
-\caption{Sensitivity over adjustments to the complexity penalty.}
+\caption{Sensitivity over adjustments to the complexity penalty. The $Y$ axis is
+as in Figure \ref{fig:poissampstd}.}
 \label{fig:poiscomppen}
 \end{figure}
 
@@ -178,7 +182,7 @@ remaining chromosomes were segmented into 500nt bins, and the KL divergence was
 sampled from the 50,000 segments with the highest read counts.
 
 Figure \ref{fig:caokl}, we plot directly the positional KL divergence, computed
-in tho same manner described in the Results section of the paper.  We see that
+in the same manner described in the Results section of the paper.  We see that
 our method is effective at reducing the bias in this ChIP-Seq data.
 
 \begin{figure}[H]
@@ -215,8 +219,9 @@ in Figure \ref{fig:frtall}.
 
 It is clear from this analysis that the FRT-Seq method, as implemented to
 generate this data, is not without bias, yet there is significant divergence at
-only a small number of positions surrounding the read start. When our method is
-trained on this data we obtain the suitably sparse model pictured in Figure
+only a small number of positions near the read start, including the position
+before it. When our method is trained on this data we obtain the suitably sparse
+model pictured in Figure
 \ref{fig:frtgraph}.
 
 \begin{figure}[H]
@@ -250,12 +255,19 @@ Though we do not know if the variability is always minor, assuming this is so,
 there remains the risk that the sequence bias would greatly effect the depth to
 which a locus is sequenced, and thus the statistical significance of
 differential expression tests. This would bias the discovery of differentially
-expressed genes, but not the test itself.
+expressed genes, but not the test itself.  Additionally, as sequencing bias
+appears to be at least partly related to sequence context, alternative splicing
+potentially will change the bias at positions somewhat distant from the splice
+site itself, complicating any analysis of differential isoform usage.
 
 
-\section{KL Divergence}
+\section{KL Divergence and Parameter Estimation}
 
 \subsection{Overview}
+
+In this section and the next, we present some theoretical analysis quantifying
+the accuracy of parameter estimation and the likelihood of falsely learning a
+biased model from unbiased data.
 
 Suppose $P$ and $Q$ are probability distributions defined on a discrete sample
 space. E.g., in the context of this paper, think of them as the probabilities of
@@ -266,18 +278,18 @@ where $q_{i}$ ($p_{i}$) is the probability of observing the i$^{\text{th}}$
 event according to the distribution $Q$ (resp., $P$), and the summation is taken
 over all events in the sample space (e.g., all $k$-mers). In some sense, this is
 a measure of the dissimilarity between the distributions: if $p_{i} \approx
-q_{i}$ everywhere, their log rations will be near zero and $H$ will be small; as
-$q_{i}$ and $p_{i}$ diverge, their log rotions will deviate from zero and $H$
+q_{i}$ everywhere, their log ratios will be near zero and $H$ will be small; as
+$q_{i}$ and $p_{i}$ diverge, their log ratios will deviate from zero and $H$
 will increase.
 
 For a more quantitative and (perhaps) intuitive interpretation, consider the
 following hypothesis-testing scenario. Given $m$ independent samples from either
 $P$ (arbitrarily called the ``null'') or from $Q$ (the ``alternative''), how
-large should $m$ be to cenfidently choose between these cases? A natural
+large should $m$ be to confidently choose between these cases? A natural
 approach is to use a likelihood ratio test: letting $Y_i$ be the number of times
 event $i$ is observed in $m$ trials ($\sum Y_i = m$), the likelihood of the
 sequence of observations under model $P$ is $$\prod_{i} p_{i}^{Y_{i}}$$
-and similarily for $Q$. So, the logarithm of the likelihood ratios is
+and similarly for $Q$. So, the logarithm of the likelihood ratios is
 $$
 \text{LLR} =
 \ln \frac{\prod_{i} q_{i} ^ {Y_{i}}}{\prod_{i} p_{i} ^ {Y_{i}}}
@@ -285,13 +297,13 @@ $$
 = m \sum_{i} \frac{Y_{i}}{m} \ln \frac{q_{i}}{p_{i}} $$
 
 If the sample is drawn from the alternative distribution $Q$, then the
-expectation of $frac{Y_{i}}{m}$ is $q_i$, so the expected value of the LLR is
+expectation of $\frac{Y_{i}}{m}$ is $q_i$, so the expected value of the LLR is
 $$ m \sum_{i} q_{i} \ln \frac{q_{i}}{p_{i}} = m H(Q || P) $$
 That is, the KL divergence is exactly the expected per-sample contribution to
 the log-likelihood ratio.
 %% when comparing these two hypotheses ??
 So, assuming the null hypothesis is false, in order for it to be rejected with
-$1000:1$ odds, one should choose $m$ to be inversely proportional to $H(Q ||
+say, $1000:1$ odds, one should choose $m$ to be inversely proportional to $H(Q ||
 P)$:
 \begin{align*}
 m H(Q||P) \ge \ln 1000 \\
@@ -299,11 +311,12 @@ m \ge \frac{\ln 1000}{H(Q || P)}
 \end{align*}
 
 As a concrete example, all of the RNA-Seq data sets examined in this paper show
-a KL divergence between the 1$^{\text{st}}$ positon of reads versus the
+a KL divergence between the 1$^{\text{st}}$ position of reads versus the
 transcriptomic background nucleotide distribution of $0.05$ or greater. Thus,
 one can confidently reject the hypothesis that reads are beeing uniformly
 sampled across the transcriptome by examining only a few hundred randomly
-selected reads (i.e., $\ln 1000 / 0.05 \approx 140$).
+selected reads (i.e., $\ln 1000 / 0.05 \approx 140$), a surprisingly small
+number, given the supposedly ``random sampling'' accomplished by RNA-Seq.
 
 
 \subsection{Accuracy of Multinomial Parameter Estimation}
@@ -311,28 +324,27 @@ selected reads (i.e., $\ln 1000 / 0.05 \approx 140$).
 Continuing the notation above, suppose $P$ as an unknown distribution with
 parameters $p_1, \dots, p_r$, $\sum p_i = 1$ where $r$ is the number of points
 in the sample space (e.g. $r = 4^{k}$ in the case of $k$-mers). Given a random
-ample $X_1, X_2, \dots, X_r$ of size $n = \sum_{i} X_i$ from $P$, it is well
+sample $X_1, X_2, \dots, X_r$ of size $n = \sum_{i} X_i$ from $P$, it is well
 known that the maximum likelihood estimators for the parameters are $q_i =
 \frac{X_i}{n} \approx p_i$. How good an estimate for $P$ is this distribution
-$Q$?
-
+$Q$? The estimators are unbiased:
 $$E[q_i] = E\left[\frac{X_i}{n}\right] = \frac{E[X_i]}{n} = \frac{np_i}{n} =
 p_i$$
-And the standard deviation of each estimate is proportional to $1/\sqrt{n}$. So
+and the standard deviation of each estimate is proportional to $1/\sqrt{n}$, so
 these estimates are increasingly accurate as the sample size increases. A more
 quantitative assessment of the accuracy of the estimator is obtained by
 evaluating the KL divergence:
 $$H(Q||P)
 = \sum_{i = 1}^{r} q_i \ln \frac{q_i}{p_i}
 = \sum_{i = 1}^{r} q_i \ln \left(1 + \frac{q_i - p_i}{p_i} \right) $$
-Using the first two terms of he Taylor series for $\ln (1 + x)$, this is
+Using the first two terms of the Taylor series for $\ln (1 + x)$, this is
 \begin{align*}
 H(Q||P) &\approx \sum_{i = 1}^{r} q_i \left( \frac{q_i - p_i}{p_i} -
 \frac{1}{2} \left( \frac{q_i - p_i}{p_i} \right)^2 \right ) \\
 &= \sum_{i = 1}^{r} q_i \frac{q_i - p_i}{p_i} -
 \frac{q_i}{2 p_i} \frac{(q_i - p_i)^2} {p_i}
 \end{align*}
-Since $\sum_{i = 1}^{r} q_i = \sum_{i = 1}^{r} pi = 1$,
+Since $\sum_{i = 1}^{r} q_i = \sum_{i = 1}^{r} p_i = 1$,
 $\sum_{i = 1}^{r} p_i \frac{q_i - p_i}{p_i} = 0$, so
 \begin{align*}
 H(Q||P) &\approx \sum_{i=1}^{r} q_i \frac{q_i - p_i}{p_i} - p_i \frac{q_i -
@@ -342,7 +354,7 @@ p_i}{p_i} - \frac{q_i}{2 p_i} \frac{(q_i - p_i)^2}{p_i} \\
 \end{align*}
 since $q_i \approx p_i$. Multiplying by $n^2 / n^2$ we have,
 \begin{align*}
-H(Q||P) &\approx \frac{1}{2n} \sum_{i=1}^{r} \frac{n q_i - n p_i)^2}{n p_i} \\
+H(Q||P) &\approx \frac{1}{2n} \sum_{i=1}^{r} \frac{(n q_i - n p_i)^2}{n p_i} \\
         &= \frac{1}{2n} \sum_{i=1}^{r} \frac{(X_i - E[X_i])^2}{E[X_i]}
 \end{align*}
 
@@ -356,14 +368,14 @@ the MLE inferred distribution $Q$ with respect to the true distribution $P$ is
 E[H(Q||P)] = \frac{r - 1}{2n}
 \end{equation}
 
-Stochastic simulations of this proves when $P$ is uniform show that the above
-formula is a very good fit when $n > r$.
+Stochastic simulations of this, shown in Figure \ref{fig:entropy}, proves when
+$P$ is uniform show that the above formula is a very good fit when $n > r$.
 
 \begin{figure}[H]
 \centerline{\includegraphics[width=0.8\textwidth]{fig/entropy.pdf}}
 \caption{For each value of $n$ plotted, the circles indicate the value of
 $H(Q||P)$, averaged over 100 samples of size $n$, where $P$ is uniform and $Q$
-is the MLE estimator for $P$ basen on $n$ random samples drawn from $r$ bins.
+is the MLE estimator for $P$ based on $n$ random samples drawn from $r$ bins.
 The asterisks and the straight line interpolating them are the theoretical
 approximation from Equation \ref{eq:entropy}.
 }
@@ -378,10 +390,10 @@ non-empty model would otherwise decrease the accuracy of the quantification. To
 address this concern, we derive here an upper bound on the probability of a
 non-empty model being trained, when the data is unbiased.
 
-The training procedure begins by considering the the set of models formed by
+The training procedure begins by considering the set of models formed by
 including each single nucleotide position from within the training sequences.
-For each single nucleotide model, the Bayesian infromation criterion is
-evaluated. If in any of these model the BIC score increases over the empty
+For each single nucleotide model, the Bayesian information criterion is
+evaluated. If in any of these models the BIC score increases over the empty
 model, a non-empty model will be trained, otherwise the training procedure will
 halt with an empty model.
 
@@ -403,7 +415,7 @@ and
 $$ D_{Y} = \sum_{k \in \{a, c, g, t\}} (y_k / n) \log \left( \frac{y_k / n}{p_k}
 \right) < \epsilon $$
 
-Now, objective function evaluated is the Bayesian information criterion (BIC)
+Now, the objective function evaluated is the Bayesian information criterion (BIC)
 applied to the conditional log-likelihood (CLL).
 $$ \text{BIC} = 2 \cdot \text{CLL} - m \log n $$
 where CLL in this single nucleotide case can be written as,
@@ -475,7 +487,7 @@ $$ \text{BIC} \le \text{BIC}_0 $$
 In summary, if $D_X, D_Y < \frac{3}{2n} \log n$, then $\text{BIC} \le
 \text{BIC}_0$ and the empty model is retained. That is, the probability of an
 empty model being trained is bounded below by the probability that the KL
-divergence of both sampled is bounded above $\frac{3}{2n} \log n$:
+divergence of both samples is bounded above by $\frac{3}{2n} \log n$:
 $$ \Pr(D_{X} < \frac{3}{2n} \log n) \cdot 
 \Pr(D_{Y} < \frac{3}{2n} \log n) $$
 
@@ -486,26 +498,33 @@ where $D$ is the divergence of any sample of size $n$. The probability of a
 non-empty model being trained is then less than
 $$ 1 - (\Pr(D < \frac{3}{2n} \log n))^2 $$
 
-In training we consider mulitple nucleotides. If $h$ nucleotides are considered,
+In training we consider multiple nucleotides. If $h$ nucleotides are considered,
 the probability of a non-empty model being trained is less than
 $$ 1 - (\Pr(D < \frac{3}{2n} \log n))^{2h} $$
 
 As discussed in Supplementary Section 9.2, $2n D$ is approximated by a $\chi^2$
 distribution with 3 degrees of freedom for large $n$, and so we can estimate
 this probability for various values of $n$. This is shown in Figure
-\ref{fig:nepr}. From this figure we can see, for example that training with more
-than 10,000 reads results in an incorrect non-empty model with probability less
-than 0.0004.
+\ref{fig:nepr}. From this figure we can see, for example, that training with
+more than 10,000 reads results in an incorrect non-empty model with probability
+less than 0.0004.
 
-In the low end, the upper bound on non-empty model probability is much higher.
+For small $n$, the upper bound on non-empty model probability is much higher.
 In our tests, this upper bound is not tight for a small number of reads. We
-trained the model on 100 sets of 100 simulated reads, drawn randomly at uniform
+trained the model on 100 sets of 100 simulated reads, drawn uniformly at random
 from exonic sequences and in only 3 trials was a non-empty model trained, far
-less than the upper bound prediction of 23 out of 100. This test was repeated
-using sets of 10,000 reads, and in no trial was a non-empty model trained.
+less than the upper bound expectation of 23 out of 100. This test was repeated
+using sets of 10,000 reads, and in no trial was a non-empty model trained.  From
+these results, and the results in Supplementary Section 5, we recommend training
+our method with at least 10,000 reads.
 
-From these results, and the results in Supplementary Section 5, we recommend
-training our method with at least 10,000 reads.
+Here we considered only the case of an empty model versus a non-empty model. A
+similar analysis can be conducted to show that if an extraneous position were
+added to to the initial empty model, it would be very improbable that more
+extraneous positions are edged were added. So that if, despite the very low
+probability, a non-empty model were trained from unbiased data, it would be
+extremely sparse and have little effect.
+
 
 
 \begin{figure}[H]
@@ -513,19 +532,13 @@ training our method with at least 10,000 reads.
 \includegraphics[width=0.8\textwidth]{fig/nepr.pdf}}
 \caption{Plotted is the upper bound on the probability of training a non-empty
 model when there is no real bias in the experiment when the model is trained
-with various number of reads $n$. We fixed the number of nucleotides being
-considered as $h = 41$, as this what was used for the evaluation in Section 3.}
+with various numbers of reads. We fixed the number of nucleotides being
+considered as $h = 41$, as was used for the evaluation in Section 3.}
 \label{fig:nepr}
 \end{figure}
-
-
-
 
 \bibliographystyle{plain}
 \bibliography{seqbias-paper}
 
 \end{document}
-
-
-
 
