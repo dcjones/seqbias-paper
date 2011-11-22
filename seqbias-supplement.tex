@@ -98,6 +98,32 @@ the restraints on in-degree and edge distance). This result is a sub-optimal but
 entirely adequate solution.
 
 
+\begin{figure}[H]
+\begin{center}
+\includegraphics[width=0.8\textwidth]{fig/pois-p_max.pdf}
+\end{center}
+\caption{Sensitivity over values of the $p_{\text{max}}$ parameter,
+controlling the maximum in-degree of any node in the directed graph. The $Y$ axis is
+as in Figure \ref{fig:poissampstd}.}
+\label{fig:pois_p_max}
+\end{figure}
+
+\begin{figure}[H]
+\begin{center}
+\includegraphics[width=0.8\textwidth]{fig/pois-d_max.pdf}
+\end{center}
+\caption{Sensitivity over values of the $d_{\text{max}}$ parameter, controlling
+the maximum distance any edge in the directed graph may traverse.  The $Y$ axis
+is as in Figure \ref{fig:poissampstd}.}
+\label{fig:pois_d_max}
+\end{figure}
+
+Figures \ref{fig:pois_p_max} and \ref{fig:pois_d_max} suggest that most
+dependencies are between adjacent nucleotides, as increasing the maximum
+in-degree ($p_{\text{max}}$), or maximum edge distance ($d_{\text{max}}$) has
+little effect for values of at least 1.
+
+
 \section{Additional Kullback-Leibler Divergence Plots}
 
 Figure \ref{fig:klall} plots the adjusted and unadjusted KL divergence plots,

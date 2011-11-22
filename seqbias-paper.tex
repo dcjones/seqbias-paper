@@ -199,14 +199,13 @@ from its position. Estimating bias is therefore a problem of finding a model of
 sequence probability that is sufficiently complex to capture the common features
 of the training data yet avoids overfitting.
 
-Towards that end, we propose training a Bayesian network classifier trained on
-examples of foreground and background sequences. Though our goal is not
-classification, by using the machinery of classification we can avoid a model
-that is over-parametrized. Parameters that are not informative in
-discriminating between foreground and background are not included in the model.
-The Bayesian network can then be used to evaluate sequence probability, and thus
-bias, at any genomic position. Figure \ref{fig:overview} gives a schematic overview
-of the proposed model.
+Towards that end, we propose training a Bayesian network using examples of
+foreground and background sequences. By training the model discriminatively and
+penalizing model complexity, we can avoid a model that is over-parametrized,
+excluding parameters that insufficiently informitive in discriminating between
+foreground and background. The Bayesian network can then be used to evaluate
+sequence probability, and thus bias, at any genomic position. Figure
+\ref{fig:overview} gives a schematic overview of the proposed model.
 
 \begin{figure}
 \centerline{\includegraphics[width=0.37\textwidth]{overview.eps}}
@@ -614,10 +613,10 @@ the RNA-Seq data.
 
 To evaluate the efficacy of each of the bias correction methods considered, we
 counted reads overlapping each gene, defining the gene by the union of every
-transcript in release 62 of the Ensembl gene annotations, excluding UTRs, and
-100 additional bases from both ends of the gene. Counts were then normalized by
-dividing by the length of these genes. We then removed any genes with a read
-count less than 10, or that did not correspond to a unique TaqMan probe.
+transcript in release 60 of the Ensembl gene annotations. Counts were then
+normalized by dividing by the length of these genes. We then removed any genes
+with a read count less than 10, or that did not correspond to a unique TaqMan
+probe.
 
 Each method was trained in a manner identical to that used in the analysis of
 section 3.1 and 3.2, but without restricting the training data to the first
@@ -635,17 +634,17 @@ significant increase in correlation compared to the other methods.
 \begin{tabular*}{0.4\textwidth}{lrl}
 \toprule
 Method & Correlation & \\ \midrule
-Unadjusted &  0.6665 & $\ast\ast$ \\
-7mer &  0.6677 & $\ast\ast$ \\
-GLM & 0.6854 & $\ast\ast$ \\
-MART & 0.6921 & $\ast$ \\
-BN & \textbf{0.7016}
+Unadjusted &  0.6650 & $\ast\ast$ \\
+7mer &  0.6680 & $\ast\ast$ \\
+GLM & 0.6874 & $\ast\ast$ \\
+MART & 0.6998 & $\ast$ \\
+BN & \textbf{0.7086}
 \end{tabular*}}
 }
 {
 We estimated the statistical significance of the improvement in correlation
 using the BN method over the other methods using a simple boostrap procedure. A
-bootstrap sample is formed by sampling, with replacement, 592 genes from the
+bootstrap sample is formed by sampling, with replacement, 648 genes from the
 original set of the same size. The correlation is then computed for this set,
 using the adjusted count from each method. We repeated this procedure one
 million times, and counted the number of times each of the competing methods
