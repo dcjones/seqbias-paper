@@ -10,7 +10,7 @@
 \firstpage{1}
 
 %\title{Correcting for bias in high-throughput sequencing data}
-\title{A new approach to bias correction in high-throughput sequencing data}
+\title{A new approach to bias correction in RNA-Seq}
 \author[Jones \textit{et~al}]
 {Daniel C. Jones\,$^{1,}$
 \hspace{-0.5em}\footnote{to whom correspondence should be addressed}\hspace{0.5em},
@@ -38,12 +38,11 @@ $^{4}$Department of Microbiology, University of Washington, Seattle, WA
 \begin{abstract}
 
 \section{Motivation:}
-Quantification of sequence abundance in RNA-Seq and ChiP-Seq experiments is
-often conflated by protocol-specific sequence bias. The exact sources of the
-bias are unknown, but may be influenced by PCR amplification, or differing
-primer affinities and mixtures, for example.  The result is decreased accuracy
-in many applications, such as de novo gene annotation, isoform quantification in
-RNA-Seq, and peak calling in ChIP-Seq.
+Quantification of sequence abundance in RNA-Seq experiments is often conflated
+by protocol-specific sequence bias. The exact sources of the bias are unknown,
+but may be influenced by PCR amplification, or differing primer affinities and
+mixtures, for example. The result is decreased accuracy in many applications,
+such as de novo gene annotation and gene or isoform quantification.
 
 \section{Results:}
 We present a new method to measure and correct for these influences using a
@@ -408,26 +407,6 @@ Katze (unpublished) & Macaque & ABI & 50  & \\
 \end{tabular}
 }{}
 \end{table}
- 
-\begin{table}
-\processtable{Numbers of reads used to train each method.\label{tab:counts}}
-{
-\begin{tabular}{lcccc}\toprule
-Experiment & Total & 7mer & GLM/MART & BN \\\midrule
-Wetterbom & $3.9 \times 10^7$ & $2.3 \times 10^7$ & $5.9 \times
-10^6$ & $1 \times 10^5$ \\
-Katze & $4.8 \times 10^7$ & $2.0 \times 10^7$ & $3.1 \times 10^6$ & $1 \times
-10^5$ \\
-Bullard & $1.2 \times 10^7$ & $3.1 \times 10^6$ & $1.8 \times 10^5$ & $1 \times
-10^5$\\
-Mortazavi & $3.9 \times 10^6$ & $1.9 \times 10^6$ & $3.8 \times 10^5$ & $1
-\times 10^5$ \\
-Trapnell & $3.4 \times 10^7$ & $1.6 \times 10^7$ & $5.9 \times 10^6$ & $1 \times
-10^5$
-\end{tabular}
-}{Note that in the Trapnell data set (the only paired-end set considered) we
-count only the first mate of each read.}
-\end{table}
 
 
 Testing was performed by cross-validation. Each method was trained on data taken
@@ -441,7 +420,7 @@ to those at least 100 nt long.
 
 The differences in the methods being tested necessitated training procedures
 unique to each. The total number of reads used to train each method is listed in
-Table \ref{tab:counts}, and below we describe the procedure used for
+Supplementary Section 3, and below we describe the procedure used for
 each.
 
 \citet{Li2010} recommends that their MART and GLM models be trained using the
@@ -490,24 +469,27 @@ zero, leading to a small KL divergence (exactly zero, when the distributions are
 Conversely, very different $k$-mer frequencies will result in a larger KL
 divergence.
 
-To avoid the risk of a small number of reads with many duplicates dominating the
-measure, we do not count duplicate reads when computing the KL divergence. Since we
-explicitly chose exons with high coverage, not counting duplicates may not
-fully capture the effects of the bias correction methods. Thus, for each exon,
-we compute the number of duplicates of each read and count only reads in the
-upper half. Under the assumption of uniform sampling, the set of reads falling
-in the upper half should not depend on sequence, and we should expect the KL
-divergence to be low.
+When computing the KL divergence, there is a risk of the measure being dominated
+by a small number of reads with many duplicates. Yet, given the high coverage of
+the exons being tested, if duplicate reads are excluded, it may not capture the
+full effect of bias correction. To account for these opposing concerns we adopt
+the following method: all reads contained within the exon being tested are
+ranked by the number of duplicates. We then exclude reads that are ranked in the
+lower half, and count each read ranked in the upper half only once, ignoring
+duplicates.
 
-We compute the divergence by reweighting the read counts using the predicted
-bias coefficient, choosing the upper half in each exon, discarding duplicate
-reads, and then tallying frequencies of overlapping $k$-mers. The $k$-mer
-distribution obtained is then compared to a background distribution obtained by
-redistributing reads uniformly at random within their exons.
+Under the assumption of uniform sampling, the set of reads ranked in the upper
+half should not depend on sequence, and we should expect the KL divergence to be
+low.  We compute the divergence by reweighting the read counts using the
+predicted bias coefficient before ranking the reads, choosing those reads
+ranked in the upper half of each exon, ignoring duplicate reads, and then
+tallying frequencies of overlapping $k$-mers. The $k$-mer distribution obtained
+is then compared to a background distribution obtained by redistributing reads
+uniformly at random within their exons.
 
 We repeated the procedure for $k \in \{1, 2, 3, 4, 5, 6\}$. The results of this
 analysis are plotted in Figure \ref{fig:kl}, for $k = 1$ and $k = 4$. The
-remaining cases are plotted in Supplementary Section 3.
+remaining cases are plotted in Supplementary Section 4.
 
 \begin{figure*}
 \centerline{\includegraphics[width=0.95\textwidth]{kl.eps}}
@@ -606,7 +588,7 @@ We used sequencing data previously published by \citet{Au2010} to evaluate the
 effect bias correction has on correlation to measurements made by TaqMan RT-PCR,
 made available by the the Microarray Quality Control project \citep{Shi2006}. The
 RNA-Seq data shows a pattern of bias similar to that seen in the other samples
-sequenced on an Illumina platform (see Supplementary Section 5). This evaluation
+sequenced on an Illumina platform (see Supplementary Section 6). This evaluation
 does not rely on an assumption that qRT-PCR necissarily more accurate than
 RNA-Seq based quantification, only that qRT-PCR is not biased in the same way as
 the RNA-Seq data.
@@ -664,7 +646,7 @@ an increasingly long training time. For example, in our tests, fitting our model
 minutes, running on one core of a 3 Ghz Intel Xeon processor. However, limiting
 the training to 25,000 reads leads to a model that is nearly as accurate while
 requiring less than 4 minutes to train. A full discussion of this trade-off is in
-Supplementary Section 5.
+Supplementary Section 6.
 
 The quality of the solution depends also on two other parameters: the standard
 deviation at which background sequences are sampled, and the weight applied to
@@ -677,7 +659,7 @@ without any intervention.
 
 Additionally, experimental and theoritical analysis suggest that the procedure
 is very resistant to inclusion of extranious parameters. In Supplementary
-Section 10 we prove an upper bound on the probability of our model predicting
+Section 11 we prove an upper bound on the probability of our model predicting
 any bias, if the experiment is in fact unbiased, showing that there very little
 risk in the applying the method to an unbiased data set. In particular, if more
 than 10,000 reads are used in the training procedure, the probability that any
@@ -698,15 +680,15 @@ priming was used. A possible explaination is, given the large number of
 parameters needed to estimate heptamer frequencies ($4^{7} = 16,383$), these
 parameters are estimated with less accuracy than in models requiring fewer
 parameters. Yet, we trained the 7mer model on a minimum of 1.9 million reads
-(see Table \ref{tab:counts}), a number which our theoretical results, detailed
-in Supplementary Section 9, suggest should lead to accurate estimates. A perhaps
+(see Supplementary Section 3), a number which our theoretical results, detailed
+in Supplementary Section 10, suggest should lead to accurate estimates. A perhaps
 more significant factor is that this method does not capture bias outside of the
 initial heptamer, though many data sets clearly are affected by bias in other
 positions.  Thus to improve the performance, it seems necessary to incease the
 size of the $k$-mers being considered. Yet, exponentially more reads would be
 required for an accurate estimate since the accuracy of the model, as quantified
 by its KL divergence from the true distribution, is $(r-1)/2n$, where $r=4^k$ is
-the number of parameters that must be estimated (See Supplementary Section 9).
+the number of parameters that must be estimated (See Supplementary Section 10).
 
 Our method generalizes this approach, attempting to overcome this problem by
 using an estimation of sequence probability that requires fewer parameters
@@ -738,7 +720,7 @@ sequencing experiments, may also benefit from our model. In a preliminary
 investigation, we found the sequence bias in one ChIP-Seq experiment
 \cite{Cao2010} was less than that observed in any of the RNA-Seq data we
 evaluated; however, our method is still able to effectively correct for the bias
-that was observed (see Supplementary Section 6).  Protocol differences, as we
+that was observed (see Supplementary Section 7).  Protocol differences, as we
 have seen, can result in significant differences in observed nucleotide
 frequencies, so we can not safely assert that bias in ChIP-Seq data is always
 low.  Given the weak assumptions made by our model, our estimation of bias could
@@ -751,12 +733,12 @@ observed bias, we evaluated data from the FRT-Seq method proposed by
 preparation with reverse transcription occuring on the flowcell surface. We
 observed that this data is not free from sequence bias, yet unlike other data
 generated on the Illumina platform, it appears to be effected only by relatively
-few positions adjacent to the read start (see Supplementary Section 7).
+few positions adjacent to the read start (see Supplementary Section 8).
 
 RNA-Seq is most often used to compare levels of expression, and so a natural
 concern is the consistency of the bias between samples. In the data we examined,
 the bias appears to be largely, but not entirely consistent (see Supplementary
-Section 8).  Similarly, in Figure \ref{fig:freqs}, the three data sets sequenced
+Section 9).  Similarly, in Figure \ref{fig:freqs}, the three data sets sequenced
 on the Illumina platform display similar patterns of nonuniformity, yet differ
 in magnitude, suggesting that batch effects in RNA-Seq remain a legitimate
 concern that should not be dismissed without evaluation.

@@ -124,6 +124,30 @@ in-degree ($p_{\text{max}}$), or maximum edge distance ($d_{\text{max}}$) has
 little effect for values of at least 1.
 
 
+\section{Total numbers of reads used to train each method}
+
+\begin{table}[H]
+\begin{center}
+\begin{tabular}{lcccc}
+Experiment & Total & 7mer & GLM/MART & BN \\\hline
+Wetterbom & $3.9 \times 10^7$ & $2.3 \times 10^7$ & $5.9 \times
+10^6$ & $1 \times 10^5$ \\
+Katze & $4.8 \times 10^7$ & $2.0 \times 10^7$ & $3.1 \times 10^6$ & $1 \times
+10^5$ \\
+Bullard & $1.2 \times 10^7$ & $3.1 \times 10^6$ & $1.8 \times 10^5$ & $1 \times
+10^5$\\
+Mortazavi & $3.9 \times 10^6$ & $1.9 \times 10^6$ & $3.8 \times 10^5$ & $1
+\times 10^5$ \\
+Trapnell & $3.4 \times 10^7$ & $1.6 \times 10^7$ & $5.9 \times 10^6$ & $1 \times
+10^5$
+\end{tabular}
+\caption{Note that in the Trapnell data set (the only paired-end set considered) we
+count only the first mate of each read.}
+\label{tab:counts}
+\end{center}
+\end{table}
+
+
 \section{Additional Kullback-Leibler Divergence Plots}
 
 Figure \ref{fig:klall} plots the adjusted and unadjusted KL divergence plots,
