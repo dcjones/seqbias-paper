@@ -1,0 +1,162 @@
+08-Nov-2011
+Manuscript ID: BIOINF-2011-1619
+Title: A new approach to bias correction in high-throughput sequencing data
+
+Dear Mr. Jones,
+
+The reviews of your manuscript are now in hand for Bioinformatics and can be found at the foot of this e-mail.
+
+Based on the reports of the referees, the editor has rejected the paper for publication in its present form. However, the Associate Editor, Alex Bateman, considers that if the paper were substantially rewritten, taking into account all the referees' comments it may become acceptable for publication.
+
+We ask that major revisions are submitted within one month ideally, but the system will allow a revised paper to be submitted within 90 days of the original decision date.
+
+Please summarise your changes for the editor, indicating which changes you have made and which changes you do not wish to make and why. This can be done either in a file uploaded alongside your revised manuscript, or through the Author Centre where you can enter your responses directly.
+
+Please submit your revised version through the Author Centre by clicking on the purple button 'Click here to Submit a Revision' in the Bioinformatics ScholarOne Manuscripts web site (http://mc.manuscriptcentral.com/bioinformatics ).
+
+At this major revision stage, we ask that you upload the following revised manuscript files:
+
+EITHER: (i) A .doc or .rtf file of the revised manuscript, with all tables, figures, schemes and equations inserted in the document.
+
+OR: (ii) All necessary LaTeX files that will be required by the typesetter (including bioinfo.cls, bib, .bst and .ps files).
+Please can you mark-up the changes made after revision by using the track changes function or highlighting these in red text.
+
+NOTE: Please upload your final version of supplementary materials without any changes marked.
+
+On behalf of the Bioinformatics  Associate Editor, Alex Bateman, I want to thank you for selecting Bioinformatics to present your work.
+
+Best regards,
+Alison Hutchins
+Bioinformatics
+
+Here are the Associate Editor's comments:
+
+----------------------------------------
+The reviewers thought that this is an important subject to work on but they also raised many issues that you should attempt to address in a revised manuscript.
+
+Yours sincerely
+Alex Bateman
+----------------------------------------
+
+Here are the comments of the reviewers:
+
+----------------------------------------
+Reviewer: 1
+Comments to the Author
+1) General comments
+
+This paper presents a method for correcting for sequencing bias in RNA-seq experiments.
+The effects of sequencing bias have been reported in previous studies and several methods presented to correct this bias. Since RNA-seq depends on using sequencing machines as simple counters to estimate the abundances of genes it is neccessary to correct for any effects the nucleotide sequence might have on the abundance estimation.
+
+The authors present a method based on training a Bayesian network that represents the sequence bias probability distribution. The only limits on the structure of this Bayesian network are due to computational restrictions, otherwise no structure is imposed (such as a tree structure).
+
+The authors compare their method to other bias-correction methods on several RNA-seq datasets. The comparison is very favorable, their method increases uniformity of read counts more than other methods with some computational overhead (45 minutes).
+
+In the supplement the authors show an upper bound on the probability that their method will learn a non-empty model when in fact there is no bias in the data. I think this is an important feature of the method and should be highlighted better in the paper.
+
+2) Specific comments
+
+a) major comments
+
+- My only concern is with the sampling described on pg3, column 2, lines 32-47.
+In RNA-seq data the distribution of read count can span 5-6 orders of magnitudes, the top
+expressed gene accounting for up to 10% of the data (especially tissue specific). If you sample at random you are selecting more frequently from the top, because of this heavy skew in the distribution. You discuss this issue when measuring KL-divergence in section 3.1, but it does not appear to affect the training. My main worry is that this will bias the adjustment to mostly highly expressed genes. How do you take care of this?
+
+One approach would be to simply discard duplicates. In that case how do you count the sequences, i.e. if two reads map to the same position with one with sequencing errors, one without do you count them as two sequences or do you treat them as one and use the sequence of the genome?
+
+
+b) minor comments
+
+- pg 3, column 1, lines 42-50
+ Although BN's are mostly used for classification purposes they are just a compact representation of a discrete probability distribution, the discussion of classification is somewhat confusing.
+
+- supplement pg 7, figure 11.
+ Since you have the 4 replicates from the Trapnell et al. data and you show the nucleotide frequencies for each replicate, why not run your method independently on each replicate and compare the modified results.
+
+Reviewer: 2
+Comments to the Author
+The manuscript “A new approach to bias correction in high-throughput sequencing
+data” by Jones et al. addressed the important issue of detecting and correcting
+for intrinsic biases in NGS data. The authors built their assumptions on and
+compared their methods to those presented in two previous papers: Hansen et al.
+2010 and Li et al. 2010. Different from reweighting heptamers, GLM or MART
+methods in previous work, they proposed a Bayesian network framework to
+incorporate info from more neighboring bases and automatically does model
+selection. They showed better performance of their method in three different
+aspects: more uniform nucleotide frequency, more uniform read coverage, and
+better agreement with RT-PCR quantitation. Interestingly, they also proposed to
+apply their methods to ChIP-Seq and other general NGA data, which is not
+addressed in any previous work.
+
+General concerns. This work has an underlying assumption that base-level read
+counts are biased and mainly affected by surrounding nucleotide frequencies.
+For RNA-Seq data, this assumption has been justified by previous work (Hansen et
+al. 2010 and Li et al. 2010). But it is not readily extendable to other NGS
+data, such as ChIP-Seq. ChIP-Seq has an enrichment step for DNA fragments with
+very specific characteristics (e.g. transcription factor binding sites) , it is
+imaginable that the surrounding nucleotide frequencies around a ChIP-Seq peak
+may be quite different from other genomic regions, and most sequencing reads
+from real binding sites may have very similar surrounding nucleotide
+frequencies. To accurately measure read counts for a ChIP-Seq peak, it matters
+more to distinguish reads from background and from real binding sites and
+correct for protocol-related biases such as PCR over-amplification. The authors
+may need more effort to establish the fact that biases related to surrounding
+nucleotide frequencies exist in multiple ChIP-Seq data sets. Moreover, even for
+RNA-Seq data, only considering biases in base-level read counts does not seem to
+be enough for accurate quantitation of transcript level as shown in (Zheng et
+al. 2011 BMC Bioinformatics). Features other than the 20 upstream and downstream
+nucleotides surrounding read starts may also cause biases in gene/transcript
+quantitation. The authors may discuss a little more on their assumptions.
+
+Below are some specific concerns:
+1.      Page 2, Figure 1. Wetterbom data does not seem to have much bias in surrounding nucleotide frequencies. What is the difference between this and Katze data set that makes such difference? Why do the different Illumina data sets have similar bias trends whereas ABI data sets do not?
+2.      Page 4, line 31, left column. How are the default values of pmax and dmax determined? Could you provide a table with model complexity, model performance and running time with different pmax and dmax choices?
+3.      Page 5, line28, right column. This sentence is confusing. Are the duplicated reads counted or not? Is “upper half” referring to the position in the exon or reads with number of duplicates in the upper 50 percentile?
+4.      Page 6, figure 4. Is the unadjusted k=1 case equivalent to the KL panel in Figure 1? If so, why is Bullard data not consistent KL=0.6 in figure 4 and 0.3 in Figure 1. Other data sets seem to be consistent.
+5.      Page 7, table 4. Is the presented correlation r or r^2?
+6.      Different versions of annotation were referred. Page 4 line 49: Ensembl 60 is used in training models, page 7 line 32, Ensembl 62 is used in comparing to RT-PCR data. Should make these consistent.
+
+
+Reviewer: 3
+Comments to the Author
+The paper presents a new method for bias correction in  RNAseq data.
+
+ The authors correctly point out that adverse consequences of failing
+to correct the biases include untrustworth comparisons of relative
+abundance between genes, as well as test of differential expression
+between samples.
+
+The result sections, however, did not include any comparison directly
+on bias reduction. Rather, results are focused on improvement of model
+fitting and statistical significance of correlation -- which are both
+important but not the ultimate goal.
+
+In terms of bias reduction: first, it is necessary to see the amount of bias
+reduced using the proposed approach versus the other methods in
+comparison.  The increase in uniformaity is a promising sign, but does
+not guarantee that the gene expression measure is improved.  With the
+bias correction implemented, what will be the recommended measure for
+a gene or exon level expression? Sum of Pr[m_i|s_i]? Whether the bias of
+this value is reduced is a much more convincing argument than the
+increased uniformity itself. There are  biological information that
+would allow this type of comparison. We have seen only one example in
+Fig 2, but no direct quantification in bias reduction.
+
+Second, as the authors point out in introduction, another problem of
+these biases is that they cannot be assumed to be ``identical between
+replicates". How much of the non-identical bias is removed with the
+proposed approach?
+
+
+Another issue as important as bias reduction is variance
+reduction. The bias-variance trade off is unavoidable. By estimating
+the bias and trying to adjust for it, more variance is introduced to
+the system. Is the amount of bias reduced worth the increased
+variance, for downstream analysis?
+
+A minor point: If all examples are from RNAseq experiment, how should
+one modify the method when it is applied to other sequencing data?
+Would one do the same for ChIP-Seq? IF the current method is meant for
+RNAseq only, the title should reflect this instead of general ``high
+throughput sequencing data".
+----------------------------------------

@@ -47,9 +47,12 @@ such as de novo gene annotation and gene or isoform quantification.
 \section{Results:}
 We present a new method to measure and correct for these influences using a
 simple graphical model. Our model does not rely on existing gene annotations,
-making it applicable to any quantitative high throughput sequencing data. We
-evaluate our method on several data sets, and by multiple criteria,
-demonstrating that it effectively decreases bias and increases uniformity.
+and model selection is performed automatically making it applicable with few
+assumptions. We evaluate our method on several data sets, and by multiple
+criteria, demonstrating that it effectively decreases bias and increases
+uniformity. Additionally, we provide theoretical and empirical results showing
+that the method is unlikely to have any effect on unbiased data, suggesting it
+can be applied with little risk of spurious adjustment.
 
 
 \section{Availability:}
@@ -201,9 +204,9 @@ of the training data yet avoids overfitting.
 Towards that end, we propose training a Bayesian network using examples of
 foreground and background sequences. By training the model discriminatively and
 penalizing model complexity, we can avoid a model that is over-parametrized,
-excluding parameters that insufficiently informitive in discriminating between
-foreground and background. The Bayesian network can then be used to evaluate
-sequence probability, and thus bias, at any genomic position. Figure
+excluding parameters that are insufficiently informitive in discriminating
+between foreground and background. The Bayesian network can then be used to
+evaluate sequence probability, and thus bias, at any genomic position. Figure
 \ref{fig:overview} gives a schematic overview of the proposed model.
 
 \begin{figure}
@@ -271,8 +274,12 @@ including uninformative parameters that would only increase variance.
 The model is trained on $n$ sequences, one half labeled as foreground, the other
 background, sampled from the reference genome. To obtain the foreground
 sequences, we take sequences surrounding (extending 20 nt to either side, by
-default) the start positions of a randomly sampled set of $n/2$ aligned reads,
-ignoring duplicate reads.
+default) the start positions of a randomly sampled set of $n/2$ aligned reads.
+To avoid the risk of the method being overfit to reads deriving from a few
+highly expressed genes, we ignore duplicate reads, which we define as tow reads
+mapping to the same location in the genome. The nucleotide sequence is taken
+from the genome, rather then the reads themselves, allowing us to include
+positions outside of the read.
 
 To obtain background training sequences, we randomly offset the positions from
 which the foreground sequences were sampled.  The offset is drawn from a
@@ -603,15 +610,16 @@ probe.
 Each method was trained in a manner identical to that used in the analysis of
 section 3.1 and 3.2, but without restricting the training data to the first
 eight chromosomes.  After adjusting read counts according to the predicted
-sequence bias, we computed the Pearson correlation between log read counts and
-log TaqMan expression values, which are averaged across three replicates. These
-correlations are listed in Table \ref{tab:pcr}. Our method shows a statistically
-significant increase in correlation compared to the other methods.
+sequence bias, we computed the Pearson correlation coefficient $r$ between log
+read counts and log TaqMan expression values, which are averaged across three
+replicates. These correlations are listed in Table \ref{tab:pcr}. Our method
+shows a statistically significant increase in correlation compared to the other
+methods.
 
 \begin{table}
 \processtable{
-    Pearson correlation between log-adjusted read counts and log-adjusted TaqMan
-    values.\label{tab:pcr}}{
+    The Pearson correlation coefficient $r$ between log-adjusted read counts and
+    log-adjusted TaqMan values.\label{tab:pcr}}{
     \centerline{
 \begin{tabular*}{0.4\textwidth}{lrl}
 \toprule
