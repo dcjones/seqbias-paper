@@ -4,7 +4,15 @@
 
 \begin{document}
 
-\subsection*{Response to Reviewer 1}
+TODO: Introduction
+
+
+\section*{Summary}
+
+TODO
+
+
+\section*{Response to Reviewer 1}
 
 \begin{quote}
 In the supplement the authors show an upper bound on the probability that their
@@ -39,7 +47,7 @@ in the first paragraph of Section 2.2.1: ``we take sequences surrounding
 sampled set of $n/2$ aligned reads, ignoring duplicate reads.'' The reviewer is
 correct that this is an important detail, as the method might otherwise be
 overfit to a few highly expressed genes, and in this revision we have expanded
-this paragraph to clarify it.
+this paragraph to clarify this decision.
 
 
 \begin{quote}
@@ -66,8 +74,8 @@ We agree that a looking for an increase in correlation of gene abundance
 estimates between replicates after bias correction would be an interesting
 analysis. Unfortunately, the four RNA-Seq data sets from Trapnell, et al, were
 taken from four different biological states and compared without technical or
-biological replicates, so comparing gene abundance estimates would be conflated
-with genuine changes in gene expression.
+biological replicates, so a comparison of gene abundance estimates would be
+conflated with genuine changes in gene expression.
 
 While we wish to draw attention to the issue of batch effects in RNA-Seq, a larger
 survey of variability of technical bias is outside the intended scope of the
@@ -76,16 +84,15 @@ paper.
 
 
 
-
-
-\subsection*{Response to Reviewer 2}
+\section*{Response to Reviewer 2}
 
 \begin{quote}
+General concerns. This work has an underlying assumption that base-level read
 counts are biased and mainly affected by surrounding nucleotide frequencies.
 For RNA-Seq data, this assumption has been justified by previous work (Hansen et
 al. 2010 and Li et al. 2010). But it is not readily extendable to other NGS
 data, such as ChIP-Seq. ChIP-Seq has an enrichment step for DNA fragments with
-very specific characteristics (e.g. transcription factor binding sites) , it is
+very specific characteristics (e.g. transcription factor binding sites), it is
 imaginable that the surrounding nucleotide frequencies around a ChIP-Seq peak
 may be quite different from other genomic regions, and most sequencing reads
 from real binding sites may have very similar surrounding nucleotide
@@ -93,15 +100,40 @@ frequencies. To accurately measure read counts for a ChIP-Seq peak, it matters
 more to distinguish reads from background and from real binding sites and
 correct for protocol-related biases such as PCR over-amplification. The authors
 may need more effort to establish the fact that biases related to surrounding
-nucleotide frequencies exist in multiple ChIP-Seq data sets. Moreover, even for
-RNA-Seq data, only considering biases in base-level read counts does not seem to
-be enough for accurate quantitation of transcript level as shown in (Zheng et
-al. 2011 BMC Bioinformatics). Features other than the 20 upstream and downstream
-nucleotides surrounding read starts may also cause biases in gene/transcript
-quantitation. The authors may discuss a little more on their assumptions.
+nucleotide frequencies exist in multiple ChIP-Seq data sets.
 \end{quote}
 
-TODO
+The reviewer is correct that we have by no means established that applying our
+method to ChIP-Seq leads to more accurate results, and have instead concentrated
+on making this case for RNA-Seq. We have included some very preliminary ChIP-Seq
+results, only to suggest that investigating the effects of sequence bias in
+ChIP-Seq is a promising future research direction. To avoid the impression that
+we are making an overly-broad claim, we have reworded the title and abstract to
+reflect that our results relate most readily to RNA-Seq.
+
+
+\begin{quote}
+Moreover, even for RNA-Seq data, only considering biases in base-level read
+counts does not seem to be enough for accurate quantitation of transcript level
+as shown in (Zheng et al. 2011 BMC Bioinformatics). Features other than the 20
+upstream and downstream nucleotides surrounding read starts may also cause
+biases in gene/transcript quantitation. The authors may discuss a little more on
+their assumptions.
+\end{quote}
+
+The Zheng paper make the assertion that ``the bias patterns across genes were
+not adequately addressed by the base-level bias correction methods, and GAM
+[Generalized Additive Model] correction is necessary to further remove these
+biases.'' This follows from their observation that Hansen's heptamer reweighting
+method did not improve correlation bewteen RNA-Seq and RT-PCR. Indeed, our
+results are consistent, showing only a slight improvment.
+
+However, the authors apparently did not evaluate this correlation after applying
+a more sophisticated model such as the GLM or MART model propsed by Li. As we
+demonstrate in Section 3.3, applying a more flexible model results in a large
+increase in correlation, suggesting such an approach should not be hastily
+dismissed.
+
 
 \begin{quote}
 Page 2, Figure 1. Wetterbom data does not seem to have much bias in surrounding
@@ -110,8 +142,14 @@ that makes such difference? Why do the different Illumina data sets have similar
 bias trends whereas ABI data sets do not?
 \end{quote}
 
-TODO
-
+While both these data sets were generated using the ABI platform, there are
+significant differences in the protocol used. Most significantly, the Wetterbom
+data was generated using poly-A primers to enrich for mature, polyadenylated
+mRNA. In the Katze data, ribosomal RNA was depleted, but polyadenylated
+transcripts were not selected for, in an effort to sequence more of the
+non-polyadenylated transcriptome. The Kate data set is unique in this aspect:
+all three of the Illumina data sets were generated with mRNA-Seq protocols as
+well.  We have revised Table 1 to make note of this fact.
 
 
 \begin{quote}
@@ -124,17 +162,21 @@ As suggested by Figure 3 in the paper, most edges added to the model are between
 adjacent nucleotides, and the in-degree of most positions is small.  We have now
 included additional data (Figures 4 and 5 in the Supplement) showing that the
 performance of the model on the Mortazavi data set is not greatly effected by
-these parameters as long as they are both non-zero.
+these parameters as long as they are both non-zero. It should not bed assumed
+that this necessarily the case with every data set, and so these parameters
+default to somewhat arbitrary larger numbers that balance training time with
+flexibility.
 
 
 \begin{quote}
 Page 5, line28, right column. This sentence is confusing. Are the duplicated
-reads counted or not? Is “upper half” referring to the position in the exon or
+reads counted or not? Is ``upper half'' referring to the position in the exon or
 reads with number of duplicates in the upper 50 percentile?
 \end{quote}
 
 We have rewritten the 3rd paragraph in section 3.1 to provide a more lucid
 description of the procedure.
+
 
 \begin{quote}
 Page 6, figure 4. Is the unadjusted k=1 case equivalent to the KL panel in
@@ -142,9 +184,9 @@ Figure 1? If so, why is Bullard data not consistent KL=0.6 in figure 4 and 0.3
 in Figure 1. Other data sets seem to be consistent.
 \end{quote}
 
-Regrettably, Figure 1 figure used the natural logarithm to compute KL
-divergence, while Figure 4 used the base 2 logarithm, causing the scale to
-somewhat shifted between the two. This has been corrected in the revision.
+Regrettably, in Figure 1, te natural logarithm was used to compute KL
+divergence, while in Figure 4, the base 2 logarithm, causing the scale to
+somewhat shifted between the two. This error has been corrected in the revision.
 
 
 \begin{quote}
@@ -161,10 +203,10 @@ RT-PCR data. Should make these consistent.
 \end{quote}
 
 We have repeated tho RT-PCR analysis with Ensembl 60, to remain consistent with
-the other results.
+the Poisson regression and KL divergence results.
 
 
-\subsection*{Response to Reviewer 3}
+\section*{Response to Reviewer 3}
 
 
 \begin{quote}
@@ -185,7 +227,25 @@ would allow this type of comparison. We have seen only one example in
 Fig 2, but no direct quantification in bias reduction.
 \end{quote}
 
-TODO
+We use bias to refer to the fact that the estimator in question (RNA-Seq
+based measurement of gene abundance) does not, in expectation, agree with the
+value we wish to estimate (the true gene abundance). To measure the bias
+directly, we would then need to know the true number of copies of each
+transcript we wish to quantify and compare RNA-Seq based estimates before and
+after correcting for sequence bias. Because exact quantification of transcript
+copy number is not feasible at a large scale with any existing technology, we
+instead used the largest publically available RT-PCR data set that we are aware
+of and demonstrated a substantial increase in the agreement between RNA-Seq and
+RT-PCR after correcting for bias in the former (see Section 3.3).
+
+In the example shown in Figure 2, we provided a qualitative illustration of the
+large scale quantitative analysis of Section 3.1 and Section 3.2, demonstrating
+a reduction in the symptoms of sequence bias across thousands of exons in five
+data sets, and in comparison to three previously proposed methods. In sum, we
+believe this represents the most complete and rigorous characterization of
+sequence bias in RNA-Seq yet presented and is a compelling convergence of
+evidence that the accuracy RNA-Seq is improved by correcting for sequence
+bias, and that the method we propose is particularily suited to do so.
 
 
 \begin{quote}
@@ -195,7 +255,14 @@ replicates". How much of the non-identical bias is removed with the
 proposed approach?
 \end{quote}
 
-TODO
+We have seen that sequence bias is not always consistent, even in experiments
+using similar protocols (see Figure 1, for example), and believe that batch
+effects in RNA-Seq are a serious concern. So far, we have concentrated only on
+rigorously demonstrating a absolute reduction in sequence bias, and have not
+undertaken any systematic comparison of the consistency of this bias between
+replicates. Such comparison would be meaningful, but outside of the intended
+scope of the paper.
+
 
 \begin{quote}
 Another issue as important as bias reduction is variance reduction. The
@@ -207,12 +274,11 @@ reduced worth the increased variance, for downstream analysis?
 We agree that it possible to reduce bias and yet introduce so much variance that
 that experiments are actually rendered less reliable. In the paper, we attempted
 to capture this tradeoff most directly with Figure 5, which demonstrates that,
-while uniformity of read coverage is increased ($R^2 > 0$) in the vast majority
+while uniformity of read coverage is increased ($R^2 > 0$) in the large majority
 of exons after applying our method, inevitably it is decreased ($R^2 < 0$) in
-some.
-
-TODO: expand upon this thought.
-
+some. This suggests that the complexity penalty we use in model selection works
+as desired, and as as its ansymptotic properties predict, controlling variance by
+preventing very dense models from being trained.
 
 
 \begin{quote}

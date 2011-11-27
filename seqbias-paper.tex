@@ -404,15 +404,19 @@ unpublished data set of our own (Table \ref{tab:datasets}).
 \processtable{Data sets on which the methods are evaluated.\label{tab:datasets}}
 {
 \begin{tabular}{lllcc}\toprule
- & & & Read  \\
-Experiment & Species & Platform & length \\\midrule
-\citet{Wetterbom2010} & Chimpanzee & ABI & 33  \\
-Katze (unpublished) & Macaque & ABI & 50  & \\
-\citet{Bullard2010} & Human & Illumina & 35 \\
-\citet{Mortazavi2008} & Mouse & Illumina & 33 \\
-\citet{Trapnell2010} & Mouse & Illumina & 75 \\\botrule
+                      &            &          &          & Read  \\
+Experiment            & Species    & Platform & Protocol & Length \\\midrule
+\citet{Wetterbom2010} & Chimp.     & ABI      & mRNA     & 33  \\
+Katze (unpublished)   & Macaque    & ABI      & WT       & 50 \\
+\citet{Bullard2010}   & Human      & Illumina & mRNA     & 35 \\
+\citet{Mortazavi2008} & Mouse      & Illumina & mRNA     & 33 \\
+\citet{Trapnell2010}  & Mouse      & Illumina & mRNA     & 75 \\\botrule
 \end{tabular}
-}{}
+}{
+The protocol column lists whether a poly-A priming step to select for
+polyadenylated transcripts was used (``mRNA''), or depletion of ribosomal RNA
+with no step to select for polyadenylated transcripts (``WT'').
+}
 \end{table}
 
 
@@ -661,12 +665,16 @@ deviation at which background sequences are sampled, and the weight applied to
 the penalty term of the BIC, yet it is not particularly sensitive to their
 values. (The median $R^2$ goodness-of-fit statistic used in section 3.2 varied
 by less that 25\% as these parameters were varied over a range of $10^4$. See
-Supplementary Section 2.) In all our evaluation, no special tuning of the
+Supplementary Section 2.) The same is true of the $p_{\text{max}}$ and
+$d_{\text{max}}$ parameters, used restrict the in-degree and edge distance of
+the model, respectively, in order to control training time. Our tests show that
+these parameters need only be greater than zero for an adequate model to trained
+for the Mortazavi data.  In all our evaluation, no special tuning of the
 parameters was performed, suggesting it can be used effectively across data sets
 without any intervention.
 
-Additionally, experimental and theoritical analysis suggest that the procedure
-is very resistant to inclusion of extranious parameters. In Supplementary
+Additionally, experimental and theoretical analysis suggest that the procedure
+is very resistant to inclusion of extraneous parameters. In Supplementary
 Section 11 we prove an upper bound on the probability of our model predicting
 any bias, if the experiment is in fact unbiased, showing that there very little
 risk in the applying the method to an unbiased data set. In particular, if more
