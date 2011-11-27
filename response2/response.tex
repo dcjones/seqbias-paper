@@ -4,13 +4,54 @@
 
 \begin{document}
 
-TODO: Introduction
 
 
-\section*{Summary}
+\section*{Summary of Changes}
 
-TODO
+\begin{itemize}
+\item In response concerns raised by reviewers 2 and 3, we we have reworded the
+title and abstract to make clear that our results are most directly applicable
+to RNA-Seq, and we are not yet able to make strong assertions regarding
+ChIP-Seq.
 
+\item We have taken the first reviewer's suggestion and have highlighted the
+strong theoretical results our method provides in the abstract.
+
+\item In response to the first reviewers primary concern, we have clarified the
+first paragraph of Section 2.1.1 to make clear that our method does ignore
+duplicate reads when training.
+
+\item We have removed our use of the term ``classification'' in the fifth
+paragraph of Section 2.1, as it seemed to cause some confusion.
+
+\item We have clarified protocol differences between the Wetterbom and Katze
+data sets in Table 1, in response to the second reviewer's question.
+
+\item We have included new data in Supplementary Section 2 showing that the
+results presented are not typically sensitive to the values of $p_{\text{max}}$
+and $d_{\text{max}}$
+
+\item The description of the procedure we used to compute KL divergence in the
+3rd paragraph of Section 3.1 has been rewritten to be more clear.
+
+\item We have corrected an inconsistency in the scale of figures 1 and 4.
+
+\item We have clarified that the values in Table 3 are Pearson correlation
+coefficient $r$, and not $r^2$.
+
+\item We have repeated the RT-PCR analysis of 3.3 using version 60 of the
+Ensembl gene annotations, rather than version 62, to remain consistent with the
+Poisson regression and KL divergence analysis.
+
+\item We have added the proper citation of what we believe to be first published
+derivation of the results of Supplementary Section 10.
+
+\time We have cited and made note of in Section 4 a related paper by Zheng, et
+al, brought to our attention by reviewer 2.
+
+\item Table 2 was moved to Supplementary Section 3 to preserve space.
+
+\end{itemize}
 
 \section*{Response to Reviewer 1}
 
@@ -174,8 +215,8 @@ reads counted or not? Is ``upper half'' referring to the position in the exon or
 reads with number of duplicates in the upper 50 percentile?
 \end{quote}
 
-We have rewritten the 3rd paragraph in section 3.1 to provide a more lucid
-description of the procedure.
+We have rewritten the 3rd paragraph in Section 3.1 to provide a more lucid
+description of the procedureve.
 
 
 \begin{quote}
@@ -296,10 +337,6 @@ one that our method is particularly suited for, besides some preliminary
 analysis the results presented here are directed at RNA-Seq, and we have
 reworded the title and abstract to reflect this.
 
-
-\section*{Conclusion}
-
-TODO
 
 \end{document}
 
