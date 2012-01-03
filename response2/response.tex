@@ -1,14 +1,17 @@
 \documentclass{article}
 \usepackage{amsmath}
-%\usepackage{dcj}
+\usepackage{dcj}
 
 \begin{document}
 
-TODO: brief introduction
+The paper submitted here is a revision of one originally titled ``A new approach
+to bias correction in high-throughput sequencing data''.  We found the reviewers
+comments to be very constructive overall, and are grateful for their time and
+attention. Some small errors were brought to our attention, as well as several
+points of confusion which we have taken care to address in this revision.
 
-We have included below a summary of the changes made in this revision in
-addition to specific responses to the points raised by the reviewers.
-
+Belew is a summary of the changes made, in addition to specific responses to the
+points reaised by the reviewers.
 
 \section*{Summary of Changes}
 
@@ -25,7 +28,7 @@ strong theoretical results our method provides in the abstract.
 our method does ignore duplicate reads when training.
 
 \item We have removed our use of the term ``classification'' in the fifth
-paragraph of Section 2.1, as it seemed to cause some confusion.
+paragraph of Section 2.1, as it seemed only to cause confusion.
 
 \item We have clarified protocol differences between the Wetterbom and Katze
 data sets in Table 1, in response to the second reviewer's question.
@@ -50,8 +53,9 @@ Poisson regression and KL divergence analysis.
 what we believe to be first published derivation of the results of Supplementary
 Section 10.
 
-%\time We have cited and made note of in Section 4 a related paper by Zheng, et
-%al, brought to our attention by reviewer 2.
+\item In Section 4, we have made note of recent paper by Jayaprakash, et al, as
+well as the work by Zheng, et al, that was brought to our attention by the
+second reviewer.
 
 \item Table 2 was moved to Supplementary Section 3 to preserve space.
 
@@ -102,9 +106,10 @@ compact representation of a discrete probability distribution, the discussion
 of classification is somewhat confusing.
 \end{quote}
 
-It was our intention to point out that the training algorithm used is typical of
-classification applications, but this point was perhaps needlessly confusing.
-We have rewritten the paragraph in question (the fifth paragraph in Section 2.1,
+It was our intention to point out that the training algorithm used (i.e.,
+maximizing the conditional log-likelihood) is typical of classification
+applications, but this point was perhaps needlessly confusing. We have
+rewritten the paragraph in question (the fifth paragraph in Section 2.1,
 beginning with ``Towards that end...'') to avoid this.
 
 
@@ -167,10 +172,10 @@ not adequately addressed by the base-level bias correction methods, and GAM
 [Generalized Additive Model] correction is necessary to further remove these
 biases.'' This follows from their observation that Hansen's heptamer reweighting
 method did not improve correlation bewteen RNA-Seq and RT-PCR. Indeed, our
-results are consistent, showing only a slight improvment.
+results are mostly consistent, showing only a slight improvment.
 
 However, the authors apparently did not evaluate this correlation after applying
-a more sophisticated model such as the GLM or MART models as propsed by Li. As
+a more sophisticated model such as the GLM or MART models as proposed by Li. As
 we demonstrate in Section 3.3, applying a more flexible model results in a large
 increase in correlation, suggesting such an approach should not be hastily
 dismissed.
@@ -188,7 +193,7 @@ significant differences in the protocol used. Most significantly, the Wetterbom
 data was generated using poly-A primers to enrich for mature, polyadenylated
 mRNA. In the Katze data, ribosomal RNA was depleted, but polyadenylated
 transcripts were not selected for, in an effort to sequence more of the
-non-polyadenylated transcriptome. The Kate data set is unique in this aspect:
+non-polyadenylated transcriptome. The Katze data set is unique in this aspect:
 all three of the Illumina data sets were generated with mRNA-Seq protocols as
 well.  We have revised Table 1 to make note of this fact.
 
@@ -204,7 +209,7 @@ adjacent nucleotides, and the in-degree of most positions is small.  We have now
 included additional data (Figures 4 and 5 in the Supplement) showing that the
 performance of the model on the Mortazavi data set is not greatly effected by
 these parameters as long as they are both non-zero. It should not be assumed
-that this necessarily the case with every data set, and so these parameters
+that this is necessarily the case with every data set, and so these parameters
 default to somewhat arbitrary larger numbers that balance training time with
 model flexibility.
 
@@ -284,9 +289,9 @@ large scale quantitative analysis of Section 3.1 and Section 3.2, demonstrating
 a reduction in the symptoms of sequence bias across thousands of exons in five
 data sets, and in comparison to three previously proposed methods. In sum, we
 believe this represents the most complete and rigorous characterization of
-sequence bias in RNA-Seq yet presented and is a compelling convergence of
+sequence bias in RNA-Seq yet presented. It is a compelling convergence of
 evidence that the accuracy RNA-Seq is improved by correcting for sequence
-bias, and that the method we propose is particularily suited to do so.
+bias, and that the method we propose is particularly suited to do so.
 
 
 \begin{quote}
@@ -318,7 +323,7 @@ to capture this tradeoff most directly with Figure 5, which demonstrates that,
 while uniformity of read coverage is increased ($R^2 > 0$) in the large majority
 of exons after applying our method, inevitably it is decreased ($R^2 < 0$) in
 some. This suggests that the (BIC) complexity penalty we use during model
-selection works as desired, and as as its ansymptotic properties predict,
+selection works as desired, and as its ansymptotic properties predict,
 controlling variance by preventing very dense models from being trained.
 
 
@@ -334,9 +339,8 @@ No modification at all is needed to apply the method to ChIP-Seq data. This is
 true also of the Hansen method, but not the case with methods of Li or Roberts.
 While we believe application to ChIP-Seq is a promising research direction and
 one that our method is particularly suited for, besides some preliminary
-analysis the results presented here are directed at RNA-Seq, and we have
+analysis the results presented here are directed at RNA-Seq. We have
 reworded the title and abstract to reflect this.
-
 
 \end{document}
 
