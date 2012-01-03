@@ -3,9 +3,6 @@
 \copyrightyear{2011}
 \pubyear{2011}
 
-\usepackage{comment}
-
-
 \begin{document}
 \firstpage{1}
 
@@ -42,7 +39,7 @@ Quantification of sequence abundance in RNA-Seq experiments is often conflated
 by protocol-specific sequence bias. The exact sources of the bias are unknown,
 but may be influenced by PCR amplification, or differing primer affinities and
 mixtures, for example. The result is decreased accuracy in many applications,
-such as de novo gene annotation and gene or isoform quantification.
+such as de novo gene annotation and transcript quantification.
 
 \section{Results:}
 We present a new method to measure and correct for these influences using a
@@ -73,19 +70,16 @@ In the last few years, RNA-Seq has emerged as a promising alternative to
 microarrays in quantifying RNA abundance. But, as microarray technology has
 brought with it technical challenges ranging from developing robust
 normalization to accounting for cross-hybridization, RNA-Seq presents a new set
-of challenges. A significant example is the effect that transcript length has in
-biasing quantification, as first explored by \citet{Oshlack2009}, and
-subsequently addressed by \cite{Young2010, Gao2011}.
+of challenges. As first noted by \citet{Dohm2008}, a particular challenge is the
+often complex and protocol-specific influence of nucleotide sequence on
+quantification.
 
-The underlying nucleotide sequence also influences quantification in a manner
-that is complex and protocol-specific. In an ideal experiment, the number of
-reads mapping to a particular position in the genome is a function of RNA
-abundance and should not be additionally dependent on the sequence at that
-position. As noted first by \citet{Dohm2008}, this is not the case.  As
-illustration, Figure \ref{fig:freqs} plots this nonuniformity in nucleotide
-frequencies on five data sets (see Table \ref{tab:datasets}), each using a
-different protocol.
-
+In an ideal experiment, the number of RNA-Seq reads mapping to a particular
+position in the genome is a function of RNA abundance and should not be
+additionally dependent on the sequence at that position. Yet, this is not the
+case. As illustration, Figure \ref{fig:freqs} plots this nonuniformity in
+nucleotide frequencies on five data sets (see Table \ref{tab:datasets}), each
+using a different protocol.
 
 These biases may adversely effect transcript discovery, as low level noise may
 be over-reported in some regions, and in others, active transcription may be
@@ -93,11 +87,10 @@ under-reported. They render untrustworthy comparisons of relative abundance
 between genes or isoforms, and any test of differential expression hangs on the
 assumption that these biases are identical between replicates, an undesirable
 assumption given that the causes of the bias are not well understood.
-Additionally, in many tests of differential expression---similar to the effects
-of transcript length---a higher read count will result in higher statistical
-confidence. It follows that the sensitivity of such a test will also be biased
-by sequence, affecting downstream analysis such as gene ontology enrichment
-tests.
+Additionally, in many tests of differential expression higher read count will
+result in higher statistical confidence. It follows that the sensitivity of such
+a test will also be biased by sequence, affecting downstream analysis such as
+gene ontology enrichment tests.
 
 This bias, though observed primarily in the $5'$ end of a read, is not resolved by
 trimming the reads prior to mapping \citep{Hansen2010} (see also Supplementary
@@ -119,6 +112,8 @@ are sampled uniformly from transcripts, each of the plots should be essentially
 flat.}
 \label{fig:freqs}
 \end{figure*}
+
+
 
 \citet{Li2010} propose two models. The first is a Poisson linear model, in which
 read counts across a transcript follow an inhomogeneous Poisson process. The
@@ -169,13 +164,11 @@ assumed, whether implicitly or otherwise). The number of reads $x_i$ aligned to
 genomic position $i$ is an unbiased estimate of RNA abundance. Furthermore, we
 assume reads may be treated as independent and identically distributed samples.
 That is, if $N$ reads are generated, and $m_i$ is the event that a generated
-read maps to position $i$, then
-$$ E[x_i] = N \Pr[m_i] $$
+read maps to position $i$, then $ E[x_i] = N \Pr[m_i] $.
 
-The experiment may be considered unbiased  with regards to sequence if, having
+The experiment may be considered unbiased with regards to sequence if, having
 observed the nucleotide sequence $s_i$ surrounding position $i$, the expected
 number of reads sampled from position $i$ is independent of $s_i$, i.e., if
-
 $$ E[ x_i | s_i ] = N \Pr[ m_i | s_i ] = N \Pr[ m_i ] = E[ x_i ] $$
 From Bayes' rule,
 $$ \Pr[ m_i | s_i ] = \frac{ \Pr[ s_i | m_i ] \Pr[ m_i ] }{ \Pr[ s_i ] } $$
@@ -204,7 +197,7 @@ of the training data yet avoids overfitting.
 Towards that end, we propose training a Bayesian network using examples of
 foreground and background sequences. By training the model discriminatively and
 penalizing model complexity, we can avoid a model that is over-parametrized,
-excluding parameters that are insufficiently informitive in discriminating
+excluding parameters that are insufficiently informative in discriminating
 between foreground and background. The Bayesian network can then be used to
 evaluate sequence probability, and thus bias, at any genomic position. Figure
 \ref{fig:overview} gives a schematic overview of the proposed model.
@@ -224,12 +217,11 @@ of chromosome 1, the log10 bias of 95\% of the positions were between -1.14 and
 0.63, suggesting that most adjustments are not large. The $R^2$ measure,
 detailed in Section 3.2, gives the relative increase in log-likeliood under a
 uniform sampling model, after correcting for bias, with 1.0 indicating a perfect
-fit, and the score of 0.38 here indicating a significant increase.
-}
+fit, and the score of 0.38 here indicating a significant increase.}
 \label{fig:overview}
 \end{figure}
 
-However, we have so far ignored one complication: the RNA abundance that we wish
+We have so far ignored one complication: the RNA abundance that we wish
 to estimate is not itself independent of the nucleotide sequence. Notably,
 exonic DNA tends to be more GC-rich than intergenic DNA. If background sequences
 are sampled uniformly from the genome we run the risk of incorrectly adjusting
@@ -239,8 +231,7 @@ sequence is paired with a background sequence taken from a nearby position
 that is likely to have similar abundance and general nucleotide composition.
 Alternatively, we could pair foreground samples with background samples from
 within the same transcript, but we prefer to avoid dependence on existing
-gene annotations as such a model would be limited to RNA-Seq analysis in which
-trustworthy and reasonably complete gene annotations are available.
+gene annotations.
 
 The methods proposed by \citet{Hansen2010} and \cite{Roberts2011} also treat
 bias correction as a problem of estimating foreground and background sequence
@@ -268,17 +259,15 @@ informative in discriminating between foreground and background sequences are
 included in the model. We thus seek to train a model that reduces bias, without
 including uninformative parameters that would only increase variance.
 
-
 \subsubsection{Sampling}
-
 The model is trained on $n$ sequences, one half labeled as foreground, the other
 background, sampled from the reference genome. To obtain the foreground
 sequences, we take sequences surrounding (extending 20 nt to either side, by
 default) the start positions of a randomly sampled set of $n/2$ aligned reads.
 To avoid the risk of the method being overfit to reads deriving from a few
-highly expressed genes, we ignore duplicate reads, which we define as tow reads
+highly expressed genes, we ignore duplicate reads, which we define as two reads
 mapping to the same location in the genome. The nucleotide sequence is taken
-from the genome, rather then the reads themselves, allowing us to include
+from the genome, rather than the reads themselves, allowing us to include
 positions outside of the read.
 
 To obtain background training sequences, we randomly offset the positions from
@@ -294,19 +283,17 @@ binary, indicating classification as background ($x_i = 0$) or foreground ($x_i
 = 1$).
 
 \subsubsection{Training}
-
-
 To determine the structure and parameters of the Bayesian network, we use a
 hill-climbing approach similar to the algorithm described by \citet{Grossman2004}.
 The network structure is determined by greedily optimizing the conditional
 log-likelihood:
 \begin{align*}
-\ell &= \sum_{i=1}^{n} \log \Pr( x_i | s_i ) 
+\ell &= \sum_{i=1}^{n} \log \Pr[ x_i | s_i ]
 =
-\sum_{i=1}^{n} \log \frac{ \Pr(s_i | x_i) \Pr( x_i ) }{
-\sum_{x \in \{0,1\}} \Pr( s_i | x ) \Pr(x) } \\
+\sum_{i=1}^{n} \log \frac{ \Pr[s_i | x_i] \Pr[ x_i ] }{
+\sum_{x \in \{0,1\}} \Pr[ s_i | x ] \Pr[x] } \\
 \end{align*}
-where $\Pr(x)$ is flat (i.e.  $\Pr( x = 0 ) = \Pr( x = 1 ) =
+where $\Pr[x]$ is flat (i.e.  $\Pr[ x = 0 ] = \Pr[ x = 1 ] =
 0.5$) since we sample foreground and background positions equally.
 
 As we will be estimating parameters and evaluating the likelihood on the same
@@ -324,8 +311,8 @@ allowed to grow exponentially does the prediction become polluted by small
 deviations between thousands of uninformative parameters. 
 
 At each step of the optimization procedure, every possible edge or position
-addition, removal, or edge reversal that produces a valid network (i.e., does not
-introduce a cycle) is evaluated, and the alteration that increases the score
+addition, removal, or edge reversal that produces a valid, acyclic network
+is evaluated, and the alteration that increases the score
 $\ell'$ the most is kept.  This process is repeated until a local maximum is
 found, in which no single alteration to the network will increase the score.
 Given the network structure, the parameters are estimated directly from the
@@ -335,15 +322,10 @@ The run time of the training procedure is further reduced in practice by
 imposing the following two restrictions on the structure of the network, First,
 the in-degree (i.e., number of parents) of any node must be less than some
 number $p_{\text{max}}$. Secondly, for all edges $(i,j)$, $|j - i| \le
-d_{\text{max}}$ for some number $d_{\text{max}}$.  This encodes the assumption
-that distant nucleotides are effectively independent. We choose $p_{\text{max}}
-= 4$ and $d_{\text{max}} = 10$, as reasonable default values.
-
-Along with $p_{\text{max}}$ and $d_{\text{max}}$, the time required to train the
-model is controlled by the number of reads used (i.e., $n$) and the number of
-positions surrounding the read start to consider. Increasing any of these
-parameters results in a  solution that is potentially better, at
-the expense of increased training time.
+d_{\text{max}}$ for some number $d_{\text{max}}$. This latter rule encodes the
+assumption that distant nucleotides are effectively independent. We choose
+$p_{\text{max}} = 4$ and $d_{\text{max}} = 10$, as reasonable default values
+(see Supplementary Section 2).
 
 Figure \ref{fig:models} shows examples of the structure learned when this
 procedure is applied to several data sets, using 100,000 reads from each.
@@ -370,7 +352,8 @@ default) or very high in-degrees (greater than 4, by default).
 
 
 Because we cannot observe directly the underlying RNA-abundance, our evaluation
-strategy relies on testing three assumptions we make of an ideal, unbiased experiment.
+strategy relies on testing three assumptions we make of an ideal, unbiased
+RNA-Seq experiment.
 \begin{enumerate}
 \item Positional nucleotide frequencies (as in Figure \ref{fig:freqs}), measured
 from reads within exons, should not differ greatly from frequencies measured by
@@ -420,7 +403,7 @@ with no step to select for polyadenylated transcripts (``WT'').
 \end{table}
 
 
-Testing was performed by cross-validation. Each method was trained on data taken
+Each method was trained on data taken
 from chromosomes 1--8 of the genome from which the reads were mapped (including
 chromosomes 2a and 2b of the Chimpanzee genome). For evaluation, we drew a set
 of long, highly expressed exons from the remaining chromosomes. In particular,
@@ -543,9 +526,9 @@ $R^2 = 0.5$, for example, indicating the model has a log-likelihood equal to
 half that of the null model (a large improvement, corresponding to, for example,
 the likelihood increasing over 100-fold if the initial log-likelihood was -9.6,
 which is the mean per-position log-likehood under the null model). This measure
-can also take on values less than 0, indicating that the model has worse fit
-than the null model (i.e., when adjusting read counts according the bias
-coefficients leads to less uniform read coverage).
+has the added advantage that it can take on values less than 0, indicating that
+the model has worse fit than the null model (i.e., when adjusting read counts
+according the bias coefficients leads to less uniform read coverage).
 
 We compute $R^2$ for each of the test exons, giving us a sense of the variability
 of the effectiveness of each model. The results of this analysis are plotted in
@@ -600,7 +583,7 @@ effect bias correction has on correlation to measurements made by TaqMan RT-PCR,
 made available by the the Microarray Quality Control project \citep{Shi2006}. The
 RNA-Seq data shows a pattern of bias similar to that seen in the other samples
 sequenced on an Illumina platform (see Supplementary Section 6). This evaluation
-does not rely on an assumption that qRT-PCR necissarily more accurate than
+does not rely on an assumption that qRT-PCR is necessarily more accurate than
 RNA-Seq based quantification, only that qRT-PCR is not biased in the same way as
 the RNA-Seq data.
 
@@ -692,19 +675,22 @@ frequencies, and agreement with qRT-PCR.
 
 In our results, estimating initial heptamer frequencies was not seen to be as
 effective as the other models, even when data generated using random hexamer
-priming was used. A possible explaination is, given the large number of
+priming was used. A possible explanation is, given the large number of
 parameters needed to estimate heptamer frequencies ($4^{7} = 16,383$), these
 parameters are estimated with less accuracy than in models requiring fewer
 parameters. Yet, we trained the 7mer model on a minimum of 1.9 million reads
-(see Supplementary Section 3), a number which our theoretical results, detailed
-in Supplementary Section 10, suggest should lead to accurate estimates. A perhaps
-more significant factor is that this method does not capture bias outside of the
-initial heptamer, though many data sets clearly are affected by bias in other
-positions.  Thus to improve the performance, it seems necessary to incease the
-size of the $k$-mers being considered. Yet, exponentially more reads would be
-required for an accurate estimate since the accuracy of the model, as quantified
-by its KL divergence from the true distribution, is $(r-1)/2n$, where $r=4^k$ is
-the number of parameters that must be estimated (See Supplementary Section 10).
+(see Supplementary Section 3), a number which theoretical results,
+following from work by \citet{Birch1964} and included in Supplementary Section
+10 for completeness, suggest should lead to accurate estimates
+
+A perhaps more significant factor is that this method does not capture bias
+outside of the initial heptamer, though many data sets clearly are affected by
+bias in other positions.  Thus to improve the performance, it seems necessary to
+increase the size of the $k$-mers being considered. However, exponentially more reads
+would be required for an accurate estimate since the accuracy of the model, as
+quantified by its KL divergence from the true distribution, is $(r-1)/2n$, where
+$r=4^k$ is the number of parameters that must be estimated (See Supplementary
+Section 10).
 
 Our method generalizes this approach, attempting to overcome this problem by
 using an estimation of sequence probability that requires fewer parameters
@@ -731,6 +717,14 @@ against it. For example, the structures learned by our method (Figure
 \ref{fig:models}) are considerably different between those sequenced on an
 Illumina platform versus an ABI platform, and even vary within platform.
 
+During the review of this manuscript, another method addressing sequence bias in
+RNA-Seq was published by \citet{Zheng2011}. Rather than fitting a model of the
+specific base-level sequence bias surrounding read start, they propose making
+adjustments according to summary statistics at the gene level. Such an approach
+is disadvantaged in its inability to model the very specific pattern of sequence
+bias we have observed. Yet, such an approach is efficient, and though we have
+not yet evaluated it, claimed to be effective.
+
 Because we do not require annotations, ChIP-Seq, and other high-throughput
 sequencing experiments, may also benefit from our model. In a preliminary
 investigation, we found the sequence bias in one ChIP-Seq experiment
@@ -745,11 +739,14 @@ improve accuracy.
 
 To determine the extent to which PCR amplification is responsible for the
 observed bias, we evaluated data from the FRT-Seq method proposed by
-\citet{Mamanova2010}.  FRT-Seq avoids the PCR amplification step during library
+\citet{Mamanova2010}. FRT-Seq avoids the PCR amplification step during library
 preparation with reverse transcription occuring on the flowcell surface. We
 observed that this data is not free from sequence bias, yet unlike other data
 generated on the Illumina platform, it appears to be effected only by relatively
-few positions adjacent to the read start (see Supplementary Section 8).
+few positions adjacent to the read start (see Supplementary Section 8). Other
+protocol improvements might further reduce sequence bias. Notably, promising work
+by \citet{Jayaprakash2011} proposes a pooled adapter strategy to deal with this
+issue in small RNA sequencing experiments.
 
 RNA-Seq is most often used to compare levels of expression, and so a natural
 concern is the consistency of the bias between samples. In the data we examined,

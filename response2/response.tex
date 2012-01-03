@@ -1,9 +1,13 @@
 \documentclass{article}
 \usepackage{amsmath}
-\usepackage{dcj}
+%\usepackage{dcj}
 
 \begin{document}
 
+TODO: brief introduction
+
+We have included below a summary of the changes made in this revision in
+addition to specific responses to the points raised by the reviewers.
 
 
 \section*{Summary of Changes}
@@ -17,9 +21,8 @@ ChIP-Seq.
 \item We have taken the first reviewer's suggestion and have highlighted the
 strong theoretical results our method provides in the abstract.
 
-\item In response to the first reviewers primary concern, we have clarified the
-first paragraph of Section 2.1.1 to make clear that our method does ignore
-duplicate reads when training.
+\item The first paragraph of Section 2.1.1 has been reworded to make clear that
+our method does ignore duplicate reads when training.
 
 \item We have removed our use of the term ``classification'' in the fifth
 paragraph of Section 2.1, as it seemed to cause some confusion.
@@ -43,11 +46,12 @@ coefficient $r$, and not $r^2$.
 Ensembl gene annotations, rather than version 62, to remain consistent with the
 Poisson regression and KL divergence analysis.
 
-\item We have added the proper citation of what we believe to be first published
-derivation of the results of Supplementary Section 10.
+\item In the second paragraph of Section 4, we have added the proper citation of
+what we believe to be first published derivation of the results of Supplementary
+Section 10.
 
-\time We have cited and made note of in Section 4 a related paper by Zheng, et
-al, brought to our attention by reviewer 2.
+%\time We have cited and made note of in Section 4 a related paper by Zheng, et
+%al, brought to our attention by reviewer 2.
 
 \item Table 2 was moved to Supplementary Section 3 to preserve space.
 
@@ -82,12 +86,12 @@ sequencing errors, one without do you count them as two sequences or do you
 treat them as one and use the sequence of the genome?
 \end{quote}
 
-In fact, we do ignore duplicate reads when training the method. This is stated
-in the first paragraph of Section 2.2.1: ``we take sequences surrounding
+In fact, we do ignore duplicate reads when training the method. This was stated
+in the first paragraph of Section 2.2.1 (``we take sequences surrounding
 (extending 20 nt to either side, by default) the start positions of a randomly
-sampled set of $n/2$ aligned reads, ignoring duplicate reads.'' The reviewer is
+sampled set of $n/2$ aligned reads, ignoring duplicate reads''), but the reviewer is
 correct that this is an important detail, as the method might otherwise be
-overfit to a few highly expressed genes, and in this revision we have expanded
+overfit to a few highly expressed genes. In this revision we have expanded
 this paragraph to clarify this decision.
 
 
@@ -116,13 +120,9 @@ estimates between replicates after bias correction would be an interesting
 analysis. Unfortunately, the four RNA-Seq data sets from Trapnell, et al, were
 taken from four different biological states and compared without technical or
 biological replicates, so a comparison of gene abundance estimates would be
-conflated with genuine changes in gene expression.
-
-While we wish to draw attention to the issue of batch effects in RNA-Seq, a larger
-survey of variability of technical bias is outside the intended scope of the
-paper.
-
-
+conflated with genuine changes in gene expression.  While we wish to draw
+attention to the potential of batch effects in RNA-Seq, a larger survey of
+variability of technical bias is outside the intended scope of the paper.
 
 
 \section*{Response to Reviewer 2}
@@ -162,7 +162,7 @@ biases in gene/transcript quantitation. The authors may discuss a little more on
 their assumptions.
 \end{quote}
 
-The Zheng paper make the assertion that ``the bias patterns across genes were
+The Zheng paper makes the assertion that ``the bias patterns across genes were
 not adequately addressed by the base-level bias correction methods, and GAM
 [Generalized Additive Model] correction is necessary to further remove these
 biases.'' This follows from their observation that Hansen's heptamer reweighting
@@ -170,8 +170,8 @@ method did not improve correlation bewteen RNA-Seq and RT-PCR. Indeed, our
 results are consistent, showing only a slight improvment.
 
 However, the authors apparently did not evaluate this correlation after applying
-a more sophisticated model such as the GLM or MART model propsed by Li. As we
-demonstrate in Section 3.3, applying a more flexible model results in a large
+a more sophisticated model such as the GLM or MART models as propsed by Li. As
+we demonstrate in Section 3.3, applying a more flexible model results in a large
 increase in correlation, suggesting such an approach should not be hastily
 dismissed.
 
@@ -203,10 +203,10 @@ As suggested by Figure 3 in the paper, most edges added to the model are between
 adjacent nucleotides, and the in-degree of most positions is small.  We have now
 included additional data (Figures 4 and 5 in the Supplement) showing that the
 performance of the model on the Mortazavi data set is not greatly effected by
-these parameters as long as they are both non-zero. It should not bed assumed
+these parameters as long as they are both non-zero. It should not be assumed
 that this necessarily the case with every data set, and so these parameters
 default to somewhat arbitrary larger numbers that balance training time with
-flexibility.
+model flexibility.
 
 
 \begin{quote}
@@ -216,7 +216,7 @@ reads with number of duplicates in the upper 50 percentile?
 \end{quote}
 
 We have rewritten the 3rd paragraph in Section 3.1 to provide a more lucid
-description of the procedureve.
+description of the procedure.
 
 
 \begin{quote}
@@ -299,7 +299,7 @@ proposed approach?
 We have seen that sequence bias is not always consistent, even in experiments
 using similar protocols (see Figure 1, for example), and believe that batch
 effects in RNA-Seq are a serious concern. So far, we have concentrated only on
-rigorously demonstrating a absolute reduction in sequence bias, and have not
+rigorously demonstrating an absolute reduction in sequence bias, and have not
 undertaken any systematic comparison of the consistency of this bias between
 replicates. Such comparison would be meaningful, but outside of the intended
 scope of the paper.
@@ -317,9 +317,9 @@ that experiments are actually rendered less reliable. In the paper, we attempted
 to capture this tradeoff most directly with Figure 5, which demonstrates that,
 while uniformity of read coverage is increased ($R^2 > 0$) in the large majority
 of exons after applying our method, inevitably it is decreased ($R^2 < 0$) in
-some. This suggests that the complexity penalty we use in model selection works
-as desired, and as as its ansymptotic properties predict, controlling variance by
-preventing very dense models from being trained.
+some. This suggests that the (BIC) complexity penalty we use during model
+selection works as desired, and as as its ansymptotic properties predict,
+controlling variance by preventing very dense models from being trained.
 
 
 \begin{quote}

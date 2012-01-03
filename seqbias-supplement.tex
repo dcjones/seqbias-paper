@@ -124,7 +124,7 @@ in-degree ($p_{\text{max}}$), or maximum edge distance ($d_{\text{max}}$) has
 little effect for values of at least 1.
 
 
-\section{Total numbers of reads used to train each method}
+\section{Total Numbers of Reads Used to Train Each Method}
 
 \begin{table}[H]
 \begin{center}
@@ -317,7 +317,9 @@ site itself, complicating any analysis of differential isoform usage.
 
 In this section and the next, we present some theoretical analysis quantifying
 the accuracy of parameter estimation and the likelihood of falsely learning a
-biased model from unbiased data.
+biased model from unbiased data. These results follow mostly from work
+originally done by Birch \cite{Birch1964}, but are presented here for
+completeness, and in a manner more directly addressing the the question at hand.
 
 Suppose $P$ and $Q$ are probability distributions defined on a discrete sample
 space. E.g., in the context of this paper, think of them as the probabilities of
@@ -552,7 +554,7 @@ In training we consider multiple nucleotides. If $h$ nucleotides are considered,
 the probability of a non-empty model being trained is less than
 $$ 1 - (\Pr(D < \frac{3}{2n} \log n))^{2h} $$
 
-As discussed in Supplementary Section 9.2, $2n D$ is approximated by a $\chi^2$
+As discussed in Supplementary Section 10.2, $2n D$ is approximated by a $\chi^2$
 distribution with 3 degrees of freedom for large $n$, and so we can estimate
 this probability for various values of $n$. This is shown in Figure
 \ref{fig:nepr}. From this figure we can see, for example, that training with
@@ -565,7 +567,7 @@ trained the model on 100 sets of 100 simulated reads, drawn uniformly at random
 from exonic sequences and in only 3 trials was a non-empty model trained, far
 less than the upper bound expectation of 23 out of 100. This test was repeated
 using sets of 10,000 reads, and in no trial was a non-empty model trained.  From
-these results, and the results in Supplementary Section 5, we recommend training
+these results, and the results in Supplementary Section 6, we recommend training
 our method with at least 10,000 reads.
 
 Here we considered only the case of an empty model versus a non-empty model. A
