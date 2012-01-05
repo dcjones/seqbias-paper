@@ -4,14 +4,18 @@
 
 \begin{document}
 
-The paper submitted here is a revision of one originally titled ``A new approach
-to bias correction in high-throughput sequencing data''.  We found the reviewers
-comments to be very constructive overall, and are grateful for their time and
-attention. Some small errors were brought to our attention, as well as several
-points of confusion which we have taken care to address in this revision.
+\vspace{8em}
+
+The paper presented here is revised version of the one submitted on Sept. 30
+2011. In this last round of review, we found the reviewers comments to be
+very constructive overall, and are grateful for their time and attention. Some
+small errors were discovered, as well as several points of confusion which we
+have taken care to address. While no major changes to the method or results were
+required, we have, in a number of ways, improved the clarity of our
+presentation, and believe that is now fit for publication in Bioinformatics.
 
 Belew is a summary of the changes made, in addition to specific responses to the
-points reaised by the reviewers.
+points raised by the reviewers.
 
 \section*{Summary of Changes}
 
@@ -45,7 +49,7 @@ and $d_{\text{max}}$
 \item We have clarified that the values in Table 3 are Pearson correlation
 coefficient $r$, and not $r^2$.
 
-\item We have repeated the RT-PCR analysis of 3.3 using version 60 of the
+\item We have repeated the RT-PCR analysis of Section 3.3 using version 60 of the
 Ensembl gene annotations, rather than version 62, to remain consistent with the
 Poisson regression and KL divergence analysis.
 
@@ -230,7 +234,7 @@ Figure 1? If so, why is Bullard data not consistent KL=0.6 in figure 4 and 0.3
 in Figure 1. Other data sets seem to be consistent.
 \end{quote}
 
-Regrettably, in Figure 1, te natural logarithm was used to compute KL
+Regrettably, in Figure 1, the natural logarithm was used to compute KL
 divergence, while in Figure 4, the base 2 logarithm, causing the scale to
 somewhat shifted between the two. This error has been corrected in the revision.
 
@@ -290,7 +294,7 @@ a reduction in the symptoms of sequence bias across thousands of exons in five
 data sets, and in comparison to three previously proposed methods. In sum, we
 believe this represents the most complete and rigorous characterization of
 sequence bias in RNA-Seq yet presented. It is a compelling convergence of
-evidence that the accuracy RNA-Seq is improved by correcting for sequence
+evidence that the accuracy of RNA-Seq is improved by correcting for sequence
 bias, and that the method we propose is particularly suited to do so.
 
 
