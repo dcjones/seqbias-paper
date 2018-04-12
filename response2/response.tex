@@ -4,7 +4,6 @@
 
 \begin{document}
 
-\vspace{8em}
 
 The paper presented here is revised version of the one submitted on Sept. 30
 2011. In this last round of review, we found the reviewers comments to be
@@ -99,8 +98,19 @@ in the first paragraph of Section 2.2.1 (``we take sequences surrounding
 (extending 20 nt to either side, by default) the start positions of a randomly
 sampled set of $n/2$ aligned reads, ignoring duplicate reads''), but the reviewer is
 correct that this is an important detail, as the method might otherwise be
-overfit to a few highly expressed genes. In this revision we have expanded
-this paragraph to clarify this decision.
+overfit to a few highly expressed genes.
+
+In this revision we have expanded this paragraph to clarify this decision, and
+it now reads as follows:
+``The model is trained on $n$ sequences, one half labeled as foreground, the other
+background, sampled from the reference genome. To obtain the foreground
+sequences, we take sequences surrounding (extending 20 nt to either side, by
+default) the start positions of a randomly sampled set of $n/2$ aligned reads.
+To avoid the risk of the method being overfit to reads deriving from a few
+highly expressed genes, we ignore duplicate reads, which we define as two reads
+mapping to the same location in the genome. The nucleotide sequence is taken
+from the genome, rather than the reads themselves, allowing us to include
+positions outside of the read.''
 
 
 \begin{quote}
@@ -112,9 +122,17 @@ of classification is somewhat confusing.
 
 It was our intention to point out that the training algorithm used (i.e.,
 maximizing the conditional log-likelihood) is typical of classification
-applications, but this point was perhaps needlessly confusing. We have
-rewritten the paragraph in question (the fifth paragraph in Section 2.1,
-beginning with ``Towards that end...'') to avoid this.
+applications, but this point was perhaps needlessly confusing.
+
+We have rewritten the paragraph in question to avoid this (the fifth paragraph
+in Section 2.1), and it now reads as: ``Towards that end, we propose training a
+Bayesian network using examples of foreground and background sequences. By
+training the model discriminatively and penalizing model complexity, we can
+avoid a model that is over-parametrized, excluding parameters that are
+insufficiently informative in discriminating between foreground and background.
+The Bayesian network can then be used to evaluate sequence probability, and thus
+bias, at any genomic position. Figure 2 gives a schematic
+overview of the proposed model.''
 
 
 \begin{quote}
@@ -226,6 +244,16 @@ reads with number of duplicates in the upper 50 percentile?
 
 We have rewritten the 3rd paragraph in Section 3.1 to provide a more lucid
 description of the procedure.
+
+It reads now as:
+``When computing the KL divergence, there is a risk of the measure being dominated
+by a small number of reads with many duplicates. Yet, given the high coverage of
+the exons being tested, if duplicate reads are excluded, it may not capture the
+full effect of bias correction. To account for these opposing concerns we adopt
+the following method: all reads contained within the exon being tested are
+ranked by the number of duplicates. We then exclude reads that are ranked in the
+lower half, and count each read ranked in the upper half only once, ignoring
+duplicates.''
 
 
 \begin{quote}
